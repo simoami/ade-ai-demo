@@ -1,0 +1,29 @@
+{
+  "name": "@repo/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "dependencies": {
+    "ai": "^7.0.173",
+    "eve": "catalog:",
+    "zod": "^4.6.7"
+  },
+  "scripts": {
+    "dev:eve": "eve dev --no-ui --no-default-extensions",
+    "build": "eve build",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --error-on-warnings .",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "eval": "eve eval",
+    "format": "biome format --write .",
+    "check": "biome check ."
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "@biomejs/biome": "catalog:"
+  }
+}

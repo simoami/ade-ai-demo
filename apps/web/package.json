@@ -1,0 +1,36 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome lint --error-on-warnings .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "format": "biome format --write .",
+    "check:agent": "node scripts/check-agent.mjs",
+    "check": "biome check ."
+  },
+  "dependencies": {
+    "@repo/ui": "workspace:*",
+    "next": "16.4.5",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "eve": "catalog:",
+    "@repo/ai": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "@biomejs/biome": "catalog:"
+  }
+}

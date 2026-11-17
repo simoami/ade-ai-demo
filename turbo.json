@@ -1,0 +1,47 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "format": {
+      "cache": false
+    },
+    "web#typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": [".next/types/**", "tsconfig.tsbuildinfo"]
+    },
+    "@repo/ai#build": {
+      "outputs": [
+        ".output/**",
+        ".eve/builds/**",
+        ".eve/agent-summary.json",
+        ".vercel/output/**"
+      ]
+    },
+    "dev:eve": {
+      "cache": false,
+      "persistent": true
+    },
+    "eval": {
+      "cache": false
+    },
+    "test": {},
+    "check": {},
+    "//#check": {}
+  },
+  "globalDependencies": ["biome.json"],
+  "globalPassThroughEnv": ["AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN"]
+}

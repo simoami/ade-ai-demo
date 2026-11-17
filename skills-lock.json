@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "skills": {
+    "eve": {
+      "source": "vercel/eve",
+      "commit": "89330056b1ee92a4e7d12ceb332ca4b99b31c6c0",
+      "sourceType": "github",
+      "skillPath": "skills/eve/SKILL.md",
+      "computedHash": "9c1eaa91f1aa5a1733b90937ee5186bc14f43e88ef6524a956750e535b0e2a60"
+    },
+    "pick-ui-library": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/pick-ui-library/SKILL.md",
+      "computedHash": "3bc44e7faccb949583f4af6c8a15b5a50acc04a5e656f5168a96e5aa43e9f3cd"
+    }
+  }
+}

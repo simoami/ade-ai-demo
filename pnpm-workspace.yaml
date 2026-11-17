@@ -1,0 +1,27 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  "@biomejs/biome": 2.6.8
+  eve: 1.0.0
+  react: 19.3.1
+  react-dom: 19.3.1
+  "@types/react": ^19
+  "@types/react-dom": ^19
+  "@types/node": ^26
+  "@tailwindcss/postcss": ^4
+  tailwindcss: ^4
+  typescript: ^5
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - "@tybys/wasm-util@0.10.5"
+  - axe-core@4.14.1
+  - browserslist@4.29.6
+  - eve@1.0.0
+  - update-browserslist-db@1.4.0
