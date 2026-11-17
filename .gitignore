@@ -10,3 +10,5 @@ node_modules/
 **/.eve/
 **/.output/
 **/.vercel/
+
+next-env.d.ts
