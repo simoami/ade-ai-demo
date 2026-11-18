@@ -1,23 +1,23 @@
 {
   "id": "consent-01",
-  "datasetVersion": "synthetic-v1",
+  "datasetVersion": "synthetic-v2",
   "seed": 7306,
   "split": "development",
   "documentClass": "consent",
   "pages": [
     {
       "page": 0,
-      "rotation": -0.6249020226299763,
+      "rotation": -2.374980387277901,
       "blocks": [
         {
           "id": "p1-b1",
           "kind": "header",
-          "text": "DEMO EHR | Imaginary Fern Clinic\nAven Testmere | MRN FAKE-7306 | DOB 1978-04-12",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7306 | DOB 1978-04-12",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.03156565656565657,
-            "width": 0.46405228758169936,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.3781748366013072,
+            "height": 0.03907828282828283
           },
           "continues": null
         },
@@ -26,34 +26,34 @@
           "kind": "heading",
           "text": "Consent to synthetic care",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.10732323232323232,
-            "width": 0.33169934640522875,
-            "height": 0.02904040404040404
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.29272875816993466,
+            "height": 0.032196969696969696
           },
           "continues": null
         },
         {
           "id": "p1-b3",
           "kind": "paragraph",
-          "text": "Aven Testmere authorizes evaluation at Imaginary Fern Clinic.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Zavi Fableton at 202-555-0147.",
+          "text": "Bex Samplewick authorizes evaluation at Imaginary Fern Clinic. The purpose, alternatives and right to withdraw were\nexplained. This consent contains no treatment results or observations. Questions may be directed to Dr. Zavi Fableton\nat 202-555-0147.",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.17676767676767677,
-            "width": 0.630718954248366,
-            "height": 0.08585858585858586
+            "x": 0.058823529411764705,
+            "y": 0.13188131313131313,
+            "width": 0.8595588235294117,
+            "height": 0.058712121212121195
           },
           "continues": null
         },
         {
           "id": "p1-b4",
           "kind": "table",
-          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "text": "Authorization Status\nEvaluation Agreed\nData review Agreed",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.3282828282828283,
-            "width": 0.3366013071895425,
-            "height": 0.06691919191919192
+            "x": 0.058823529411764705,
+            "y": 0.20321969696969697,
+            "width": 0.4869281045751634,
+            "height": 0.05628156565656564
           },
           "continues": null
         },
@@ -62,22 +62,34 @@
           "kind": "list",
           "text": "- All identities are fictional.\n- Generated for software evaluation only.",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.46085858585858586,
-            "width": 0.4150326797385621,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.2721275252525252,
+            "width": 0.30480392156862746,
+            "height": 0.0422979797979798
           },
           "continues": null
         },
         {
           "id": "p1-b6",
           "kind": "footer",
-          "text": "Aven Testmere | FAKE-7306 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7306 | Confidential synthetic data for software evaluation only.",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.9217171717171717,
-            "width": 0.5326797385620915,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.4797042483660131,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
           },
           "continues": null
         }
@@ -86,12 +98,12 @@
         {
           "id": "p1-b1",
           "kind": "header",
-          "text": "DEMO EHR | Imaginary Fern Clinic\nAven Testmere | MRN FAKE-7306 | DOB 1978-04-12",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7306 | DOB 1978-04-12",
           "box": {
-            "x": 0.05877377965165037,
-            "y": 0.03134564502139481,
-            "width": 0.4647018810730564,
-            "height": 0.05188781851532792
+            "x": 0.034013861315416116,
+            "y": 0.03272388581757857,
+            "width": 0.3799456591987416,
+            "height": 0.05115437369789638
           },
           "continues": null
         },
@@ -100,34 +112,34 @@
           "kind": "heading",
           "text": "Consent to synthetic care",
           "box": {
-            "x": 0.05984303274657249,
-            "y": 0.1082141403826754,
-            "width": 0.33208949849246644,
-            "height": 0.03183412563426474
+            "x": 0.0370574873769971,
+            "y": 0.09216628132899185,
+            "width": 0.29420395020099466,
+            "height": 0.041542875060916196
           },
           "continues": null
         },
         {
           "id": "p1-b3",
           "kind": "paragraph",
-          "text": "Aven Testmere authorizes evaluation at Imaginary Fern Clinic.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Zavi Fableton at 202-555-0147.",
+          "text": "Bex Samplewick authorizes evaluation at Imaginary Fern Clinic. The purpose, alternatives and right to withdraw were\nexplained. This consent contains no treatment results or observations. Questions may be directed to Dr. Zavi Fableton\nat 202-555-0147.",
           "box": {
-            "x": 0.060823181416917727,
-            "y": 0.17513441939008567,
-            "width": 0.6318932615624884,
-            "height": 0.09116896324955981
+            "x": 0.039461240996265745,
+            "y": 0.11880036326370835,
+            "width": 0.8619690591274352,
+            "height": 0.08618589878203442
           },
           "continues": null
         },
         {
           "id": "p1-b4",
           "kind": "table",
-          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "text": "Authorization Status\nEvaluation Agreed\nData review Agreed",
           "box": {
-            "x": 0.06296168760676185,
-            "y": 0.32911928242101507,
-            "width": 0.3375257942735149,
-            "height": 0.06975197267247102
+            "x": 0.043286933376228465,
+            "y": 0.20200959724074874,
+            "width": 0.4895280777958134,
+            "height": 0.07182530270175835
           },
           "continues": null
         },
@@ -136,22 +148,34 @@
           "kind": "list",
           "text": "- All identities are fictional.\n- Generated for software evaluation only.",
           "box": {
-            "x": 0.0648328805228755,
-            "y": 0.4610261620525402,
-            "width": 0.4156851887371826,
-            "height": 0.051474698001380714
+            "x": 0.04698228136979432,
+            "y": 0.2766900922858645,
+            "width": 0.3068104322428483,
+            "height": 0.05202187130317015
           },
           "continues": null
         },
         {
           "id": "p1-b6",
           "kind": "footer",
-          "text": "Aven Testmere | FAKE-7306 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7306 | Confidential synthetic data for software evaluation only.",
           "box": {
-            "x": 0.07133750351698481,
-            "y": 0.9208658484919416,
-            "width": 0.5333252503432797,
-            "height": 0.052466187234853856
+            "x": 0.08235977917901621,
+            "y": 0.9302135486273847,
+            "width": 0.48104253133339864,
+            "height": 0.047971617072537165
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8928966065299504,
+            "y": 0.9173202050928975,
+            "width": 0.07219235650800504,
+            "height": 0.02340815677266228
           },
           "continues": null
         }
@@ -163,196 +187,178 @@
           "end": 32,
           "category": "facility",
           "box": {
-            "x": 0.17973856209150327,
-            "y": 0.03409090909090909,
-            "width": 0.20588235294117646,
-            "height": 0.015151515151515152
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.14955882352941174,
+            "height": 0.014204545454545454
           },
           "scannedBox": {
-            "x": 0.17318170353852014,
-            "y": 0.035082567528093966,
-            "width": 0.2060839584296545,
-            "height": 0.016885720153302752
+            "x": 0.1322805234243698,
+            "y": 0.041949986232841185,
+            "width": 0.15019210852951181,
+            "height": 0.018981415325796447
           }
         },
         {
           "blockId": "p1-b1",
           "start": 33,
-          "end": 46,
+          "end": 47,
           "category": "name",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.05303030303030303,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.11451470588235294,
+            "height": 0.014204545454545454
           },
           "scannedBox": {
-            "x": 0.06561229367332821,
-            "y": 0.055590692974499034,
-            "width": 0.12765725069225636,
-            "height": 0.016224727330987287
+            "x": 0.041607263287228136,
+            "y": 0.06076354671300205,
+            "width": 0.115178093047976,
+            "height": 0.017859256342657115
           }
         },
         {
           "blockId": "p1-b1",
-          "start": 53,
-          "end": 62,
+          "start": 54,
+          "end": 63,
           "category": "id",
           "box": {
-            "x": 0.2679738562091503,
-            "y": 0.05303030303030303,
-            "width": 0.08823529411764706,
-            "height": 0.015151515151515152
+            "x": 0.22974183006535945,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
           },
           "scannedBox": {
-            "x": 0.2616790630168236,
-            "y": 0.05426870732986805,
-            "width": 0.0884438968235573,
-            "height": 0.015894230919829555
+            "x": 0.2058484152186621,
+            "y": 0.05671850027357028,
+            "width": 0.0771519612535091,
+            "height": 0.016640562491056554
           }
         },
         {
           "blockId": "p1-b1",
-          "start": 69,
-          "end": 79,
+          "start": 70,
+          "end": 80,
           "category": "dob",
           "box": {
-            "x": 0.42483660130718953,
-            "y": 0.05303030303030303,
-            "width": 0.09803921568627451,
-            "height": 0.015151515151515152
+            "x": 0.3552565359477124,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
           },
           "scannedBox": {
-            "x": 0.41853247849161984,
-            "y": 0.0528640975824477,
-            "width": 0.09824723529073215,
-            "height": 0.01597685502261903
+            "x": 0.33125530658874525,
+            "y": 0.052739380085770726,
+            "width": 0.07590303497741568,
+            "height": 0.016600535838279862
           }
         },
         {
           "blockId": "p1-b3",
           "start": 0,
-          "end": 13,
+          "end": 14,
           "category": "name",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.17929292929292928,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.13693181818181818,
+            "width": 0.1187091503267974,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.06739438216486499,
-            "y": 0.18184580959720437,
-            "width": 0.12765725069225636,
-            "height": 0.016224727330987232
+            "x": 0.0462624199442625,
+            "y": 0.14736022645128105,
+            "width": 0.11945357376414656,
+            "height": 0.019570495116031927
           }
         },
         {
           "blockId": "p1-b3",
-          "start": 39,
-          "end": 60,
+          "start": 40,
+          "end": 61,
           "category": "facility",
           "box": {
-            "x": 0.4542483660130719,
-            "y": 0.17929292929292928,
-            "width": 0.20588235294117646,
-            "height": 0.015151515151515152
+            "x": 0.3648202614379085,
+            "y": 0.13693181818181818,
+            "width": 0.1547549019607843,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.44972458238468094,
-            "y": 0.177962476766101,
-            "width": 0.20608395842965455,
-            "height": 0.016885720153302697
+            "x": 0.3454659736954196,
+            "y": 0.136616863556332,
+            "width": 0.15546836284992444,
+            "height": 0.020724727743814342
           }
         },
         {
           "blockId": "p1-b3",
-          "start": 215,
-          "end": 232,
+          "start": 216,
+          "end": 233,
           "category": "provider",
           "box": {
-            "x": 0.3562091503267974,
-            "y": 0.2361111111111111,
-            "width": 0.16666666666666666,
-            "height": 0.015151515151515152
+            "x": 0.7898039215686274,
+            "y": 0.1533459595959596,
+            "width": 0.12204248366013072,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.3524931375341248,
-            "y": 0.2359340166853705,
-            "width": 0.16687060456095548,
-            "height": 0.01655522374214491
+            "x": 0.7709648295377362,
+            "y": 0.1404558617328311,
+            "width": 0.12278404383372898,
+            "height": 0.0196772328567697
           }
         },
         {
           "blockId": "p1-b3",
-          "start": 236,
-          "end": 248,
+          "start": 237,
+          "end": 249,
           "category": "phone",
           "box": {
-            "x": 0.5620915032679739,
-            "y": 0.2361111111111111,
-            "width": 0.11764705882352941,
-            "height": 0.015151515151515152
+            "x": 0.0835294117647059,
+            "y": 0.169760101010101,
+            "width": 0.10173202614379084,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.558363245344795,
-            "y": 0.23461203104073958,
-            "width": 0.11785391222508168,
-            "height": 0.016142103228197757
+            "x": 0.06617724259869973,
+            "y": 0.18012211510188614,
+            "width": 0.10249103257642067,
+            "height": 0.019026865152175942
           }
         },
         {
           "blockId": "p1-b6",
-          "start": 0,
-          "end": 13,
+          "start": 33,
+          "end": 47,
           "category": "name",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.9242424242424242,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.08309640522875818,
+            "height": 0.011047979797979798
           },
           "scannedBox": {
-            "x": 0.07790870426493213,
-            "y": 0.9267509976711659,
-            "width": 0.12765725069225625,
-            "height": 0.016224727330987232
+            "x": 0.08977713158998041,
+            "y": 0.959230362658884,
+            "width": 0.08361750163490261,
+            "height": 0.013699346581222294
           }
         },
         {
           "blockId": "p1-b6",
-          "start": 16,
-          "end": 25,
+          "start": 54,
+          "end": 63,
           "category": "id",
           "box": {
-            "x": 0.22875816993464052,
-            "y": 0.9242424242424242,
-            "width": 0.08823529411764706,
-            "height": 0.015151515151515152
+            "x": 0.18701307189542482,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
           },
           "scannedBox": {
-            "x": 0.23476211973972833,
-            "y": 0.9257595084376927,
-            "width": 0.08844389682355736,
-            "height": 0.015894230919829444
-          }
-        },
-        {
-          "blockId": "p1-b6",
-          "start": 32,
-          "end": 42,
-          "category": "dob",
-          "box": {
-            "x": 0.38562091503267976,
-            "y": 0.9242424242424242,
-            "width": 0.09803921568627451,
-            "height": 0.015151515151515152
-          },
-          "scannedBox": {
-            "x": 0.39161553521452463,
-            "y": 0.9243548986902723,
-            "width": 0.0982472352907321,
-            "height": 0.01597685502261892
+            "x": 0.21132622846279725,
+            "y": 0.9561318288321714,
+            "width": 0.058749991782021005,
+            "height": 0.012902371450379868
           }
         }
       ]

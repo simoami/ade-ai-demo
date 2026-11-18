@@ -19,7 +19,9 @@ Stage suites use the Braintrust SDK directly. There are no agent evals yet;
 when added, run them through `eve eval` with `braintrustReporter`, separately
 from these stage suites (which are not eve `defineEval` cases).
 
-The per-page regression envelope in `ocr-baseline.json` is measured from the
-first full baseline. Runtime failures or scores outside it fail the suite.
-`EVAL_FIXTURE`, `EVAL_VARIANT` and `EVAL_DPI` (144 or 216) support focused runs.
-See [threshold rationale](../../../docs/evals.md) before changing the baseline.
+Runtime or schema failures fail the suite, as does a page-mean CER or WER
+above the fixed per-variant ceilings in `scorers/ocr.ts`. Compare candidates
+against a baseline experiment in Braintrust; the completion log prints the
+experiment URL. `EVAL_FIXTURE`, `EVAL_VARIANT` and `EVAL_DPI` (144 or 216)
+support focused runs; ceilings then apply to the selected pages only.
+See [threshold rationale](../../../docs/evals.md) before changing a ceiling.

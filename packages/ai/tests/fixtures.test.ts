@@ -18,6 +18,7 @@ test('same seed produces identical PDF bytes and valid ground truth', async () =
     first.expected.pages.flatMap((page) => page.blocks.map((block) => block.id))
   )
   for (const page of first.expected.pages) {
+    assert.ok(Math.abs(page.rotation) >= 1 && Math.abs(page.rotation) <= 3)
     for (const block of page.blocks) {
       if (block.continues) assert.ok(ids.has(block.continues))
       assert.ok(block.box.x + block.box.width <= 1)
@@ -59,4 +60,18 @@ test('all checked-in synthetic variants validate and have real continuation refe
       for (const block of blocks) priorIds.add(block.id)
     }
   }
+})
+
+test('checked-in fixtures cover two-column pages, dense tables and stamps', async () => {
+  const { syntheticDataset } = await import('#evals/fixtures/dataset')
+  const blocks = (await syntheticDataset())
+    .filter((row) => row.input.variant === 'clean')
+    .flatMap((row) => row.expected.flat())
+  assert.ok(blocks.some((block) => block.kind === 'table' && block.box.x > 0.5))
+  assert.ok(
+    blocks.some(
+      (block) => block.kind === 'table' && block.text.split('\n').length > 10
+    )
+  )
+  assert.ok(blocks.some((block) => block.kind === 'other'))
 })

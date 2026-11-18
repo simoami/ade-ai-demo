@@ -1,83 +1,107 @@
 {
   "id": "invoice-01",
-  "datasetVersion": "synthetic-v1",
+  "datasetVersion": "synthetic-v2",
   "seed": 7309,
   "split": "held-out",
   "documentClass": "other",
   "pages": [
     {
       "page": 0,
-      "rotation": -0.44722346626222137,
+      "rotation": -2.6715144547633827,
       "blocks": [
         {
           "id": "p1-b1",
           "kind": "header",
-          "text": "DEMO EHR | Imaginary Fern Clinic\nAven Testmere | MRN FAKE-7309 | DOB 1978-04-12",
+          "text": "Fictional Quartz Health\nPatient: Aven Testmere  DOB 1978-04-12",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.03156565656565657,
-            "width": 0.46405228758169936,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.27715522875816995,
+            "height": 0.03746843434343434
           },
           "continues": null
         },
         {
           "id": "p1-b2",
-          "kind": "heading",
-          "text": "Service invoice",
+          "kind": "header",
+          "text": "Printed 2026-02-10\nMRN FAKE-7309",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.10732323232323232,
-            "width": 0.2042483660130719,
-            "height": 0.02904040404040404
+            "x": 0.8053684640522876,
+            "y": 0.030303030303030304,
+            "width": 0.13580800653594774,
+            "height": 0.03746843434343434
           },
           "continues": null
         },
         {
           "id": "p1-b3",
-          "kind": "paragraph",
-          "text": "Bill to: Aven Testmere\n17 Fiction Lane, Exampleville, ZZ 00000\nAdministrative service invoice; no clinical results.",
+          "kind": "heading",
+          "text": "Service invoice",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.17676767676767677,
-            "width": 0.5228758169934641,
-            "height": 0.06691919191919192
+            "x": 0.410859477124183,
+            "y": 0.08544823232323231,
+            "width": 0.17828104575163395,
+            "height": 0.032196969696969696
           },
           "continues": null
         },
         {
           "id": "p1-b4",
-          "kind": "table",
-          "text": "Item                       Quantity    Amount\nDocument handling          1           25.00\nTotal                                  25.00",
+          "kind": "paragraph",
+          "text": "Bill to: Aven Testmere\n17 Fiction Lane, Exampleville, ZZ 00000\nAdministrative service invoice; no clinical results.",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.3282828282828283,
-            "width": 0.4542483660130719,
-            "height": 0.06691919191919192
+            "x": 0.058823529411764705,
+            "y": 0.13027146464646464,
+            "width": 0.36349673202614385,
+            "height": 0.05871212121212123
           },
           "continues": null
         },
         {
           "id": "p1-b5",
-          "kind": "list",
-          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "kind": "table",
+          "text": "Item Quantity Amount\nDocument handling 1 25.00\nRecords copy fee 12 6.00\nTotal 31.00",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.46085858585858586,
-            "width": 0.4150326797385621,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.2016098484848485,
+            "width": 0.6339869281045751,
+            "height": 0.07187500000000001
           },
           "continues": null
         },
         {
           "id": "p1-b6",
-          "kind": "footer",
-          "text": "Aven Testmere | FAKE-7309 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
           "box": {
-            "x": 0.06535947712418301,
-            "y": 0.9217171717171717,
-            "width": 0.5326797385620915,
-            "height": 0.047979797979797977
+            "x": 0.058823529411764705,
+            "y": 0.28611111111111115,
+            "width": 0.30480392156862746,
+            "height": 0.0422979797979798
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7309 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.471468954248366,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
           },
           "continues": null
         }
@@ -86,72 +110,96 @@
         {
           "id": "p1-b1",
           "kind": "header",
-          "text": "DEMO EHR | Imaginary Fern Clinic\nAven Testmere | MRN FAKE-7309 | DOB 1978-04-12",
+          "text": "Fictional Quartz Health\nPatient: Aven Testmere  DOB 1978-04-12",
           "box": {
-            "x": 0.060640986750513104,
-            "y": 0.03140253002378984,
-            "width": 0.46452280286048286,
-            "height": 0.05077725775336667
+            "x": 0.030971547218920148,
+            "y": 0.036721012200504444,
+            "width": 0.2791140521400607,
+            "height": 0.0474099257046568
           },
           "continues": null
         },
         {
           "id": "p1-b2",
-          "kind": "heading",
-          "text": "Service invoice",
+          "kind": "header",
+          "text": "Printed 2026-02-10\nMRN FAKE-7309",
           "box": {
-            "x": 0.0614062262327289,
-            "y": 0.10872479974138699,
-            "width": 0.20453548581050063,
-            "height": 0.030271439005541523
+            "x": 0.7767051153707645,
+            "y": 0.014923795602157175,
+            "width": 0.13792045014089194,
+            "height": 0.042319067039574776
           },
           "continues": null
         },
         {
           "id": "p1-b3",
-          "kind": "paragraph",
-          "text": "Bill to: Aven Testmere\n17 Fiction Lane, Exampleville, ZZ 00000\nAdministrative service invoice; no clinical results.",
+          "kind": "heading",
+          "text": "Service invoice",
           "box": {
-            "x": 0.06210769575809344,
-            "y": 0.17624533409569515,
-            "width": 0.5235358502056244,
-            "height": 0.07007086759413617
+            "x": 0.38595117374339105,
+            "y": 0.0826882327835084,
+            "width": 0.18002936104911316,
+            "height": 0.03858306973294329
           },
           "continues": null
         },
         {
           "id": "p1-b4",
-          "kind": "table",
-          "text": "Item                       Quantity    Amount\nDocument handling          1           25.00\nTotal                                  25.00",
+          "kind": "paragraph",
+          "text": "Bill to: Aven Testmere\n17 Fiction Lane, Exampleville, ZZ 00000\nAdministrative service invoice; no clinical results.",
           "box": {
-            "x": 0.06363817472252509,
-            "y": 0.3281697950077404,
-            "width": 0.4549104898186056,
-            "height": 0.06965694260148309
+            "x": 0.03700150361069787,
+            "y": 0.13347106307592188,
+            "width": 0.36664310651426524,
+            "height": 0.07174025922471405
           },
           "continues": null
         },
         {
           "id": "p1-b5",
-          "kind": "list",
-          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "kind": "table",
+          "text": "Item Quantity Amount\nDocument handling 1 25.00\nRecords copy fee 12 6.00\nTotal 31.00",
           "box": {
-            "x": 0.06497734381640274,
-            "y": 0.46097804250443886,
-            "width": 0.4155046882983266,
-            "height": 0.05048159704432875
+            "x": 0.041304535326964875,
+            "y": 0.1949897535723243,
+            "width": 0.6376332925459727,
+            "height": 0.094630992954011
           },
           "continues": null
         },
         {
           "id": "p1-b6",
-          "kind": "footer",
-          "text": "Aven Testmere | FAKE-7309 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
           "box": {
-            "x": 0.069632550666549,
-            "y": 0.9211130035575656,
-            "width": 0.5331481632475017,
-            "height": 0.05119118274601964
+            "x": 0.04640153351477322,
+            "y": 0.29125525911942796,
+            "width": 0.3070240069958206,
+            "height": 0.05323003658610681
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7309 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.0853496825359934,
+            "y": 0.9302578345055849,
+            "width": 0.47292528045013693,
+            "height": 0.04958416577516189
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8957016706121896,
+            "y": 0.9154591545434998,
+            "width": 0.0723176641115355,
+            "height": 0.023687485456097113
           },
           "continues": null
         }
@@ -159,20 +207,20 @@
       "pii": [
         {
           "blockId": "p1-b1",
-          "start": 11,
-          "end": 32,
+          "start": 0,
+          "end": 23,
           "category": "facility",
           "box": {
-            "x": 0.17973856209150327,
-            "y": 0.03409090909090909,
-            "width": 0.20588235294117646,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.03535353535353535,
+            "width": 0.15154166666666669,
+            "height": 0.01341540404040404
           },
           "scannedBox": {
-            "x": 0.17504209537828497,
-            "y": 0.034794977035624286,
-            "width": 0.20602912905749948,
-            "height": 0.016392828569898543
+            "x": 0.03780503088907988,
+            "y": 0.04605480938613776,
+            "width": 0.15218616527064827,
+            "height": 0.01885885257383385
           }
         },
         {
@@ -181,142 +229,124 @@
           "end": 46,
           "category": "name",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.05303030303030303,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.11917892156862746,
+            "y": 0.049305555555555554,
+            "width": 0.09679166666666668,
+            "height": 0.01341540404040404
           },
           "scannedBox": {
-            "x": 0.067393553212095,
-            "y": 0.054857304719892475,
-            "width": 0.1276001457580495,
-            "height": 0.015919771435437824
+            "x": 0.09240754919458194,
+            "y": 0.06002518165986537,
+            "width": 0.09749566914401714,
+            "height": 0.01688693895904031
           }
         },
         {
           "blockId": "p1-b1",
-          "start": 53,
+          "start": 52,
           "end": 62,
-          "category": "id",
-          "box": {
-            "x": 0.2679738562091503,
-            "y": 0.05303030303030303,
-            "width": 0.08823529411764706,
-            "height": 0.015151515151515152
-          },
-          "scannedBox": {
-            "x": 0.26346601146072013,
-            "y": 0.05391119045097109,
-            "width": 0.08838565410832455,
-            "height": 0.015683242868207492
-          }
-        },
-        {
-          "blockId": "p1-b1",
-          "start": 69,
-          "end": 79,
           "category": "dob",
           "box": {
-            "x": 0.42483660130718953,
-            "y": 0.05303030303030303,
-            "width": 0.09803921568627451,
-            "height": 0.015151515151515152
+            "x": 0.2584150326797386,
+            "y": 0.049305555555555554,
+            "width": 0.07102777777777777,
+            "height": 0.01341540404040404
           },
           "scannedBox": {
-            "x": 0.4203239780596203,
-            "y": 0.052905944040242125,
-            "width": 0.09818927702075575,
-            "height": 0.015742375010015075
+            "x": 0.2314923344988628,
+            "y": 0.05593828814569418,
+            "width": 0.07175978118995824,
+            "height": 0.015959009036300154
           }
         },
         {
-          "blockId": "p1-b3",
+          "blockId": "p1-b2",
+          "start": 23,
+          "end": 32,
+          "category": "id",
+          "box": {
+            "x": 0.8624321895424836,
+            "y": 0.049305555555555554,
+            "width": 0.07220833333333335,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.8348530281576866,
+            "y": 0.03414107154734686,
+            "width": 0.07293905368381004,
+            "height": 0.016001528736264037
+          }
+        },
+        {
+          "blockId": "p1-b4",
           "start": 9,
           "end": 22,
           "category": "name",
           "box": {
-            "x": 0.16013071895424835,
-            "y": 0.17929292929292928,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.11357843137254903,
+            "y": 0.1353219696969697,
+            "width": 0.10694444444444445,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.15690155856100274,
-            "y": 0.18058389537645098,
-            "width": 0.12760014575804957,
-            "height": 0.015919771435437824
+            "x": 0.09200153578406234,
+            "y": 0.1457841523734158,
+            "width": 0.10778021231623974,
+            "height": 0.01961745963645345
           }
         },
         {
-          "blockId": "p1-b3",
+          "blockId": "p1-b4",
           "start": 23,
           "end": 62,
           "category": "address",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.19823232323232323,
-            "width": 0.38235294117647056,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.15173611111111113,
+            "width": 0.2905392156862745,
+            "height": 0.015782828282828284
           },
           "scannedBox": {
-            "x": 0.06886026221967534,
-            "y": 0.198517465955646,
-            "width": 0.38249434148126216,
-            "height": 0.017457207122435148
+            "x": 0.04482506537486597,
+            "y": 0.15730466599513032,
+            "width": 0.29117544748465984,
+            "height": 0.026229935052282827
           }
         },
         {
-          "blockId": "p1-b6",
-          "start": 0,
-          "end": 13,
+          "blockId": "p1-b7",
+          "start": 33,
+          "end": 46,
           "category": "name",
           "box": {
-            "x": 0.0718954248366013,
-            "y": 0.9242424242424242,
-            "width": 0.12745098039215685,
-            "height": 0.015151515151515152
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.0748611111111111,
+            "height": 0.011047979797979798
           },
           "scannedBox": {
-            "x": 0.07619380725757707,
-            "y": 0.9260428862563972,
-            "width": 0.1276001457580495,
-            "height": 0.01591977143543788
+            "x": 0.09287622087195896,
+            "y": 0.9608293593355606,
+            "width": 0.07544614862136784,
+            "height": 0.013732221745517359
           }
         },
         {
-          "blockId": "p1-b6",
-          "start": 16,
-          "end": 25,
+          "blockId": "p1-b7",
+          "start": 53,
+          "end": 62,
           "category": "id",
           "box": {
-            "x": 0.22875816993464052,
-            "y": 0.9242424242424242,
-            "width": 0.08823529411764706,
-            "height": 0.015151515151515152
+            "x": 0.17877777777777779,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
           },
           "scannedBox": {
-            "x": 0.23305177385647718,
-            "y": 0.9253333005547062,
-            "width": 0.0883856541083245,
-            "height": 0.015683242868207437
-          }
-        },
-        {
-          "blockId": "p1-b6",
-          "start": 32,
-          "end": 42,
-          "category": "dob",
-          "box": {
-            "x": 0.38562091503267976,
-            "y": 0.9242424242424242,
-            "width": 0.09803921568627451,
-            "height": 0.015151515151515152
-          },
-          "scannedBox": {
-            "x": 0.38990974045537735,
-            "y": 0.9243280541439773,
-            "width": 0.0981892770207557,
-            "height": 0.015742375010014964
+            "x": 0.20617125525706387,
+            "y": 0.9573442152084208,
+            "width": 0.05881065345550324,
+            "height": 0.01313241443474733
           }
         }
       ]

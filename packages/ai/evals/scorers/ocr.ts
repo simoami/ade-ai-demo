@@ -112,16 +112,29 @@ export function scoreBlocks(
   }
 }
 
-/** Flags scores outside the empirical baseline envelope, including nonfinite metrics. */
-export function isOcrRegression(
-  scores: ReturnType<typeof scoreBlocks>,
-  baseline: ReturnType<typeof scoreBlocks>
+/** Page-mean CER and WER ceilings per PDF variant; rationale in docs/evals.md. */
+export const ocrCeilings = {
+  clean: { cer: 0.01, wer: 0.03 },
+  scanned: { cer: 0.03, wer: 0.09 },
+} as const
+
+/** Returns variants whose page-mean CER or WER is nonfinite or above its ceiling. */
+export function exceededOcrCeilings(
+  pages: readonly {
+    variant: keyof typeof ocrCeilings
+    cer: number
+    wer: number
+  }[]
 ) {
-  return (
-    Object.values(scores).some((value) => !Number.isFinite(value)) ||
-    scores.cer > baseline.cer ||
-    scores.wer > baseline.wer ||
-    scores.blockKindAccuracy < baseline.blockKindAccuracy ||
-    scores.boxIoU < baseline.boxIoU
-  )
+  return (['clean', 'scanned'] as const).filter((variant) => {
+    const subset = pages.filter((page) => page.variant === variant)
+    return (['cer', 'wer'] as const).some(
+      (metric) =>
+        subset.length > 0 &&
+        !(
+          subset.reduce((sum, page) => sum + page[metric], 0) / subset.length <=
+          ocrCeilings[variant][metric]
+        )
+    )
+  })
 }

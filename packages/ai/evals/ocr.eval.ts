@@ -4,9 +4,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { logger } from '@repo/logger'
 import { Eval } from 'braintrust'
-import { z } from 'zod'
 import { syntheticDataset } from '#evals/fixtures/dataset'
-import { isOcrRegression, scoreBlocks } from '#evals/scorers/ocr'
+import { exceededOcrCeilings, scoreBlocks } from '#evals/scorers/ocr'
 import { models } from '#models'
 import { ocrPages } from '#stages/ocr/ocr-pages'
 import { promptVersion } from '#stages/ocr/prompt'
@@ -37,19 +36,6 @@ const metadata = {
   datasetVersion: data[0]?.metadata.datasetVersion,
   dpi,
 }
-
-const baseline = z
-  .object({
-    cer: z.number().nonnegative(),
-    wer: z.number().nonnegative(),
-    blockKindAccuracy: z.number().min(0).max(1),
-    boxIoU: z.number().min(0).max(1),
-  })
-  .parse(
-    JSON.parse(
-      await readFile(new URL('./ocr-baseline.json', import.meta.url), 'utf8')
-    )
-  )
 
 const started = performance.now()
 
@@ -129,6 +115,7 @@ for (const row of cases) log.info(row, 'OCR case metrics')
 log.info(
   {
     ...metadata,
+    experimentUrl: result.summary.experimentUrl,
     wallMs: report.wallMs,
     caseCount: cases.length,
     failureCount: cases.filter((row) => row.failed).length,
@@ -138,7 +125,11 @@ log.info(
 if (cases.some((row) => row.failed))
   throw new Error('OCR evaluation contains failed cases')
 
-if (
-  cases.some((row) => row.pages.some((page) => isOcrRegression(page, baseline)))
+const exceeded = exceededOcrCeilings(
+  cases.flatMap((row) =>
+    row.pages.map((page) => ({ ...page, variant: row.variant }))
+  )
 )
-  throw new Error('OCR scores regress outside the measured baseline envelope')
+
+if (exceeded.length)
+  throw new Error(`OCR error rates exceed ceilings for ${exceeded.join(', ')}`)

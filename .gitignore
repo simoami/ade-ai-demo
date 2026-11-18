@@ -15,3 +15,5 @@ next-env.d.ts
 
 fixtures/private/
 packages/ai/evals/results/
+# Added by Braintrust Wizard
+.braintrust.json

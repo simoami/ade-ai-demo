@@ -47,24 +47,22 @@ test('block alignment penalizes missing, extra and wrong-kind blocks independent
   )
 })
 
-test('baseline comparison accepts equality and improvements but rejects each regression', async () => {
-  const { isOcrRegression } = await import('#evals/scorers/ocr')
-  const baseline = { cer: 0.01, wer: 0.02, blockKindAccuracy: 0.9, boxIoU: 0.7 }
-  assert.equal(isOcrRegression(baseline, baseline), false)
-  assert.equal(
-    isOcrRegression(
-      { cer: 0, wer: 0, blockKindAccuracy: 1, boxIoU: 1 },
-      baseline
-    ),
-    false
+test('ceilings gate each variant on its page-mean CER and WER', async () => {
+  const { exceededOcrCeilings } = await import('#evals/scorers/ocr')
+  const page = (variant: 'clean' | 'scanned', cer: number, wer = 0) => ({
+    variant,
+    cer,
+    wer,
+  })
+  assert.deepEqual(
+    exceededOcrCeilings([page('clean', 0.01, 0.03), page('scanned', 0.03)]),
+    []
   )
-  for (const change of [
-    { cer: 0.011 },
-    { wer: 0.021 },
-    { blockKindAccuracy: 0.89 },
-    { boxIoU: 0.69 },
-    { cer: Number.NaN },
-  ]) {
-    assert.equal(isOcrRegression({ ...baseline, ...change }, baseline), true)
-  }
+  assert.deepEqual(
+    exceededOcrCeilings([page('scanned', 0.08), page('scanned', 0)]),
+    ['scanned']
+  )
+  assert.deepEqual(exceededOcrCeilings([page('clean', 0, 0.031)]), ['clean'])
+  assert.deepEqual(exceededOcrCeilings([page('clean', Number.NaN)]), ['clean'])
+  assert.deepEqual(exceededOcrCeilings([]), [])
 })
