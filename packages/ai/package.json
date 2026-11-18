@@ -6,24 +6,32 @@
   "engines": {
     "node": ">=26 <27"
   },
-  "dependencies": {
-    "ai": "^7.0.173",
-    "eve": "catalog:",
-    "zod": "^4.6.7"
-  },
   "scripts": {
-    "dev:eve": "eve dev --no-ui --no-default-extensions",
+    "dev": "eve dev --port 8000 --no-ui --no-default-extensions",
     "build": "eve build",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint --error-on-warnings .",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node --experimental-strip-types --test tests/*.test.ts src/**/*.test.ts",
     "eval": "eve eval",
     "format": "biome format --write .",
-    "check": "biome check ."
+    "check": "biome check .",
+    "bench:render": "node scripts/bench-render.ts"
+  },
+  "dependencies": {
+    "@hyzyla/pdfium": "^3.0.0",
+    "ai": "^7.0.173",
+    "eve": "catalog:",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.7",
+    "@ai-sdk/openai": "catalog:"
   },
   "devDependencies": {
+    "@biomejs/biome": "catalog:",
     "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "@biomejs/biome": "catalog:"
+    "pdf-lib": "^1.17.1",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    "./review-action": "./src/workflows/ingest-document/review-action.ts"
   }
 }

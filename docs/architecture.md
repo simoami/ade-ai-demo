@@ -12,14 +12,14 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 
 ## Packages
 
-| Package            | Responsibility                                                                                               |
-| ------------------ | ------------------------------------------------------------------------------------------------------------ |
-| `apps/web`         | Next.js app: documents and patients views, document review, chat drawer, upload route                        |
-| `packages/ai`      | Pipeline workflow, stage functions, prompts and model registry, eve agents, document artifacts, evals        |
-| `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                                                |
-| `packages/storage` | Provider-agnostic wrapper over Vercel Blob: put, get, head, list, delete, client upload tokens. No app logic |
-| `packages/logger`  | One tslog instance: pretty locally, JSON on Vercel, sensitive keys masked                                    |
-| `packages/ui`      | shadcn components on Base UI                                                                                 |
+| Package            | Responsibility                                                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `apps/web`         | Next.js document API gateway; validates requests and calls the authenticated eve service                         |
+| `packages/ai`      | eve service, ingestion workflow and steps, plain rendering stage, model instances, local artifacts and contracts |
+| `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                                                    |
+| `packages/storage` | Provider-agnostic wrapper over Vercel Blob: put, get, head, list, delete, client upload tokens. No app logic     |
+| `packages/logger`  | One tslog instance: pretty locally, JSON on Vercel, sensitive keys masked                                        |
+| `packages/ui`      | shadcn components on Base UI                                                                                     |
 
 `packages/ai` owns everything document-specific about storage: the artifact path layout, AES-256-GCM encryption of review-only artifacts, and their deletion.
 
@@ -39,7 +39,20 @@ AI Gateway is deferred; models are called directly. Model IDs live in one regist
 
 ## Pipeline
 
-One workflow run per document, implemented as an eve workflow tool in `packages/ai` and started by the upload route.
+One workflow run per document is owned by eve. Browser document requests go to
+Next.js `/api/documents` route handlers, which validate the shared contract and
+call a fixed `PIPELINE_SERVICE_ORIGIN` with a 15-second timeout. The eve channel
+at `/pipeline/documents` authenticates with HTTP Basic locally or Vercel OIDC
+on deployments, validates requests, then calls `start`, `getRun` or `resumeHook`.
+Unknown gateway errors return 503 with "Service unavailable". `withEve` handles
+protocol routes only; document routes use no custom rewrite.
+
+`agent/tools/ingest-document.ts` registers the workflow from
+`src/workflows/ingest-document/ingest-document.workflow.ts`. Its steps call
+ordinary functions under `src/stages/render`. The implemented workflow renders
+the synthetic fixture, waits on the review hook, increments a refresh counter
+for redaction decisions, and finishes on `markReviewed` or `discard`.
+Only the contract is exported to Next.js. The clinical processing design is:
 
 ```
 upload ─► render pages ─► OCR ─┬─► classify ──────────┐
@@ -108,4 +121,10 @@ Evaluation is how stages are built, not a check added afterwards.
 
 GitHub Actions runs check, typecheck, test and build on every pull request. Evals cost tokens, so they run on the `run-evals` label or manually and post the comparison as a comment. The app is developed locally and deployed to Vercel.
 
-Build order: a spike (workflow hook resumed from a route, thumbnail timing), then the fixture generator and eval harness, then the stages in pipeline order.
+Local document artifacts and run-ID mappings live under
+`<os-temp>/ade-documents`; Workflow history lives in `packages/ai/.eve/.workflow-data`.
+The service supports the synthetic fixture. Deployment requires durable artifact
+and document/run storage, custom-channel routing to eve, and service OIDC.
+`pnpm workflows` uses pinned CLI 5.1.0 with the same Workflow core/local-world
+versions as eve; live inspector access requires verification. See
+[`packages/ai/README.md`](../packages/ai/README.md) for exact local commands.

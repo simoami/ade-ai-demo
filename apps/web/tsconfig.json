@@ -22,7 +22,8 @@
       "@/*": ["./*"],
       "@repo/ui/*": ["../../packages/ui/src/*"]
     },
-    "allowJs": false
+    "allowJs": false,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "next-env.d.ts",

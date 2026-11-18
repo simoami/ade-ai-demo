@@ -1,16 +1,17 @@
 # web
 
-The Next.js App Router application. It will host the documents and patients views, document review, the chat drawer, and the upload route; today it renders a placeholder page.
+The Next.js App Router application exposes document start, status and review
+routes. They validate the shared `@repo/ai/review-action` contract and call eve
+through `lib/server/pipeline-client.ts`, which applies service authentication,
+a fixed origin, a timeout, response validation and safe HTTP errors.
 
-`next.config.ts` wraps the config with eve's `withEve`, which starts the agent service from `packages/ai` and proxies `/eve/v1/*` to it. Components come from `@repo/ui`, which is transpiled by Next.js.
+Copy `.env.example` to `.env.local` and set the shared service credential.
+See [the service README](../../packages/ai/README.md) for local startup commands.
+On Vercel the client sends the project's OIDC token instead of Basic credentials.
 
-## Commands
+`next.config.ts` uses `withEve` for `/eve/v1/*` protocol routing. Document calls
+use `PIPELINE_SERVICE_ORIGIN`; no custom rewrite is configured. Components come
+from `@repo/ui`.
 
-| Command            | Does                                                     |
-| ------------------ | -------------------------------------------------------- |
-| `pnpm dev`         | Start the dev server on port 3000                        |
-| `pnpm build`       | Production build                                         |
-| `pnpm typecheck`   | Generate route types, then type-check                    |
-| `pnpm check:agent` | Call the agent's health route through the running server |
-
-Run them from the repository root through Turbo, or here with `pnpm --filter web <command>`.
+Run `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, or `pnpm test` here.
+`pnpm check:agent` checks the agent health route through the running web server.

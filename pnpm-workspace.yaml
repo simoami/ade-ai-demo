@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 catalog:
+  "@ai-sdk/openai": 4.0.117
+  "@vercel/oidc": 4.0.9
   "@biomejs/biome": 2.6.8
   eve: 1.0.0
   react: 19.3.1
@@ -15,6 +17,8 @@ catalog:
   typescript: ^5
 
 allowBuilds:
+  "@swc/core": false
+  cbor-extract: false
   esbuild: true
   sharp: true
   unrs-resolver: true

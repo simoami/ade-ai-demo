@@ -1,8 +1,9 @@
-import { defineAgent } from "eve"
+import { defineAgent } from 'eve'
+import { models } from '../src/models'
 
 export default defineAgent({
-  model: "openai/gpt-6-sol",
+  model: models.pipeline,
   defaultTools: false,
   tool: false,
-  reasoning: "low",
+  reasoning: 'low',
 })

@@ -14,7 +14,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "biome format --write .",
     "check:agent": "node scripts/check-agent.mjs",
-    "check": "biome check ."
+    "check": "biome check .",
+    "test": "node --experimental-strip-types --test lib/server/*.test.ts"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
@@ -22,7 +23,9 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "eve": "catalog:",
-    "@repo/ai": "workspace:*"
+    "@repo/ai": "workspace:*",
+    "zod": "^4.6.7",
+    "@vercel/oidc": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",

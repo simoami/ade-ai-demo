@@ -1,12 +1,12 @@
-import type { Metadata } from "next"
-import { Noto_Sans } from "next/font/google"
-import "@repo/ui/globals.css"
+import type { Metadata } from 'next'
+import { Noto_Sans } from 'next/font/google'
+import '@repo/ui/globals.css'
 
-const fontSans = Noto_Sans({ subsets: ["latin"], variable: "--font-noto-sans" })
+const fontSans = Noto_Sans({ subsets: ['latin'], variable: '--font-noto-sans' })
 
 export const metadata: Metadata = {
-  title: "Clinical records",
-  description: "Clinical records pipeline demo",
+  title: 'Clinical records',
+  description: 'Clinical records pipeline demo',
 }
 
 export default function RootLayout({

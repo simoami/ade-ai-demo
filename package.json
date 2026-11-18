@@ -11,14 +11,15 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "turbo run format",
-    "dev:eve": "turbo run dev:eve --filter=@repo/ai",
     "eval": "turbo run eval --filter=@repo/ai",
     "test": "turbo run test",
     "check:agent": "pnpm --filter web check:agent",
-    "check": "biome check ."
+    "check": "biome check .",
+    "workflows": "WORKFLOW_TARGET_WORLD=local WORKFLOW_LOCAL_DATA_DIR=packages/ai/.eve/.workflow-data workflow inspect runs --web"
   },
   "devDependencies": {
-    "turbo": "^2.11.11",
-    "@biomejs/biome": "catalog:"
+    "@biomejs/biome": "catalog:",
+    "@workflow/cli": "5.1.0",
+    "turbo": "^2.11.11"
   }
 }

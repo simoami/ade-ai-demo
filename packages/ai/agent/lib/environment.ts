@@ -1,16 +1,20 @@
-import { z } from "zod"
+import { z } from 'zod'
 
-const credentials = z
-  .object({
-    AI_GATEWAY_API_KEY: z.string().trim().min(1).optional(),
-    VERCEL_OIDC_TOKEN: z.string().trim().min(1).optional(),
+export function validateEnvironment(env: NodeJS.ProcessEnv) {
+  const schema = z.object({
+    OPENAI_API_KEY: z.string().trim().min(1),
+    PIPELINE_SERVICE_SECRET:
+      env.VERCEL === '1' ? z.string().optional() : z.string().trim().min(32),
+    VERCEL_PROJECT_ID:
+      env.VERCEL === '1' ? z.string().trim().min(1) : z.string().optional(),
   })
-  .refine((env) => env.AI_GATEWAY_API_KEY || env.VERCEL_OIDC_TOKEN)
+  const parsed = schema.safeParse(env)
 
-export function validateEnvironment(env: NodeJS.ProcessEnv): void {
-  if (!credentials.safeParse(env).success) {
+  if (!parsed.success) {
     throw new Error(
-      "Set AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN to a non-empty credential before starting the agent."
+      `Invalid agent environment: ${[...new Set(parsed.error.issues.map((issue) => issue.path[0]))].join(', ')}`
     )
   }
+
+  return parsed.data
 }

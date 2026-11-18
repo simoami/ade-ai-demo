@@ -23,7 +23,7 @@
     "formatter": {
       "semicolons": "asNeeded",
       "trailingCommas": "es5",
-      "quoteStyle": "double"
+      "quoteStyle": "single"
     }
   },
   "css": {

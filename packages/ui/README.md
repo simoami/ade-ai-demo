@@ -5,9 +5,9 @@ Shared components built with shadcn on Base UI (`base-mira` style), plus the Tai
 ## Use
 
 ```ts
-import "@repo/ui/globals.css"
-import { Button } from "@repo/ui/components/button"
-import { cn } from "@repo/ui/lib/utils"
+import '@repo/ui/globals.css'
+import { Button } from '@repo/ui/components/button'
+import { cn } from '@repo/ui/lib/utils'
 ```
 
 The consuming Next.js app must list `@repo/ui` in `transpilePackages`.

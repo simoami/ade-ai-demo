@@ -1,5 +1,5 @@
-import { defineInstrumentation } from "eve/instrumentation"
-import { validateEnvironment } from "../lib/environment"
+import { defineInstrumentation } from 'eve/instrumentation'
+import { validateEnvironment } from '../lib/environment'
 
 export default defineInstrumentation({
   tracePolicy: () => ({ emit: false }),

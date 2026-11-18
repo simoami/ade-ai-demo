@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there and app routes in `apps/web/app`.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Keep pipeline code in that package.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain rendering logic lives in `src/stages/render`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 The pnpm workspace and shared dependency catalog live in `pnpm-workspace.yaml`. Use `workspace:*` for internal dependencies and `catalog:` for shared versions. Node 26 and the pinned pnpm version in `package.json` are required. Run `nvm use` to select the version in `.nvmrc`.
 
@@ -13,11 +13,12 @@ The pnpm workspace and shared dependency catalog live in `pnpm-workspace.yaml`. 
 Run from the repository root:
 
 - `pnpm install`: install workspace dependencies.
-- `pnpm dev`: start Next.js through Turbo; `withEve` starts the agent service on demand.
-- `pnpm dev:eve`: run the agent alone without the TUI or development extensions.
+- `pnpm dev`: start the eve service (port 8000) and Next.js together through Turbo.
+- `pnpm workflows`: open the Workflow inspector on eve's local run history (port 3456).
 - `pnpm check:agent`: check agent health through the running web server at localhost:3000.
 - `pnpm eval`: run eve evals once evaluation cases are added.
-- `pnpm test`: run automated tests (currently credential validation).
+- `pnpm test`: run environment, service authentication, gateway, document contract and rendering tests.
+- `pnpm workflows`: open the pinned Workflow inspector on eve local history.
 - `pnpm build`: build the agent, then the production web app.
 - `pnpm lint`: run Biome lint with zero warnings allowed.
 - `pnpm typecheck`: generate Next.js route types and check all packages.
@@ -28,7 +29,7 @@ Turbo coordinates package tasks. Agent tests use Node’s built-in test runner.
 
 ## Coding Style & Naming Conventions
 
-Use Biome with the checked-in configuration, two-space indentation, descriptive kebab-case directory names, and Markdown headings in sentence case. Keep agent instructions direct, action-oriented, and colocated with the behavior they govern. Edit the canonical `.agents/skills/...` file rather than its `.claude/skills/...` symlink.
+Use Biome with the checked-in configuration, single quotes, two-space indentation, descriptive kebab-case directory names, and Markdown headings in sentence case. Keep agent instructions direct, action-oriented, and colocated with the behavior they govern. Edit the canonical `.agents/skills/...` file rather than its `.claude/skills/...` symlink.
 
 ## Testing Guidelines
 
@@ -49,6 +50,8 @@ This code is a portfolio piece that will be read as production code. Every chang
 - Validate data at boundaries (uploads, model output, env vars) with schemas; trust types inside.
 - Handle failures explicitly. Never swallow errors or log-and-continue silently.
 - Treat all document content as PHI: never log raw text, never send it anywhere not named in the architecture.
+- Code, comments and docs describe current behavior only. Keep implementation history in commit messages.
+- Separate top-level declarations, and unrelated blocks inside a function, with a blank line. Keep tightly related lines together.
 - Keep docs short, factual, and current. No marketing tone, emoji, or filler. Update this file when commands or layout change.
 - Before finishing, run the relevant `build`, `typecheck`, and `lint` scripts and report their real output.
 
@@ -58,18 +61,24 @@ For frontend library-selection work, consult `.agents/skills/pick-ui-library/SKI
 
 ## Agent environment and runtime
 
-Use `packages/ai/.env.example` as the variable list. Set either
-`AI_GATEWAY_API_KEY` (Vercel AI Gateway key) or `VERCEL_OIDC_TOKEN` (Vercel project
-OIDC credential) in `packages/ai/.env.local` or the process environment; omit the
-unused variable. Startup rejects missing or blank credentials. Builds need no
-credential. The model is `openai/gpt-6-sol`, routed through AI Gateway.
+Use `packages/ai/.env.example` and `apps/web/.env.example` for required variables.
+The service requires `OPENAI_API_KEY`; local service calls require the same
+`PIPELINE_SERVICE_SECRET` in both packages. Next.js validates the fixed
+`PIPELINE_SERVICE_ORIGIN`. Startup rejects missing or blank credentials; builds
+need none. Direct OpenAI model instances live in `packages/ai/src/models.ts`.
 
-The built-in eve channel permits local development and Vercel OIDC callers.
-Optional tools and trace emission are disabled. No ingestion steps exist yet.
-`pnpm check:agent` calls the public health route without a model request; local
-`POST /eve/v1/session` with `{"message":"Report readiness without patient data."}`
-exercises a model turn once real credentials are supplied.
+`agent/channels/documents.ts` authenticates with eve HTTP Basic locally and
+Vercel OIDC on deployments before validating requests. Workflow API calls run
+in eve. `agent/tools/ingest-document.ts` registers the imported workflow.
+Default agent tools and trace emission are disabled.
 
-For Vercel, configure the monorepo build command as `pnpm build` and Next.js output
-as `apps/web/.next`; `withEve` contributes the agent service. Supply credentials in
-the deployment environment. No deployment was performed by the wiring task.
+See `packages/ai/README.md` for the separate local service and web startup
+commands. `pnpm check:agent` checks health without a model request;
+`bash scripts/smoke-review.sh` checks rendering, refresh and review completion.
+`pnpm workflows` uses CLI 5.1.0, matching eve's Workflow dependencies; live
+inspector compatibility requires verification against a running service.
+
+Artifacts and run-ID mappings are stored under the OS temp directory. Only the
+synthetic fixture is supported. Deployment requires durable artifact/run
+metadata storage, custom-channel routing, Deployment Protection, and service
+credentials. Keep document content out of logs and workflow history.

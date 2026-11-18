@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict'
+import { mkdtemp, readdir, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { test } from 'node:test'
+import { PDFDocument } from 'pdf-lib'
+import sharp from 'sharp'
+import { renderPdf } from './render-pages.ts'
+
+test('renders every page to a PNG and a WebP thumbnail', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'ade-render-test-'))
+  try {
+    const document = await PDFDocument.create()
+    document.addPage([612, 792])
+    document.addPage([612, 792])
+    const input = join(directory, 'input.pdf')
+    const output = join(directory, 'pages')
+    await writeFile(input, await document.save())
+    const result = await renderPdf(input, output)
+    assert.equal(result.pages.length, 2)
+    assert.deepEqual((await readdir(output)).sort(), [
+      '0.png',
+      '0.webp',
+      '1.png',
+      '1.webp',
+    ])
+    for (const page of result.pages) {
+      const png = await sharp(join(output, `${page.page}.png`)).metadata()
+      assert.equal(png.format, 'png')
+      assert.equal(png.width, 1224)
+      assert.equal(png.height, 1584)
+      const thumbnail = await sharp(
+        join(output, `${page.page}.webp`)
+      ).metadata()
+      assert.equal(thumbnail.format, 'webp')
+      assert.equal(thumbnail.width, 240)
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
+})
+
+test('rejects documents exceeding the page limit before writing images', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'ade-render-limit-'))
+  try {
+    const document = await PDFDocument.create()
+    for (let i = 0; i < 21; i++) document.addPage()
+    const input = join(directory, 'input.pdf')
+    const output = join(directory, 'pages')
+    await writeFile(input, await document.save())
+    await assert.rejects(renderPdf(input, output), /exceeds 20 pages/)
+    assert.deepEqual(await readdir(output), [])
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
+})

@@ -32,6 +32,7 @@ Built on Next.js, the AI SDK, eve, Vercel Workflow, Vercel Blob and Neon Postgre
 nvm use
 pnpm install
 cp packages/ai/.env.example packages/ai/.env.local   # then fill in credentials
+cp apps/web/.env.example apps/web/.env.local         # same PIPELINE_SERVICE_SECRET
 pnpm dev
 ```
 
@@ -43,8 +44,8 @@ Run from the repository root.
 
 | Command          | Does                                                      |
 | ---------------- | --------------------------------------------------------- |
-| `pnpm dev`       | Start the web app; the agent service starts with it       |
-| `pnpm dev:eve`   | Run the agent on its own                                  |
+| `pnpm dev`       | Start the agent service and the web app                   |
+| `pnpm workflows` | Open the Workflow run inspector                           |
 | `pnpm build`     | Build the agent, then the web app                         |
 | `pnpm test`      | Run unit tests                                            |
 | `pnpm eval`      | Run evals                                                 |

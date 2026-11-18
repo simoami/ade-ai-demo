@@ -31,10 +31,6 @@
         ".vercel/output/**"
       ]
     },
-    "dev:eve": {
-      "cache": false,
-      "persistent": true
-    },
     "eval": {
       "cache": false
     },
@@ -43,5 +39,15 @@
     "//#check": {}
   },
   "globalDependencies": ["biome.json"],
-  "globalPassThroughEnv": ["AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN"]
+  "globalPassThroughEnv": [
+    "OPENAI_API_KEY",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_TARGET_ENV",
+    "VERCEL_PROJECT_ID",
+    "VERCEL_OIDC_TOKEN",
+    "PIPELINE_SERVICE_ORIGIN",
+    "PIPELINE_SERVICE_SECRET",
+    "EVE_BASE_URL"
+  ]
 }
