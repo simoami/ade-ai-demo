@@ -14,6 +14,7 @@ const origin = z.url().refine((value) => {
   )
 })
 
+/** Validates the fixed service origin and required gateway credentials. */
 export function validateEnvironment(env: Record<string, string | undefined>) {
   const schema = z.object({
     PIPELINE_SERVICE_ORIGIN: origin,

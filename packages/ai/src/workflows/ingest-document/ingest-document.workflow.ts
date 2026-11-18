@@ -1,8 +1,10 @@
 import { createHook, FatalError } from 'eve/workflow'
 import { type ReviewAction, reviewToken } from './review-action'
+import { complete } from './steps/complete.step'
 import { refresh } from './steps/refresh.step'
 import { renderPages } from './steps/render-pages.step'
 
+/** Renders a document and waits for review decisions until review or discard. */
 export async function ingestDocument({ documentId }: { documentId: string }) {
   'use workflow'
 
@@ -15,11 +17,11 @@ export async function ingestDocument({ documentId }: { documentId: string }) {
   let refreshCount = 0
   for await (const action of hook) {
     if (action.type === 'markReviewed' || action.type === 'discard') {
-      return {
+      return await complete(
         documentId,
-        status: action.type === 'discard' ? 'discarded' : 'reviewed',
-        refreshCount,
-      }
+        action.type === 'discard' ? 'discarded' : 'reviewed',
+        refreshCount
+      )
     }
 
     refreshCount = await refresh(documentId, action, refreshCount)

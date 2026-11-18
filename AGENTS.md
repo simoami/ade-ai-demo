@@ -6,6 +6,8 @@
 
 `packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain rendering logic lives in `src/stages/render`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
+`packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
+
 The pnpm workspace and shared dependency catalog live in `pnpm-workspace.yaml`. Use `workspace:*` for internal dependencies and `catalog:` for shared versions. Node 26 and the pinned pnpm version in `package.json` are required. Run `nvm use` to select the version in `.nvmrc`.
 
 ## Build, test, and development commands
@@ -17,7 +19,7 @@ Run from the repository root:
 - `pnpm workflows`: open the Workflow inspector on eve's local run history (port 3456).
 - `pnpm check:agent`: check agent health through the running web server at localhost:3000.
 - `pnpm eval`: run eve evals once evaluation cases are added.
-- `pnpm test`: run environment, service authentication, gateway, document contract and rendering tests.
+- `pnpm test`: run environment, service authentication, gateway, document contract, rendering and logger masking tests.
 - `pnpm workflows`: open the pinned Workflow inspector on eve local history.
 - `pnpm build`: build the agent, then the production web app.
 - `pnpm lint`: run Biome lint with zero warnings allowed.
@@ -52,6 +54,9 @@ This code is a portfolio piece that will be read as production code. Every chang
 - Treat all document content as PHI: never log raw text, never send it anywhere not named in the architecture.
 - Code, comments and docs describe current behavior only. Keep implementation history in commit messages.
 - Separate top-level declarations, and unrelated blocks inside a function, with a blank line. Keep tightly related lines together.
+- Give exported functions, classes and workflow, step and stage entries a JSDoc header of one to three lines saying what it is or guarantees. Skip `@param`/`@returns`. Add inline comments only where they explain a non-obvious why.
+- Import across directories with Node subpath imports (`#...`, declared in each package's `imports`), never `../` paths or tsconfig `paths`.
+- Log through `@repo/logger`, never `console`. Log milestones with IDs, counts, durations and statuses only.
 - Keep docs short, factual, and current. No marketing tone, emoji, or filler. Update this file when commands or layout change.
 - Before finishing, run the relevant `build`, `typecheck`, and `lint` scripts and report their real output.
 

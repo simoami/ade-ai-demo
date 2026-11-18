@@ -45,3 +45,13 @@ WORKFLOW_TARGET_WORLD=local WORKFLOW_LOCAL_DATA_DIR=packages/ai/.eve/.workflow-d
 
 The inspector's live access to eve data needs verification against a running
 local service; package compatibility alone does not establish runtime behavior.
+
+Internal imports use `#*` → `./src/*.ts` and `#agent/*` → `./agent/*.ts`
+in `package.json`; callers omit the `.ts` extension. Node strip-types tests,
+TypeScript and eve resolve the same source files without tsconfig aliases.
+
+`@repo/logger` records run starts, accepted review actions, authentication
+rejections and request failures. Steps log render totals, refresh counts and
+terminal review status; the workflow body has no logging side effects.
+Only metadata is logged; errors contribute their type, never their message.
+See [the logger README](../logger/README.md) for formatting and masked keys.

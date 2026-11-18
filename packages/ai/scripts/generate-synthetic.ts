@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { logger } from '@repo/logger'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 
 const directory = fileURLToPath(
@@ -42,4 +43,4 @@ for (let number = 1; number <= 20; number++) {
   }
 }
 await writeFile(`${directory}/clinical-20.pdf`, await document.save())
-console.log('Generated synthetic 20-page PDF')
+logger.info({ pageCount: 20 }, 'Generated synthetic PDF')

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { authenticatePipeline } from '../agent/lib/pipeline-auth.ts'
+import { authenticatePipeline } from '#agent/lib/pipeline-auth'
 
 const env = { OPENAI_API_KEY: 'test', PIPELINE_SERVICE_SECRET: 'x'.repeat(32) }
 

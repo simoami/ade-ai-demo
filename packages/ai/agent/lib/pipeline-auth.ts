@@ -1,6 +1,7 @@
 import { httpBasic, routeAuth, vercelOidc } from 'eve/channels/auth'
 import { validateEnvironment } from './environment.ts'
 
+/** Requires local Basic authentication or deployment OIDC before document access. */
 export async function authenticatePipeline(
   request: Request,
   env = process.env

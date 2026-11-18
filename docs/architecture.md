@@ -18,7 +18,7 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 | `packages/ai`      | eve service, ingestion workflow and steps, plain rendering stage, model instances, local artifacts and contracts |
 | `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                                                    |
 | `packages/storage` | Provider-agnostic wrapper over Vercel Blob: put, get, head, list, delete, client upload tokens. No app logic     |
-| `packages/logger`  | One tslog instance: pretty locally, JSON on Vercel, sensitive keys masked                                        |
+| `packages/logger`  | Shared tslog root and named children: pretty locally, JSON on Vercel/production, sensitive keys masked           |
 | `packages/ui`      | shadcn components on Base UI                                                                                     |
 
 `packages/ai` owns everything document-specific about storage: the artifact path layout, AES-256-GCM encryption of review-only artifacts, and their deletion.
@@ -52,6 +52,9 @@ protocol routes only; document routes use no custom rewrite.
 ordinary functions under `src/stages/render`. The implemented workflow renders
 the synthetic fixture, waits on the review hook, increments a refresh counter
 for redaction decisions, and finishes on `markReviewed` or `discard`.
+Milestone logs use `@repo/logger` and carry metadata only. Render, refresh and
+terminal review logs run in durable steps, outside workflow replay; request
+failures include only fixed paths, statuses and error types.
 Only the contract is exported to Next.js. The clinical processing design is:
 
 ```
@@ -60,7 +63,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
                                └─► PII detection ─────┘          └► note index ─► enrichment ─────┴─► in_review
 ```
 
-1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: PDF, PNG or JPEG, 20 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
+1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: PDF, PNG or JPEG, 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
 2. **Render.** pdfium (WASM) renders pages; Sharp produces thumbnails. Runs in a normal step.
 3. **OCR.** The vision model returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.

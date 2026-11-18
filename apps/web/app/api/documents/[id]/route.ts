@@ -1,6 +1,7 @@
 import { documentIdSchema } from '@repo/ai/review-action'
-import { pipeline, pipelineFailure } from '@/lib/server/pipeline-client'
+import { pipeline, pipelineFailure } from '#lib/server/pipeline-client'
 
+/** Returns validated document status through the authenticated service. */
 export async function GET(
   _request: Request,
   context: { params: Promise<{ id: string }> }

@@ -15,6 +15,7 @@ catalog:
   "@tailwindcss/postcss": ^4
   tailwindcss: ^4
   typescript: ^5
+  tslog: 5.5.0
 
 allowBuilds:
   "@swc/core": false

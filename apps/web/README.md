@@ -15,3 +15,8 @@ from `@repo/ui`.
 
 Run `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, or `pnpm test` here.
 `pnpm check:agent` checks the agent health route through the running web server.
+
+Server library imports use `#lib/*` → `./lib/*.ts` in `package.json`.
+The pipeline client logs failures through `@repo/logger` with a service path,
+status and error type only. Upstream bodies and error messages are never logged.
+Next.js transpiles the shared logger and document contract source packages.

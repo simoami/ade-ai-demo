@@ -19,7 +19,6 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
       "@repo/ui/*": ["../../packages/ui/src/*"]
     },
     "allowJs": false,

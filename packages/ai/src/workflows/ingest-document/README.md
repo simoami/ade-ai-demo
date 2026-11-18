@@ -12,3 +12,7 @@ acknowledgment does not mean the action has finished processing.
 
 Steps call ordinary stage functions. Workflow history contains IDs, action
 metadata and counts; document content stays in the artifact directory.
+
+Render and refresh steps log aggregate metadata through `@repo/logger`. A final
+completion step records the terminal document status and returns the workflow
+result. Logging stays outside the replayed workflow body.

@@ -206,6 +206,9 @@ catalogs:
     tailwindcss:
       specifier: ^4
       version: 4.3.5
+    tslog:
+      specifier: 5.5.0
+      version: 5.5.0
     typescript:
       specifier: ^5
       version: 5.9.3
@@ -229,6 +232,9 @@ importers:
       '@repo/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@repo/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -281,6 +287,9 @@ importers:
       '@hyzyla/pdfium':
         specifier: ^3.0.0
         version: 3.0.0
+      '@repo/logger':
+        specifier: workspace:*
+        version: link:../logger
       ai:
         specifier: ^7.0.173
         version: 7.0.173(zod@4.6.7)
@@ -303,6 +312,22 @@ importers:
       pdf-lib:
         specifier: ^1.17.1
         version: 1.17.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/logger:
+    dependencies:
+      tslog:
+        specifier: 'catalog:'
+        version: 5.5.0
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 'catalog:'
+        version: 2.6.8
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2812,6 +2837,11 @@ packages:
   tslib@2.9.1:
     resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
+  tslog@5.5.0:
+    resolution: {integrity: sha512-GgdyKPwUtVMKDSHFtZJg3taWUHyL8pV262AfVlak00gE4qwpCpTEZT1tQ/ZS/FQsiTWqjvAD/viTt1vDmNhQ4A==}
+    engines: {node: '>=22'}
+    hasBin: true
+
   turbo@2.11.11:
     resolution: {integrity: sha512-AI4UJbUE/2cVZdoXJ4PODc8qvrjhQQX9Fa93eKGOI6Ims/w7+kUIb9T1jhlgSnZcf+gtUruci/ohSwqtNNC5Yw==}
     hasBin: true
@@ -5239,6 +5269,8 @@ snapshots:
   tslib@1.14.1: {}
 
   tslib@2.9.1: {}
+
+  tslog@5.5.0: {}
 
   turbo@2.11.11:
     optionalDependencies:

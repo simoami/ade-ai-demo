@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { validateEnvironment } from '../agent/lib/environment.ts'
+import { validateEnvironment } from '#agent/lib/environment'
 
 test('accepts an OpenAI key', () => {
   assert.doesNotThrow(() =>

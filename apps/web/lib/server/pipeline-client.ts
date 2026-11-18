@@ -4,9 +4,12 @@ import {
   reviewResultSchema,
   startResultSchema,
 } from '@repo/ai/review-action'
+import { logger } from '@repo/logger'
 import { getVercelOidcToken } from '@vercel/oidc'
 import type { z } from 'zod'
 import { validateEnvironment } from './environment.ts'
+
+const log = logger.getSubLogger({ name: 'pipeline-client' })
 
 const failures = {
   400: 'Invalid pipeline request',
@@ -15,6 +18,7 @@ const failures = {
   503: 'Service unavailable',
 } as const
 
+/** Carries a safe pipeline HTTP status and public error message. */
 export class PipelineError extends Error {
   readonly status: keyof typeof failures
 
@@ -29,6 +33,8 @@ async function call<T>(
   schema: z.ZodType<T>,
   body?: unknown
 ): Promise<T> {
+  let status = 503
+
   try {
     const env = validateEnvironment(process.env)
     const authorization = env.vercel
@@ -47,6 +53,8 @@ async function call<T>(
     )
 
     if (!response.ok) {
+      status = response.status
+
       throw new PipelineError(
         response.status === 400 ||
           response.status === 404 ||
@@ -58,17 +66,21 @@ async function call<T>(
 
     return schema.parse(await response.json())
   } catch (error) {
-    if (error instanceof PipelineError) throw error
-
     // Messages may carry document content, so only the error type is logged.
-    console.error('Pipeline call failed', {
-      path,
-      error: error instanceof Error ? error.name : typeof error,
-    })
-    throw new PipelineError()
+    log.error(
+      {
+        path: `/pipeline/documents${path}`,
+        status,
+        errorType: error instanceof Error ? error.name : typeof error,
+      },
+      'Pipeline call failed'
+    )
+
+    throw error instanceof PipelineError ? error : new PipelineError()
   }
 }
 
+/** Authenticated document service client with validated responses. */
 export const pipeline = {
   start: (input: { fixtureId: 'clinical-20' }) =>
     call('', startResultSchema, input),
@@ -82,6 +94,7 @@ export const pipeline = {
     ),
 }
 
+/** Converts failures into content-free HTTP error responses. */
 export function pipelineFailure(error: unknown): Response {
   const failure = error instanceof PipelineError ? error : new PipelineError()
   return Response.json(

@@ -1,6 +1,7 @@
 import { documentIdSchema, reviewActionSchema } from '@repo/ai/review-action'
-import { pipeline, pipelineFailure } from '@/lib/server/pipeline-client'
+import { pipeline, pipelineFailure } from '#lib/server/pipeline-client'
 
+/** Submits a validated document review decision to the service. */
 export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> }

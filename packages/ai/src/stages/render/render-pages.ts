@@ -3,8 +3,11 @@ import { join } from 'node:path'
 import { PDFiumLibrary } from '@hyzyla/pdfium'
 import sharp from 'sharp'
 
+const MAX_PDF_PAGES = 30
+
 let library: Promise<PDFiumLibrary> | undefined
 
+/** Shares PDFium initialization and permits retry after initialization fails. */
 export async function initializePdfium(): Promise<PDFiumLibrary> {
   library ??= PDFiumLibrary.init().catch((error) => {
     library = undefined
@@ -14,6 +17,7 @@ export async function initializePdfium(): Promise<PDFiumLibrary> {
   return library
 }
 
+/** Renders a bounded PDF to private page images and thumbnails with timing metadata. */
 export async function renderPdf(input: string, output: string) {
   const started = performance.now()
   const initStarted = performance.now()
@@ -25,8 +29,8 @@ export async function renderPdf(input: string, output: string) {
   const pages: { page: number; renderMs: number; thumbnailMs: number }[] = []
 
   try {
-    if (document.getPageCount() > 20)
-      throw new Error('Document exceeds 20 pages')
+    if (document.getPageCount() > MAX_PDF_PAGES)
+      throw new Error(`Document exceeds ${MAX_PDF_PAGES} pages`)
 
     for (const page of document.pages()) {
       try {

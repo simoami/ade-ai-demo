@@ -25,7 +25,8 @@
     "eve": "catalog:",
     "@repo/ai": "workspace:*",
     "zod": "^4.6.7",
-    "@vercel/oidc": "catalog:"
+    "@vercel/oidc": "catalog:",
+    "@repo/logger": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "catalog:",
@@ -35,5 +36,8 @@
     "@tailwindcss/postcss": "catalog:",
     "tailwindcss": "catalog:",
     "@biomejs/biome": "catalog:"
+  },
+  "imports": {
+    "#lib/*": "./lib/*.ts"
   }
 }

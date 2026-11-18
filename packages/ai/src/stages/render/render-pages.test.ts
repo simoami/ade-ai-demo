@@ -44,11 +44,13 @@ test('rejects documents exceeding the page limit before writing images', async (
   const directory = await mkdtemp(join(tmpdir(), 'ade-render-limit-'))
   try {
     const document = await PDFDocument.create()
-    for (let i = 0; i < 21; i++) document.addPage()
+    for (let i = 0; i < 31; i++) document.addPage()
+
     const input = join(directory, 'input.pdf')
     const output = join(directory, 'pages')
     await writeFile(input, await document.save())
-    await assert.rejects(renderPdf(input, output), /exceeds 20 pages/)
+
+    await assert.rejects(renderPdf(input, output), /exceeds 30 pages/)
     assert.deepEqual(await readdir(output), [])
   } finally {
     await rm(directory, { recursive: true, force: true })

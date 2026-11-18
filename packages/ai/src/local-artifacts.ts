@@ -2,12 +2,14 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { z } from 'zod'
-import { documentIdSchema } from './workflows/ingest-document/review-action.ts'
+import { documentIdSchema } from '#workflows/ingest-document/review-action'
 
+/** Resolves the private temporary directory for a validated document ID. */
 export function artifactDirectory(documentId: string): string {
   return join(tmpdir(), 'ade-documents', documentIdSchema.parse(documentId))
 }
 
+/** Persists the document-to-run mapping with owner-only permissions. */
 export async function saveRun(
   documentId: string,
   runId: string
@@ -19,6 +21,7 @@ export async function saveRun(
   })
 }
 
+/** Reads and validates the stored workflow run ID. */
 export async function readRunId(documentId: string): Promise<string> {
   const data: unknown = JSON.parse(
     await readFile(join(artifactDirectory(documentId), 'run.json'), 'utf8')

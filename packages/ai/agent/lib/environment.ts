@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+/** Validates service credentials without exposing their values. */
 export function validateEnvironment(env: NodeJS.ProcessEnv) {
   const schema = z.object({
     OPENAI_API_KEY: z.string().trim().min(1),
