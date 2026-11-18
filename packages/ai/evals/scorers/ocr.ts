@@ -1,7 +1,8 @@
-import type { Block, Box } from '#evals/fixtures/expected'
+import type { Block, Box } from '#stages/ocr/ocr-result'
 
 function distance(a: readonly string[], b: readonly string[]) {
   let previous = Array.from({ length: b.length + 1 }, (_, i) => i)
+
   for (let i = 0; i < a.length; i++) {
     const current = [i + 1]
     for (let j = 0; j < b.length; j++) {
@@ -15,10 +16,12 @@ function distance(a: readonly string[], b: readonly string[]) {
     }
     previous = current
   }
+
   return previous[b.length] ?? 0
 }
 
-function normalized(text: string) {
+/** NFC text with whitespace runs collapsed to single spaces. */
+export function normalized(text: string) {
   return text.normalize('NFC').replace(/\s+/g, ' ').trim()
 }
 
@@ -61,13 +64,16 @@ export function scoreBlocks(
     const row = costs[i]
     if (row) row[j] = value
   }
+
   for (let i = 0; i <= expected.length; i++) set(i, 0, i)
   for (let j = 0; j <= actual.length; j++) set(0, j, j)
+
   const substitution = (i: number, j: number) =>
     Math.min(
       1,
       characterErrorRate(expected[i]?.text ?? '', actual[j]?.text ?? '')
     )
+
   for (let i = 1; i <= expected.length; i++) {
     for (let j = 1; j <= actual.length; j++)
       set(
@@ -80,6 +86,7 @@ export function scoreBlocks(
         )
       )
   }
+
   let i = expected.length
   let j = actual.length
   let kinds = 0
@@ -102,6 +109,7 @@ export function scoreBlocks(
     } else if (i > 0 && (j === 0 || get(i, j) === get(i - 1, j) + 1)) i--
     else j--
   }
+
   const reference = expected.map((block) => block.text).join('\n')
   const output = actual.map((block) => block.text).join('\n')
   return {

@@ -13,7 +13,14 @@ prompts on them. The 20-page clinical fixture is included in the full suite.
 Scorers are plain functions tested by `pnpm test`. CER and WER normalize
 whitespace, retaining case and punctuation. Block metrics use monotonic
 text-edit alignment; missing and extra blocks contribute zero. Local reports
-contain only identifiers, metrics, token counts and timings, never OCR text.
+contain only identifiers, metrics, token counts, costs and timings, never OCR
+text.
+
+OCR providers implement `OcrProvider` from `src/stages/ocr/ocr-result.ts`.
+`EVAL_OCR_PROVIDER` selects an arm from the record in `ocr.eval.ts` (default:
+the stage default model). PII word-box coverage and precision apply only to
+providers that return words; others log a null score, which Braintrust
+excludes from averages. Page cost uses the dated price table in `prices.ts`.
 
 Stage suites use the Braintrust SDK directly. There are no agent evals yet;
 when added, run them through `eve eval` with `braintrustReporter`, separately

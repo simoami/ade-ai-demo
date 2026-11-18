@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import type { Block } from '#evals/fixtures/expected'
 import {
   boxIoU,
   characterErrorRate,
   scoreBlocks,
   wordErrorRate,
 } from '#evals/scorers/ocr'
+import type { Block } from '#stages/ocr/ocr-result'
 
 test('edit rates count substitutions, deletions and insertions including empty references', () => {
   assert.equal(characterErrorRate('abc', 'axc'), 1 / 3)

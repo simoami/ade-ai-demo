@@ -5,13 +5,34 @@ import { join } from 'node:path'
 import { logger } from '@repo/logger'
 import { Eval } from 'braintrust'
 import { syntheticDataset } from '#evals/fixtures/dataset'
+import { ocrPageCost } from '#evals/prices'
 import { exceededOcrCeilings, scoreBlocks } from '#evals/scorers/ocr'
+import {
+  type PiiSpan,
+  scorePiiWordBoxes,
+  summarizePiiWordBoxes,
+} from '#evals/scorers/pii-word-boxes'
 import { models } from '#models'
-import { ocrPages } from '#stages/ocr/ocr-pages'
+import { defaultOcrModel, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
+import type { Block, OcrPage } from '#stages/ocr/ocr-result'
 import { promptVersion } from '#stages/ocr/prompt'
 import { renderPdf } from '#stages/render/render-pages'
 
 const log = logger.getSubLogger({ name: 'ocr-eval' })
+
+/** Bake-off arms, keyed by the name `EVAL_OCR_PROVIDER` selects. */
+const providers = Object.fromEntries(
+  [models.pipeline, models.fast].map((model) => [model.modelId, llmOcr(model)])
+)
+
+const providerName = process.env.EVAL_OCR_PROVIDER ?? defaultOcrModel.modelId
+
+const provider = providers[providerName]
+
+if (!provider)
+  throw new Error(
+    `EVAL_OCR_PROVIDER must be one of ${Object.keys(providers).join(', ')}`
+  )
 
 const dpi = Number(process.env.EVAL_DPI ?? 144)
 
@@ -32,9 +53,26 @@ const metadata = {
     encoding: 'utf8',
   }).trim(),
   promptVersion,
-  modelId: models.pipeline.modelId,
+  provider: providerName,
   datasetVersion: data[0]?.metadata.datasetVersion,
   dpi,
+}
+
+/** Page scores plus PII word-box metrics, which are null for providers without words. */
+function scorePage(
+  expected: { blocks: Block[]; pii: PiiSpan[] },
+  page: OcrPage
+) {
+  return {
+    ...scoreBlocks(expected.blocks, page.blocks),
+    piiWordBoxes: page.words
+      ? scorePiiWordBoxes(expected.pii, page.words)
+      : null,
+  }
+}
+
+function mean(values: readonly number[]) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length
 }
 
 const started = performance.now()
@@ -42,21 +80,32 @@ const started = performance.now()
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `ocr-${promptVersion}-${dpi}-${Date.now()}`,
+    experimentName: `ocr-${providerName}-${promptVersion}-${dpi}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 2,
-    task: async (input) => {
+    task: async (input, { span }) => {
       const directory = await mkdtemp(join(tmpdir(), 'ade-ocr-eval-'))
       try {
         const rendered = await renderPdf(input.pdf, directory, dpi / 72)
-        return await ocrPages(
+        const pages = await ocrPages(
           await Promise.all(
             rendered.pages.map((page) =>
               readFile(join(directory, `${page.page}.png`))
             )
-          )
+          ),
+          provider
         )
+
+        span.log({
+          metrics: {
+            costUsdPerPage: mean(
+              pages.map((page) => ocrPageCost(providerName, page.usage))
+            ),
+            latencyMsPerPage: mean(pages.map((page) => page.usage.latencyMs)),
+          },
+        })
+        return pages
       } finally {
         await rm(directory, { recursive: true, force: true })
       }
@@ -65,16 +114,37 @@ const result = await Eval(
       ({ expected, output }) => {
         if (!expected || output.length !== expected.length)
           throw new Error('OCR page count mismatch')
-        const scores = expected.map((blocks, index) =>
-          scoreBlocks(blocks, output[index]?.blocks ?? [])
-        )
-        const mean = (key: keyof (typeof scores)[number]) =>
-          scores.reduce((sum, page) => sum + page[key], 0) / scores.length
+
+        const scores = expected.map((page, index) => {
+          const actual = output[index]
+          if (!actual) throw new Error('OCR page count mismatch')
+          return scorePage(page, actual)
+        })
+        const pageMean = (
+          key: 'cer' | 'wer' | 'blockKindAccuracy' | 'boxIoU'
+        ) => mean(scores.map((page) => page[key]))
+        const wordBoxes = scores.every((page) => page.piiWordBoxes)
+          ? summarizePiiWordBoxes(
+              scores.flatMap((page) => page.piiWordBoxes ?? [])
+            )
+          : { coverage: null, overCoverage: null }
+
         return [
-          { name: 'characterAccuracy', score: Math.max(0, 1 - mean('cer')) },
-          { name: 'wordAccuracy', score: Math.max(0, 1 - mean('wer')) },
-          { name: 'blockKindAccuracy', score: mean('blockKindAccuracy') },
-          { name: 'boxIoU', score: mean('boxIoU') },
+          {
+            name: 'characterAccuracy',
+            score: Math.max(0, 1 - pageMean('cer')),
+          },
+          { name: 'wordAccuracy', score: Math.max(0, 1 - pageMean('wer')) },
+          { name: 'blockKindAccuracy', score: pageMean('blockKindAccuracy') },
+          { name: 'boxIoU', score: pageMean('boxIoU') },
+          { name: 'piiWordBoxCoverage', score: wordBoxes.coverage },
+          {
+            name: 'piiWordBoxPrecision',
+            score:
+              wordBoxes.overCoverage === null
+                ? null
+                : 1 - wordBoxes.overCoverage,
+          },
         ]
       },
     ],
@@ -95,22 +165,34 @@ const cases = result.results.map((row) => ({
   split: row.metadata?.split,
   failed: Boolean(row.error),
   pages:
-    row.output?.map((page, index) => ({
-      ...scoreBlocks(row.expected?.[index] ?? [], page.blocks),
-      latencyMs: page.latencyMs,
-      inputTokens: page.inputTokens,
-      outputTokens: page.outputTokens,
-      cachedInputTokens: page.cachedInputTokens,
-    })) ?? [],
+    row.output?.map((page, index) => {
+      const expected = row.expected?.[index]
+      if (!expected) throw new Error('OCR page count mismatch')
+
+      const { piiWordBoxes, ...scores } = scorePage(expected, page)
+      return {
+        ...scores,
+        piiWordBoxes: piiWordBoxes && summarizePiiWordBoxes(piiWordBoxes),
+        piiSpanCount: expected.pii.length,
+        wordCount: page.words?.length ?? null,
+        latencyMs: page.usage.latencyMs,
+        tokens: page.usage.tokens,
+        costUsd: ocrPageCost(providerName, page.usage),
+      }
+    }) ?? [],
 }))
 
 const report = { metadata, wallMs: performance.now() - started, cases }
 
 await mkdir(new URL('./results/', import.meta.url), { recursive: true })
 await writeFile(
-  new URL(`./results/ocr-${dpi}-${Date.now()}.json`, import.meta.url),
+  new URL(
+    `./results/ocr-${providerName}-${dpi}-${Date.now()}.json`,
+    import.meta.url
+  ),
   `${JSON.stringify(report, null, 2)}\n`
 )
+
 for (const row of cases) log.info(row, 'OCR case metrics')
 log.info(
   {
@@ -122,6 +204,7 @@ log.info(
   },
   'OCR evaluation completed'
 )
+
 if (cases.some((row) => row.failed))
   throw new Error('OCR evaluation contains failed cases')
 

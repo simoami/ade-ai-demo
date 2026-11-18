@@ -19,8 +19,8 @@ Run from the repository root:
 - `pnpm workflows`: open the Workflow inspector on eve's local run history (port 3456).
 - `pnpm check:agent`: check agent health through the running web server at localhost:3000.
 - `pnpm eval`: run Braintrust stage suites locally; upload synthetic results when `BRAINTRUST_API_KEY` is set.
-- `pnpm eval:ocr` or `pnpm eval ocr`: run the OCR suite.
-- `pnpm test`: run environment, service authentication, gateway, document contract, rendering and logger masking tests.
+- `pnpm eval:ocr` or `pnpm eval ocr`: run the OCR suite; `EVAL_OCR_PROVIDER` selects the provider arm.
+- `pnpm test`: run environment, service authentication, gateway, document contract, rendering, OCR stage and scorer, and logger masking tests.
 - `pnpm build`: build the agent, then the production web app.
 - `pnpm lint`: run Biome lint with zero warnings allowed.
 - `pnpm typecheck`: generate Next.js route types and check all packages.

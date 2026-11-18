@@ -1,29 +1,5 @@
 import { z } from 'zod'
-
-/** Normalized top-left rectangle in page coordinates. */
-export const boxSchema = z.object({
-  x: z.number().min(0).max(1),
-  y: z.number().min(0).max(1),
-  width: z.number().positive().max(1),
-  height: z.number().positive().max(1),
-})
-
-/** Reading-order OCR block; continuation IDs refer to an earlier page. */
-export const blockSchema = z.object({
-  id: z.string(),
-  kind: z.enum([
-    'heading',
-    'paragraph',
-    'list',
-    'table',
-    'header',
-    'footer',
-    'other',
-  ]),
-  text: z.string(),
-  box: boxSchema,
-  continues: z.string().nullable(),
-})
+import { blockSchema, boxSchema } from '#stages/ocr/ocr-result'
 
 /** Synthetic truth shared by OCR, classification, identifier and extraction evals. */
 export const expectedSchema = z.object({
@@ -81,9 +57,5 @@ export const expectedSchema = z.object({
     })
   ),
 })
-
-export type Block = z.infer<typeof blockSchema>
-
-export type Box = z.infer<typeof boxSchema>
 
 export type Expected = z.infer<typeof expectedSchema>

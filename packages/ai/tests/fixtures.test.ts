@@ -51,7 +51,8 @@ test('all checked-in synthetic variants validate and have real continuation refe
   assert.equal(rows.length, 22)
   for (const row of rows) {
     const priorIds = new Set<string>()
-    for (const blocks of row.expected) {
+    for (const { blocks, pii } of row.expected) {
+      for (const span of pii) assert.ok(span.text.trim())
       for (const block of blocks) {
         if (block.continues) assert.ok(priorIds.has(block.continues))
         assert.ok(block.box.x + block.box.width <= 1)
@@ -66,7 +67,7 @@ test('checked-in fixtures cover two-column pages, dense tables and stamps', asyn
   const { syntheticDataset } = await import('#evals/fixtures/dataset')
   const blocks = (await syntheticDataset())
     .filter((row) => row.input.variant === 'clean')
-    .flatMap((row) => row.expected.flat())
+    .flatMap((row) => row.expected.flatMap((page) => page.blocks))
   assert.ok(blocks.some((block) => block.kind === 'table' && block.box.x > 0.5))
   assert.ok(
     blocks.some(

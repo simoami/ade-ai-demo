@@ -26,6 +26,32 @@ Cost uses standard short-context rates of $2/M input, $0.10/M cached input and
 $10/M output, checked on 2026-11-18 against
 [OpenAI pricing](https://developers.openai.com/api/docs/pricing).
 
+## OCR candidate: `gpt-6-luna`
+
+Measured 2026-11-18 with `gpt-6-luna` (`models.fast`), `ocr-v1`, `synthetic-v2`,
+at 144 DPI. Git SHA: `e620c0230ba76c4ab46cc483114d22a1c13009fe` with
+uncommitted task changes. Braintrust experiment (private to the organization):
+[ocr-gpt-6-luna-ocr-v1-144-1795040634365](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6-luna-ocr-v1-144-1795040634365).
+
+| Subset                | Pages | CER     | WER     | Block-kind accuracy | Box IoU | Latency/page | Cost/page |
+| --------------------- | ----- | ------- | ------- | ------------------- | ------- | ------------ | --------- |
+| clean / development   | 37    | 3.324%  | 4.089%  | 95.49%              | 0.647   | 9.265 s      | $0.00082  |
+| clean / held-out      | 5     | 11.052% | 12.414% | 92.00%              | 0.601   | 8.297 s      | $0.00073  |
+| scanned / development | 37    | 2.344%  | 3.560%  | 97.53%              | 0.601   | 11.638 s     | $0.00097  |
+| scanned / held-out    | 5     | 7.769%  | 9.637%  | 91.56%              | 0.554   | 9.844 s      | $0.00083  |
+| all / all             | 84    | 3.617%  | 4.682%  | 95.95%              | 0.618   | 10.287 s     | $0.00088  |
+
+All 22 cases ran without runtime or schema failures, but the suite failed the
+clean ceilings: clean page-mean CER 4.24% (ceiling 1%) and WER 5.08% (ceiling
+3%). Scanned CER 2.99% and WER 4.28% are within their ceilings. Errors are
+concentrated: nine pages score 26-28% CER, while most pages stay near zero.
+Input was 224,280 tokens (5,334 cached), the same as the baseline; output was
+104,514 tokens. Estimated cost: **$0.0742** ($0.00088/page against $0.0130/page
+for `gpt-6.1-sol`). Wall time: 264.746 s.
+
+Decision: OCR keeps `models.pipeline` (`gpt-6.1-sol`), because `gpt-6-luna`
+fails the clean CER and WER gates despite costing about 15x less per page.
+
 ## Metrics and thresholds
 
 | Stage | Metric                    | Gate or score | Threshold                | Why                                                                                     |
@@ -37,6 +63,9 @@ $10/M output, checked on 2026-11-18 against
 | OCR   | WER, scanned              | Gate          | Page mean <= 9%          | The same 3x ratio applied to the scanned CER ceiling.                                   |
 | OCR   | Block-kind accuracy       | Score         | Target >= 95%, not gated | Kinds for stamps and captions are partly judgment calls; a miss does not lose text.     |
 | OCR   | Box IoU                   | Score         | None                     | Model boxes are approximate; tight boxes will come from Tesseract later.                |
+| OCR   | PII word-box coverage     | Score         | None                     | Share of each ground-truth PII box covered by the provider's matched word boxes.        |
+| OCR   | PII word-box precision    | Score         | None                     | 1 minus over-coverage: share of matched word-box area inside the PII box.               |
+| OCR   | Cost per page             | Metric        | None                     | Token-based estimate from the dated price table in `packages/ai/evals/prices.ts`.       |
 
 Ceilings are fixed tolerances, not observed envelopes, so normal run-to-run
 variation does not fail the suite. They apply to the page mean of each variant
@@ -48,6 +77,15 @@ CER and WER normalize whitespace while preserving punctuation and case. Block
 metrics use monotonic text-edit alignment, independent of generated IDs; extra
 or missing blocks score zero. CER and WER compare the page text joined in
 reading order, so a swapped block order costs as much as misread text.
+PII word-box metrics apply only to providers that return words; the LLM
+providers return none, so they log null and are excluded from the aggregate.
+Each ground-truth PII span (`box` for clean, `scannedBox` for scanned) is
+matched to the shortest reading-order word runs whose whitespace-normalized
+text contains the span text; when the text repeats, the run covering most of
+the span box wins. Coverage is the area of the span box inside the union of the
+run's word boxes divided by the span box area; over-coverage is the share of the
+union outside the span box. Unmatched spans score zero coverage and are left
+out of the over-coverage mean.
 Braintrust displays 1-CER and 1-WER clamped to 0..1; local reports retain the
 unbounded error rates. Continuation-link accuracy is not scored. Each page is
 read independently, so `continues` is currently null in model output; ground
@@ -62,6 +100,7 @@ truth retains links for later document-level stages.
 | -   | Scanned clinical-01, `synthetic-v1`, 216 DPI | 2     | 0.000000% | 0.000000% | 0.713168 | 7.599 s   | $0.0334        |
 | -   | Fax-01 pilot, `synthetic-v2`, 144 DPI        | 2     | 6.07%     | 4.84%     | 0.579    | 13.938 s  | $0.0257        |
 | 2   | Full baseline, `synthetic-v2`, 144 DPI       | 84    | 0.010%    | 0.068%    | 0.715    | 219.527 s | $1.0922        |
+| 3   | `gpt-6-luna`, `synthetic-v2`, 144 DPI        | 84    | 3.617%    | 4.682%    | 0.618    | 264.746 s | $0.0742        |
 
 Experiment 1 was replaced because its monospaced, single-column, near-pristine
 pages saturated every metric, so no prompt change could register. It ran
@@ -78,7 +117,8 @@ to fix.
 
 Generate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.
 `pnpm eval` runs all stage suites; `pnpm eval:ocr` or `pnpm eval ocr` selects OCR.
-For a focused run:
+`EVAL_OCR_PROVIDER` selects the provider arm (`gpt-6.1-sol` by default, or
+`gpt-6-luna`). For a focused run:
 
 ```sh
 EVAL_FIXTURE=clinical-01 EVAL_VARIANT=scanned EVAL_DPI=216 pnpm eval:ocr

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { MockLanguageModelV4 } from 'ai/test'
-import { ocrPages } from '#stages/ocr/ocr-pages'
+import { llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
 
 const usage = {
   inputTokens: { total: 1, noCache: 1, cacheRead: 0, cacheWrite: 0 },
@@ -42,7 +42,7 @@ test('OCR preserves page order and bounds model concurrency at two', async () =>
   })
   const result = await ocrPages(
     Array.from({ length: 4 }, () => new Uint8Array([1])),
-    model
+    llmOcr(model)
   )
   assert.equal(maximum, 2)
   assert.deepEqual(
@@ -56,12 +56,15 @@ test('OCR rejects invalid structured output without exposing provider text', asy
   const model = new MockLanguageModelV4({
     doGenerate: response('{"blocks":[{"text":"PRIVATE SENTINEL"}]}'),
   })
-  await assert.rejects(ocrPages([new Uint8Array([1])], model), (error) => {
-    assert.ok(error instanceof Error)
-    assert.equal(error.name, 'OcrError')
-    assert.ok(!error.message.includes('PRIVATE SENTINEL'))
-    return true
-  })
+  await assert.rejects(
+    ocrPages([new Uint8Array([1])], llmOcr(model)),
+    (error) => {
+      assert.ok(error instanceof Error)
+      assert.equal(error.name, 'OcrError')
+      assert.ok(!error.message.includes('PRIVATE SENTINEL'))
+      return true
+    }
+  )
 })
 
 test('OCR rejects out-of-page boxes and duplicate IDs', async () => {
@@ -72,8 +75,36 @@ test('OCR rejects out-of-page boxes and duplicate IDs', async () => {
     const model = new MockLanguageModelV4({
       doGenerate: response(JSON.stringify({ blocks })),
     })
-    await assert.rejects(ocrPages([new Uint8Array([1])], model), {
+    await assert.rejects(ocrPages([new Uint8Array([1])], llmOcr(model)), {
       name: 'OcrError',
     })
   }
+})
+
+test('LLM OCR reports latency and token usage without word boxes', async () => {
+  const model = new MockLanguageModelV4({
+    doGenerate: response(JSON.stringify({ blocks: [block] })),
+  })
+  const [page] = await ocrPages([new Uint8Array([1])], llmOcr(model))
+
+  assert.equal(page?.words, undefined)
+  assert.deepEqual(page?.usage.tokens, { input: 1, cachedInput: 0, output: 1 })
+  assert.ok((page?.usage.latencyMs ?? -1) >= 0)
+})
+
+test('OCR accepts provider word boxes and rejects out-of-page words', async () => {
+  const word = { text: 'synthetic', box: block.box, confidence: 0.9 }
+  const provider = (box: typeof block.box) => async () => ({
+    blocks: [{ ...block, kind: 'paragraph' as const }],
+    words: [{ ...word, box }],
+    usage: { latencyMs: 1 },
+  })
+
+  const [page] = await ocrPages([new Uint8Array([1])], provider(word.box))
+  assert.deepEqual(page?.words, [word])
+
+  await assert.rejects(
+    ocrPages([new Uint8Array([1])], provider({ ...word.box, y: 0.95 })),
+    { name: 'OcrError' }
+  )
 })

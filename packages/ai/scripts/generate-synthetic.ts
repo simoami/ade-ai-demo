@@ -4,11 +4,8 @@ import { fileURLToPath } from 'node:url'
 import { logger } from '@repo/logger'
 import { PDFDocument, type PDFFont, rgb, StandardFonts } from 'pdf-lib'
 import sharp from 'sharp'
-import {
-  type Box,
-  type Expected,
-  expectedSchema,
-} from '#evals/fixtures/expected'
+import { type Expected, expectedSchema } from '#evals/fixtures/expected'
+import type { Box } from '#stages/ocr/ocr-result'
 import { initializePdfium } from '#stages/render/render-pages'
 
 const log = logger.getSubLogger({ name: 'synthetic-generator' })

@@ -9,6 +9,7 @@ export async function syntheticDataset() {
     new URL('../../../../fixtures/synthetic/', import.meta.url)
   )
   const rows = []
+
   for (const entry of (await readdir(root, { withFileTypes: true })).sort(
     (a, b) => a.name.localeCompare(b.name)
   )) {
@@ -18,8 +19,10 @@ export async function syntheticDataset() {
         await readFile(join(root, entry.name, 'expected.json'), 'utf8')
       )
     )
+
     if (fixture.id !== entry.name)
       throw new Error('Fixture directory does not match ID')
+
     for (const variant of ['clean', 'scanned'] as const) {
       rows.push({
         input: {
@@ -27,9 +30,18 @@ export async function syntheticDataset() {
           variant,
           pdf: join(root, entry.name, `${variant}.pdf`),
         },
-        expected: fixture.pages.map((page) =>
-          variant === 'clean' ? page.blocks : page.scannedBlocks
-        ),
+        expected: fixture.pages.map((page) => ({
+          blocks: variant === 'clean' ? page.blocks : page.scannedBlocks,
+          pii: page.pii.map((span) => {
+            const block = page.blocks.find(({ id }) => id === span.blockId)
+            if (!block) throw new Error('PII span references a missing block')
+
+            return {
+              text: block.text.slice(span.start, span.end),
+              box: variant === 'clean' ? span.box : span.scannedBox,
+            }
+          }),
+        })),
         metadata: {
           split: fixture.split,
           datasetVersion: fixture.datasetVersion,
@@ -37,6 +49,7 @@ export async function syntheticDataset() {
       })
     }
   }
+
   if (!rows.length) throw new Error('Synthetic dataset is empty')
   return rows
 }
