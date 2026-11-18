@@ -1,4 +1,4 @@
-import { logger } from '@repo/logger'
+import { log } from '#workflows/ingest-document/steps/log'
 
 /** Records the terminal document status outside workflow replay. */
 export async function complete(
@@ -9,9 +9,7 @@ export async function complete(
   'use step'
 
   const result = { documentId, status, refreshCount }
-  logger
-    .getSubLogger({ name: 'pipeline' })
-    .info(result, 'Document workflow completed')
+  log.info(result, 'Document workflow completed')
 
   return result
 }

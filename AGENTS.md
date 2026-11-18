@@ -56,7 +56,7 @@ This code is a portfolio piece that will be read as production code. Every chang
 - Separate top-level declarations, and unrelated blocks inside a function, with a blank line. Keep tightly related lines together.
 - Give exported functions, classes and workflow, step and stage entries a JSDoc header of one to three lines saying what it is or guarantees. Skip `@param`/`@returns`. Add inline comments only where they explain a non-obvious why.
 - Import across directories with Node subpath imports (`#...`, declared in each package's `imports`), never `../` paths or tsconfig `paths`.
-- Log through `@repo/logger`, never `console`. Log milestones with IDs, counts, durations and statuses only.
+- Log through `@repo/logger`, never `console`. Create sub-loggers at module scope (`const log = logger.getSubLogger({ name })`) and call `log.info(...)` in functions. Workflow step files are bundled into the workflow driver, so steps import their logger from `steps/log.ts` instead of creating one at module scope. Log milestones with IDs, counts, durations and statuses only.
 - Keep docs short, factual, and current. No marketing tone, emoji, or filler. Update this file when commands or layout change.
 - Before finishing, run the relevant `build`, `typecheck`, and `lint` scripts and report their real output.
 

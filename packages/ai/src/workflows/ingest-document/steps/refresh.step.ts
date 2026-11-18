@@ -1,5 +1,5 @@
-import { logger } from '@repo/logger'
 import type { ReviewAction } from '#workflows/ingest-document/review-action'
+import { log } from '#workflows/ingest-document/steps/log'
 
 /** Records a review refresh without persisting document content. */
 export async function refresh(
@@ -11,9 +11,7 @@ export async function refresh(
 
   // A recorded result proves each action crosses a durable step without storing content.
   const count = refreshCount + 1
-  logger
-    .getSubLogger({ name: 'pipeline' })
-    .info({ documentId, refreshCount: count }, 'Refresh completed')
+  log.info({ documentId, refreshCount: count }, 'Refresh completed')
 
   return count
 }
