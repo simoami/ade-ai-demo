@@ -1,11 +1,12 @@
 import { join } from 'node:path'
+import { logger } from '@repo/logger'
 import { artifactDirectory } from '#local-artifacts'
 import { renderPdf } from '#stages/render/render-pages'
-import { log } from '#workflows/ingest-document/steps/log'
 
 /** Renders document artifacts and logs aggregate rendering metadata. */
 export async function renderPages(documentId: string) {
   'use step'
+  const log = logger.getSubLogger({ name: 'ingest-document.render-pages' })
 
   const directory = artifactDirectory(documentId)
   const result = await renderPdf(join(directory, 'original.pdf'), directory)

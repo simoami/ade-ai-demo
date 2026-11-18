@@ -1,23 +1,20 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { logger } from '@repo/logger'
-
-const records: string[] = []
-
-// Sub-loggers copy transports when created, so capture must start before the steps load.
-const detach = logger.attachTransport({
-  format: 'json',
-  write: (_record, line) => {
-    records.push(line)
-  },
-})
-
-const { complete } = await import('./complete.step.ts')
-const { refresh } = await import('./refresh.step.ts')
+import { complete } from '#workflows/ingest-document/steps/complete.step'
+import { refresh } from '#workflows/ingest-document/steps/refresh.step'
 
 const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 
 test('records refresh counts and both terminal review statuses without decision contents', async () => {
+  const records: string[] = []
+  const detach = logger.attachTransport({
+    format: 'json',
+    write: (_record, line) => {
+      records.push(line)
+    },
+  })
+
   try {
     assert.equal(
       await refresh(
