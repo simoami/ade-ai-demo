@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there and app routes in `apps/web/app`.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain rendering logic lives in `src/stages/render`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 `packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
 
@@ -18,9 +18,9 @@ Run from the repository root:
 - `pnpm dev`: start the eve service (port 8000) and Next.js together through Turbo.
 - `pnpm workflows`: open the Workflow inspector on eve's local run history (port 3456).
 - `pnpm check:agent`: check agent health through the running web server at localhost:3000.
-- `pnpm eval`: run eve evals once evaluation cases are added.
+- `pnpm eval`: run Braintrust stage suites locally; upload synthetic results when `BRAINTRUST_API_KEY` is set.
+- `pnpm eval:ocr` or `pnpm eval ocr`: run the OCR suite.
 - `pnpm test`: run environment, service authentication, gateway, document contract, rendering and logger masking tests.
-- `pnpm workflows`: open the pinned Workflow inspector on eve local history.
 - `pnpm build`: build the agent, then the production web app.
 - `pnpm lint`: run Biome lint with zero warnings allowed.
 - `pnpm typecheck`: generate Next.js route types and check all packages.
@@ -56,7 +56,7 @@ This code is a portfolio piece that will be read as production code. Every chang
 - Separate top-level declarations, and unrelated blocks inside a function, with a blank line. Keep tightly related lines together.
 - Give exported functions, classes and workflow, step and stage entries a JSDoc header of one to three lines saying what it is or guarantees. Skip `@param`/`@returns`. Add inline comments only where they explain a non-obvious why.
 - Import across directories with Node subpath imports (`#...`, declared in each package's `imports`), never `../` paths or tsconfig `paths`.
-- Log through `@repo/logger`, never `console`. Create sub-loggers at module scope (`const log = logger.getSubLogger({ name })`) and call `log.info(...)` in functions. Workflow step files are bundled into the workflow driver, so steps import their logger from `steps/log.ts` instead of creating one at module scope. Log milestones with IDs, counts, durations and statuses only.
+- Log through `@repo/logger`, never `console`. Create sub-loggers at module scope (`const log = logger.getSubLogger({ name })`) and call `log.info(...)` in functions. Name sub-loggers after their file or function, using dots for nesting (`ingest-document.refresh`). Workflow step files are bundled into the sandboxed workflow driver, so a step creates its sub-logger on the first line of its `'use step'` body, not at module scope. Log milestones with IDs, counts, durations and statuses only.
 - Keep docs short, factual, and current. No marketing tone, emoji, or filler. Update this file when commands or layout change.
 - Before finishing, run the relevant `build`, `typecheck`, and `lint` scripts and report their real output.
 
@@ -83,7 +83,7 @@ commands. `pnpm check:agent` checks health without a model request;
 `pnpm workflows` uses CLI 5.1.0, matching eve's Workflow dependencies; live
 inspector compatibility requires verification against a running service.
 
-Artifacts and run-ID mappings are stored under the OS temp directory. Only the
-synthetic fixture is supported. Deployment requires durable artifact/run
+Artifacts and run-ID mappings are stored under the OS temp directory. The workflow supports only the
+`clinical-20` synthetic fixture. OCR is evaluated separately from the workflow. Deployment requires durable artifact/run
 metadata storage, custom-channel routing, Deployment Protection, and service
 credentials. Keep document content out of logs and workflow history.

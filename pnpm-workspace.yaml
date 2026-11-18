@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 catalog:
+  braintrust: 3.44.0
   "@ai-sdk/openai": 4.0.117
   "@vercel/oidc": 4.0.9
   "@biomejs/biome": 2.6.8
@@ -18,6 +19,7 @@ catalog:
   tslog: 5.5.0
 
 allowBuilds:
+  braintrust: false
   "@swc/core": false
   cbor-extract: false
   esbuild: true

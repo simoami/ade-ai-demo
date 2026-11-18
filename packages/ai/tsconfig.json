@@ -15,6 +15,7 @@
     "agent/**/*.ts",
     "tests/**/*.ts",
     "src/**/*.ts",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "evals/**/*.ts"
   ]
 }

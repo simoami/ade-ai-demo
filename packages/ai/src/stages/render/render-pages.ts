@@ -18,7 +18,9 @@ export async function initializePdfium(): Promise<PDFiumLibrary> {
 }
 
 /** Renders a bounded PDF to private page images and thumbnails with timing metadata. */
-export async function renderPdf(input: string, output: string) {
+export async function renderPdf(input: string, output: string, scale = 2) {
+  if (![2, 3].includes(scale)) throw new Error('Render scale must be 2 or 3')
+
   const started = performance.now()
   const initStarted = performance.now()
   const pdfium = await initializePdfium()
@@ -35,7 +37,7 @@ export async function renderPdf(input: string, output: string) {
     for (const page of document.pages()) {
       try {
         const renderStarted = performance.now()
-        const image = await page.render({ scale: 2, render: 'bitmap' })
+        const image = await page.render({ scale, render: 'bitmap' })
         const bitmap = sharp(image.data, {
           raw: { width: image.width, height: image.height, channels: 4 },
         })

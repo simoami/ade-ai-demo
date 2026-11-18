@@ -1,0 +1,714 @@
+{
+  "id": "consent-02",
+  "datasetVersion": "synthetic-v1",
+  "seed": 7307,
+  "split": "held-out",
+  "documentClass": "consent",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -0.565675837174058,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7307 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Consent to synthetic care",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Aven Testmere authorizes evaluation at Fictional Quartz Health.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Neri Mockwell at 202-555-0147.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17676767676767677,
+            "width": 0.630718954248366,
+            "height": 0.08585858585858586
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "table",
+          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.3282828282828283,
+            "width": 0.3366013071895425,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.46085858585858586,
+            "width": 0.4150326797385621,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7307 | DOB 1978-04-12 | Page 1/2\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7307 | DOB 1978-04-12",
+          "box": {
+            "x": 0.05939571144559763,
+            "y": 0.03136410594928907,
+            "width": 0.4646426847937757,
+            "height": 0.0515176865104468
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Consent to synthetic care",
+          "box": {
+            "x": 0.0603636276677606,
+            "y": 0.10812770213413975,
+            "width": 0.3320542150125347,
+            "height": 0.031569503010871414
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Aven Testmere authorizes evaluation at Fictional Quartz Health.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Neri Mockwell at 202-555-0147.",
+          "box": {
+            "x": 0.061250884204743394,
+            "y": 0.17528755953193925,
+            "width": 0.6317851867816648,
+            "height": 0.0906661182470172
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "table",
+          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "box": {
+            "x": 0.06318671664906933,
+            "y": 0.32903913248041494,
+            "width": 0.3374398950023458,
+            "height": 0.06948384156418402
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "box": {
+            "x": 0.06488057003785452,
+            "y": 0.46101008053599307,
+            "width": 0.41562546600647926,
+            "height": 0.05114371887915664
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7307 | DOB 1978-04-12 | Page 1/2\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.07076872705601267,
+            "y": 0.9209486833347966,
+            "width": 0.5332667910959905,
+            "height": 0.05204124119425324
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.17380148582336136,
+            "y": 0.03483662006790322,
+            "width": 0.2256727896659959,
+            "height": 0.01687102782000849
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06620558354685002,
+            "y": 0.05534575501441402,
+            "width": 0.12763835209140317,
+            "height": 0.016123092557428054
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2622744586960355,
+            "y": 0.05414905859428526,
+            "width": 0.08842457706156615,
+            "height": 0.01582391845239589
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.419129558815384,
+            "y": 0.05287756864789839,
+            "width": 0.09822802081902543,
+            "height": 0.015898711978653945
+          }
+        },
+        {
+          "blockId": "p1-b3",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.17929292929292928,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06781877725045493,
+            "y": 0.1816022276483592,
+            "width": 0.12763835209140317,
+            "height": 0.016123092557428054
+          }
+        },
+        {
+          "blockId": "p1-b3",
+          "start": 39,
+          "end": 62,
+          "category": "facility",
+          "box": {
+            "x": 0.4542483660130719,
+            "y": 0.17929292929292928,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.45015308379136676,
+            "y": 0.17793734486171486,
+            "width": 0.22567278966599602,
+            "height": 0.01687102782000849
+          }
+        },
+        {
+          "blockId": "p1-b3",
+          "start": 217,
+          "end": 234,
+          "category": "provider",
+          "box": {
+            "x": 0.3562091503267974,
+            "y": 0.2361111111111111,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.35284458338339625,
+            "y": 0.23594945396711897,
+            "width": 0.16685212712124037,
+            "height": 0.016422266662460272
+          }
+        },
+        {
+          "blockId": "p1-b3",
+          "start": 238,
+          "end": 250,
+          "category": "phone",
+          "box": {
+            "x": 0.5620915032679739,
+            "y": 0.2361111111111111,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.558716902290041,
+            "y": 0.23475275754699026,
+            "width": 0.11783490833394394,
+            "height": 0.016048299031169944
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07733662010172421,
+            "y": 0.9265154161886361,
+            "width": 0.12763835209140317,
+            "height": 0.016123092557428054
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.23419172022107265,
+            "y": 0.9256178938735395,
+            "width": 0.08842457706156609,
+            "height": 0.015823918452395835
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.3910468203404211,
+            "y": 0.9243464039271527,
+            "width": 0.09822802081902537,
+            "height": 0.01589871197865378
+          }
+        }
+      ]
+    },
+    {
+      "page": 1,
+      "rotation": -0.39516339227557185,
+      "blocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7307 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Consent to synthetic care",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "paragraph",
+          "text": "Aven Testmere authorizes evaluation at Fictional Quartz Health.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Neri Mockwell at 202-555-0147.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17676767676767677,
+            "width": 0.630718954248366,
+            "height": 0.08585858585858586
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b4",
+          "kind": "table",
+          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.3282828282828283,
+            "width": 0.3366013071895425,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.46085858585858586,
+            "width": 0.4150326797385621,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7307 | DOB 1978-04-12 | Page 2/2\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7307 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06118888228873853,
+            "y": 0.03142005105445722,
+            "width": 0.4644694864126486,
+            "height": 0.05045176886903724
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Consent to synthetic care",
+          "box": {
+            "x": 0.06186504381823826,
+            "y": 0.10788118444271233,
+            "width": 0.33195065267477647,
+            "height": 0.030807465961677383
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "paragraph",
+          "text": "Aven Testmere authorizes evaluation at Fictional Quartz Health.\nThe purpose, alternatives and right to withdraw were explained.\nThis consent contains no treatment results or observations.\nQuestions may be directed to Dr. Neri Mockwell at 202-555-0147.",
+          "box": {
+            "x": 0.062484858553612965,
+            "y": 0.17573038746612463,
+            "width": 0.6314702699213579,
+            "height": 0.08921788622914345
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b4",
+          "kind": "table",
+          "text": "Authorization              Status\nEvaluation                 Agreed\nData review                Agreed",
+          "box": {
+            "x": 0.06383718161261231,
+            "y": 0.32880940077901877,
+            "width": 0.3371905776378782,
+            "height": 0.0687114773716716
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "list",
+          "text": "- All identities are fictional.\n- Generated for software evaluation only.",
+          "box": {
+            "x": 0.0650204642892368,
+            "y": 0.4609640144707504,
+            "width": 0.41545104442913117,
+            "height": 0.05019052464173046
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7307 | DOB 1978-04-12 | Page 2/2\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06913378026035993,
+            "y": 0.9211846533369203,
+            "width": 0.533095305189573,
+            "height": 0.050817510787266595
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p2-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.17558778563459604,
+            "y": 0.03460706222945181,
+            "width": 0.22562006543008034,
+            "height": 0.016352878240516122
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06791625365323245,
+            "y": 0.05464323147777167,
+            "width": 0.12758318146304531,
+            "height": 0.015830389785902788
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2639900215873024,
+            "y": 0.05380724995039027,
+            "width": 0.08836842787623139,
+            "height": 0.01562139440405741
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.42084903593455836,
+            "y": 0.052919019577547466,
+            "width": 0.09817211627293487,
+            "height": 0.015673643249518754
+          }
+        },
+        {
+          "blockId": "p2-b3",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.17929292929292928,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06904318953573196,
+            "y": 0.18090285476865003,
+            "width": 0.12758318146304531,
+            "height": 0.015830389785902788
+          }
+        },
+        {
+          "blockId": "p2-b3",
+          "start": 39,
+          "end": 62,
+          "category": "facility",
+          "box": {
+            "x": 0.4542483660130719,
+            "y": 0.17929292929292928,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.4513870370071683,
+            "y": 0.17834266134104437,
+            "width": 0.2256200654300804,
+            "height": 0.016352878240516178
+          }
+        },
+        {
+          "blockId": "p2-b3",
+          "start": 217,
+          "end": 234,
+          "category": "provider",
+          "box": {
+            "x": 0.3562091503267974,
+            "y": 0.2361111111111111,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.3538572741872581,
+            "y": 0.23599547334932108,
+            "width": 0.1667979350498594,
+            "height": 0.01603938516774811
+          }
+        },
+        {
+          "blockId": "p2-b3",
+          "start": 238,
+          "end": 250,
+          "category": "phone",
+          "box": {
+            "x": 0.5620915032679739,
+            "y": 0.2361111111111111,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.5597347305180316,
+            "y": 0.23515949182193963,
+            "width": 0.11777949306634183,
+            "height": 0.0157781409404415
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07569211124247888,
+            "y": 0.9258346321848323,
+            "width": 0.12758318146304537,
+            "height": 0.0158303897859029
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2325511255897348,
+            "y": 0.9252076460392963,
+            "width": 0.08836842787623145,
+            "height": 0.01562139440405741
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.3894101399369908,
+            "y": 0.9243194156664535,
+            "width": 0.09817211627293493,
+            "height": 0.0156736432495187
+          }
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

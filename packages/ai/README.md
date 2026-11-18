@@ -33,7 +33,8 @@ supported. Deployment requires durable artifacts and document/run metadata,
 custom-channel routing to the eve service, and Deployment Protection.
 
 `pnpm --filter @repo/ai bench:render` measures rendering of the 20-page fixture
-at 144 DPI with 240-pixel WebP thumbnails. Regenerate the fixture with
+at 144 DPI with 240-pixel WebP thumbnails, using
+`fixtures/synthetic/clinical-20/clean.pdf`. Regenerate all 11 fixture pairs with
 `node packages/ai/scripts/generate-synthetic.ts`.
 
 `pnpm workflows` opens the Workflow inspector using pinned `@workflow/cli@5.1.0`,
@@ -55,3 +56,12 @@ rejections and request failures. Steps log render totals, refresh counts and
 terminal review status; the workflow body has no logging side effects.
 Only metadata is logged; errors contribute their type, never their message.
 See [the logger README](../logger/README.md) for formatting and masked keys.
+
+## OCR and evaluation
+
+`src/stages/ocr` transcribes page PNGs with `models.pipeline` and structured
+output, at most two calls per invocation. It is not wired into the workflow.
+`pnpm eval` runs the Braintrust stage suites; `pnpm eval:ocr` selects OCR.
+Set `BRAINTRUST_API_KEY` in this package's `.env.local` to upload synthetic
+experiments; without it, results remain local. `OPENAI_API_KEY` is required.
+See [eval operation](evals/README.md) and [scores](../../docs/evals.md).

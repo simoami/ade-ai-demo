@@ -69,7 +69,7 @@ export default defineChannel({
         const directory = artifactDirectory(documentId)
         await mkdir(directory, { recursive: true, mode: 0o700 })
         await copyFile(
-          resolve('../../fixtures/synthetic/clinical-20.pdf'),
+          resolve('../../fixtures/synthetic/clinical-20/clean.pdf'),
           join(directory, 'original.pdf')
         )
 

@@ -11,11 +11,12 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "turbo run format",
-    "eval": "turbo run eval --filter=@repo/ai",
+    "eval": "pnpm --filter @repo/ai eval",
     "test": "turbo run test",
     "check:agent": "pnpm --filter web check:agent",
     "check": "biome check .",
-    "workflows": "WORKFLOW_TARGET_WORLD=local WORKFLOW_LOCAL_DATA_DIR=packages/ai/.eve/.workflow-data workflow inspect runs --web"
+    "workflows": "WORKFLOW_TARGET_WORLD=local WORKFLOW_LOCAL_DATA_DIR=packages/ai/.eve/.workflow-data workflow inspect runs --web",
+    "eval:ocr": "pnpm --filter @repo/ai eval ocr"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

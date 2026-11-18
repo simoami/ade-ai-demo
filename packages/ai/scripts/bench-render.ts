@@ -6,7 +6,7 @@ import { logger } from '@repo/logger'
 import { renderPdf } from '#stages/render/render-pages'
 
 const input = fileURLToPath(
-  new URL('../../../fixtures/synthetic/clinical-20.pdf', import.meta.url)
+  new URL('../../../fixtures/synthetic/clinical-20/clean.pdf', import.meta.url)
 )
 
 const output = await mkdtemp(join(tmpdir(), 'ade-render-bench-'))

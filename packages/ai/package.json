@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome lint --error-on-warnings .",
     "test": "node --experimental-strip-types --test tests/*.test.ts src/**/*.test.ts",
-    "eval": "eve eval",
+    "eval": "node --env-file-if-exists=.env.local evals/run.ts",
     "format": "biome format --write .",
     "check": "biome check .",
     "bench:render": "node scripts/bench-render.ts"
@@ -30,13 +30,16 @@
     "@biomejs/biome": "catalog:",
     "@types/node": "catalog:",
     "pdf-lib": "^1.17.1",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "braintrust": "catalog:"
   },
   "exports": {
     "./review-action": "./src/workflows/ingest-document/review-action.ts"
   },
   "imports": {
     "#agent/*": "./agent/*.ts",
-    "#*": "./src/*.ts"
+    "#*": "./src/*.ts",
+    "#evals/*": "./evals/*.ts",
+    "#scripts/*": "./scripts/*.ts"
   }
 }

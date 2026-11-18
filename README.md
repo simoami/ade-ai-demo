@@ -15,11 +15,11 @@ Built on Next.js, the AI SDK, eve, Vercel Workflow, Vercel Blob and Neon Postgre
 
 ## Layout
 
-| Path          | Package    | Purpose                               |
-| ------------- | ---------- | ------------------------------------- |
-| `apps/web`    | `web`      | Next.js app                           |
-| `packages/ai` | `@repo/ai` | eve agent; pipeline and evals to come |
-| `packages/ui` | `@repo/ui` | Shared shadcn components on Base UI   |
+| Path          | Package    | Purpose                                                     |
+| ------------- | ---------- | ----------------------------------------------------------- |
+| `apps/web`    | `web`      | Next.js app                                                 |
+| `packages/ai` | `@repo/ai` | eve service, render workflow, OCR stage and synthetic evals |
+| `packages/ui` | `@repo/ui` | Shared shadcn components on Base UI                         |
 
 ## Requirements
 
@@ -48,8 +48,12 @@ Run from the repository root.
 | `pnpm workflows` | Open the Workflow run inspector                           |
 | `pnpm build`     | Build the agent, then the web app                         |
 | `pnpm test`      | Run unit tests                                            |
-| `pnpm eval`      | Run evals                                                 |
+| `pnpm eval`      | Run Braintrust stage evals                                |
 | `pnpm typecheck` | Type-check every package                                  |
 | `pnpm lint`      | Lint with Biome, warnings fail                            |
 | `pnpm format`    | Format with Biome                                         |
 | `pnpm check`     | Lint, format and import-order check across the repository |
+
+OCR runs independently of the review workflow. `pnpm eval:ocr` evaluates both
+variants of 11 synthetic fixtures; see [the scorecard](docs/evals.md).
+Regenerate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.

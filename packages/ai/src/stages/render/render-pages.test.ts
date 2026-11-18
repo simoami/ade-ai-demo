@@ -56,3 +56,10 @@ test('rejects documents exceeding the page limit before writing images', async (
     await rm(directory, { recursive: true, force: true })
   }
 })
+
+test('rejects unsupported eval render scales before reading a document', async () => {
+  await assert.rejects(
+    renderPdf('unused.pdf', 'unused-output', 4),
+    /scale must be 2 or 3/
+  )
+})

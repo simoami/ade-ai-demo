@@ -1,0 +1,2331 @@
+{
+  "id": "clinical-05",
+  "datasetVersion": "synthetic-v1",
+  "seed": 7304,
+  "split": "development",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -0.743354393541813,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-10  113    mg/dL  70-99       H\nSodium     2026-02-10  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17045454545454544,
+            "width": 0.5326797385620915,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-10)\n- Pulse: 76 beats/min (2026-02-10)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2904040404040404,
+            "width": 0.3660130718954248,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-10. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 113 mg/dL on 2026-02-10; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nPlan: review intake and hydration. Note continues.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.41035353535353536,
+            "width": 0.630718954248366,
+            "height": 0.14267676767676768
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 1/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.05753133110350589,
+            "y": 0.03131022548294832,
+            "width": 0.46481878394062454,
+            "height": 0.05262791580030707
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.05880325440811546,
+            "y": 0.10838827267876194,
+            "width": 0.33215900088326045,
+            "height": 0.03236326855223576
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-10  113    mg/dL  70-99       H\nSodium     2026-02-10  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.05986319049529021,
+            "y": 0.16949943047680494,
+            "width": 0.5337584399977755,
+            "height": 0.07225371066129033
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-10)\n- Pulse: 76 beats/min (2026-02-10)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06187706906092205,
+            "y": 0.291109675071175,
+            "width": 0.36710580015106453,
+            "height": 0.07058286595659863
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-10. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 113 mg/dL on 2026-02-10; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nPlan: review intake and hydration. Note continues.",
+          "box": {
+            "x": 0.06389094762655395,
+            "y": 0.40839538042987245,
+            "width": 0.6330613279180974,
+            "height": 0.14898776041790274
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 1/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.07247642993266878,
+            "y": 0.9206988297858432,
+            "width": 0.5334404591716231,
+            "height": 0.053315910678709444
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.17194318726532398,
+            "y": 0.035080208593925466,
+            "width": 0.22572560327706026,
+            "height": 0.017410794586529887
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06442710701419285,
+            "y": 0.05608199321171364,
+            "width": 0.1276946386613479,
+            "height": 0.016427944760240565
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2604890362456175,
+            "y": 0.05450943348965087,
+            "width": 0.08848225281506306,
+            "height": 0.016034804829724913
+          }
+        },
+        {
+          "blockId": "p1-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.41733857963075716,
+            "y": 0.05283858878495912,
+            "width": 0.09828534927663435,
+            "height": 0.016133089812353896
+          }
+        },
+        {
+          "blockId": "p1-b5",
+          "start": 49,
+          "end": 62,
+          "category": "name",
+          "box": {
+            "x": 0.5522875816993464,
+            "y": 0.4128787878787879,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.5508204693280789,
+            "y": 0.4110842287319314,
+            "width": 0.1276946386613479,
+            "height": 0.016427944760240676
+          }
+        },
+        {
+          "blockId": "p1-b5",
+          "start": 22,
+          "end": 39,
+          "category": "provider",
+          "box": {
+            "x": 0.2875816993464052,
+            "y": 0.4128787878787879,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2861368648656556,
+            "y": 0.4133447833323967,
+            "width": 0.16690702450763278,
+            "height": 0.016821084690756327
+          }
+        },
+        {
+          "blockId": "p1-b5",
+          "start": 133,
+          "end": 145,
+          "category": "phone",
+          "box": {
+            "x": 0.16013071895424835,
+            "y": 0.45075757575757575,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.1593325725175343,
+            "y": 0.4529895129848789,
+            "width": 0.11789154219977677,
+            "height": 0.016329659777611694
+          }
+        },
+        {
+          "blockId": "p1-b5",
+          "start": 156,
+          "end": 195,
+          "category": "address",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.4696969696969697,
+            "width": 0.38235294117647056,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07142268518954564,
+            "y": 0.4701581832801391,
+            "width": 0.38257514666219994,
+            "height": 0.01898335430859266
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07905422501720333,
+            "y": 0.92722079241043,
+            "width": 0.12769463866134784,
+            "height": 0.016427944760240676
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.23590376840234295,
+            "y": 0.926041372618883,
+            "width": 0.08848225281506306,
+            "height": 0.01603480482972497
+          }
+        },
+        {
+          "blockId": "p1-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.39275331178748274,
+            "y": 0.9243705279141912,
+            "width": 0.09828534927663424,
+            "height": 0.01613308981235395
+          }
+        }
+      ]
+    },
+    {
+      "page": 1,
+      "rotation": 0.6431690983474255,
+      "blocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-11  125    mg/dL  70-99       H\nSodium     2026-02-11  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17045454545454544,
+            "width": 0.5326797385620915,
+            "height": 0.06691919191919192
+          },
+          "continues": "p1-b3"
+        },
+        {
+          "id": "p2-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-11)\n- Pulse: 76 beats/min (2026-02-11)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2904040404040404,
+            "width": 0.3660130718954248,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-11. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 125 mg/dL on 2026-02-11; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.41035353535353536,
+            "width": 0.630718954248366,
+            "height": 0.14267676767676768
+          },
+          "continues": "p1-b5"
+        },
+        {
+          "id": "p2-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 2/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.0714946813447615,
+            "y": 0.027825095990961557,
+            "width": 0.4647200387359874,
+            "height": 0.05200196680663316
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.07066930026665857,
+            "y": 0.10357789869189538,
+            "width": 0.3321003093442039,
+            "height": 0.031915736086401914
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-11  125    mg/dL  70-99       H\nSodium     2026-02-11  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06920195612780883,
+            "y": 0.1667052342760068,
+            "width": 0.5336182929146323,
+            "height": 0.07153544232001363
+          },
+          "continues": "p1-b3"
+        },
+        {
+          "id": "p2-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-11)\n- Pulse: 76 beats/min (2026-02-11)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.0674594849629247,
+            "y": 0.2866471718858188,
+            "width": 0.3669621269725779,
+            "height": 0.07008977485594226
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-11. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 125 mg/dL on 2026-02-11; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06461650569390331,
+            "y": 0.4065891094956306,
+            "width": 0.6327518398082134,
+            "height": 0.14813863764687157
+          },
+          "continues": "p1-b5"
+        },
+        {
+          "id": "p2-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 2/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.05856371112114789,
+            "y": 0.9179205277269338,
+            "width": 0.5333431658885981,
+            "height": 0.05259724164478008
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p2-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.18630676317410094,
+            "y": 0.031342314144571004,
+            "width": 0.225696090836548,
+            "height": 0.01710646357981277
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07819529347967846,
+            "y": 0.049345082931287754,
+            "width": 0.12766305204710426,
+            "height": 0.016256070953888424
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2742613710585659,
+            "y": 0.05104586818313639,
+            "width": 0.08844983653132682,
+            "height": 0.015915913903518653
+          }
+        },
+        {
+          "blockId": "p2-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.43111423312167585,
+            "y": 0.05240649638461531,
+            "width": 0.09825314041027133,
+            "height": 0.016000953166111054
+          }
+        },
+        {
+          "blockId": "p2-b5",
+          "start": 49,
+          "end": 62,
+          "category": "name",
+          "box": {
+            "x": 0.5522875816993464,
+            "y": 0.4128787878787879,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.5533297700533005,
+            "y": 0.4133378196277524,
+            "width": 0.12766305204710426,
+            "height": 0.01625607095388837
+          }
+        },
+        {
+          "blockId": "p2-b5",
+          "start": 22,
+          "end": 39,
+          "category": "provider",
+          "box": {
+            "x": 0.2875816993464052,
+            "y": 0.4128787878787879,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2886405653218024,
+            "y": 0.41104175953775685,
+            "width": 0.16687626756288176,
+            "height": 0.01659622800425803
+          }
+        },
+        {
+          "blockId": "p2-b5",
+          "start": 133,
+          "end": 145,
+          "category": "phone",
+          "box": {
+            "x": 0.16013071895424835,
+            "y": 0.45075757575757575,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.16064736084345682,
+            "y": 0.4478126504745221,
+            "width": 0.11785974816815997,
+            "height": 0.016171031691295912
+          }
+        },
+        {
+          "blockId": "p2-b5",
+          "start": 156,
+          "end": 195,
+          "category": "address",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.4696969696969697,
+            "width": 0.38235294117647056,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07214249890692315,
+            "y": 0.46598549778642373,
+            "width": 0.38254895289965796,
+            "height": 0.018467091781291523
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06553945028209918,
+            "y": 0.9205023139920265,
+            "width": 0.12766305204710426,
+            "height": 0.016256070953888258
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.22239231234520912,
+            "y": 0.9218629421935054,
+            "width": 0.08844983653132682,
+            "height": 0.01591591390351854
+          }
+        },
+        {
+          "blockId": "p2-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.3792451744083192,
+            "y": 0.9232235703949843,
+            "width": 0.09825314041027117,
+            "height": 0.016000953166110943
+          }
+        }
+      ]
+    },
+    {
+      "page": 2,
+      "rotation": -0.4459704220294953,
+      "blocks": [
+        {
+          "id": "p3-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-12  110    mg/dL  70-99       H\nSodium     2026-02-12  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17045454545454544,
+            "width": 0.5326797385620915,
+            "height": 0.06691919191919192
+          },
+          "continues": "p2-b3"
+        },
+        {
+          "id": "p3-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-12)\n- Pulse: 76 beats/min (2026-02-12)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2904040404040404,
+            "width": 0.3660130718954248,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-12. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 110 mg/dL on 2026-02-12; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.41035353535353536,
+            "width": 0.630718954248366,
+            "height": 0.14267676767676768
+          },
+          "continues": "p2-b5"
+        },
+        {
+          "id": "p3-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 3/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p3-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06065416989831762,
+            "y": 0.03140294719725034,
+            "width": 0.4645215240804077,
+            "height": 0.05076942398822193
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06141726535277042,
+            "y": 0.10795427537450264,
+            "width": 0.3319818183375706,
+            "height": 0.03103455646619202
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-12  110    mg/dL  70-99       H\nSodium     2026-02-12  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06205317823148121,
+            "y": 0.16987486353036013,
+            "width": 0.5333376700295445,
+            "height": 0.0701210094751743
+          },
+          "continues": "p2-b3"
+        },
+        {
+          "id": "p3-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-12)\n- Pulse: 76 beats/min (2026-02-12)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06326141270103153,
+            "y": 0.29082315485150234,
+            "width": 0.3666760521075587,
+            "height": 0.0691185795372794
+          },
+          "continues": null
+        },
+        {
+          "id": "p3-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-12. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 110 mg/dL on 2026-02-12; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06446964717058185,
+            "y": 0.4091769216275048,
+            "width": 0.6321370113204594,
+            "height": 0.14646595501815413
+          },
+          "continues": "p2-b5"
+        },
+        {
+          "id": "p3-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 3/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06962054148813862,
+            "y": 0.9211147321938563,
+            "width": 0.5331468961659311,
+            "height": 0.051182189256766875
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p3-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.1750552265560053,
+            "y": 0.034675031807547996,
+            "width": 0.22563598451475347,
+            "height": 0.016507284914230758
+          }
+        },
+        {
+          "blockId": "p3-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06740612999951001,
+            "y": 0.05485214783159026,
+            "width": 0.12759973867829139,
+            "height": 0.01591762024488086
+          }
+        },
+        {
+          "blockId": "p3-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2634786216724344,
+            "y": 0.0539086843606304,
+            "width": 0.08838524034370654,
+            "height": 0.015681754377140866
+          }
+        },
+        {
+          "blockId": "p3-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.42033661501077385,
+            "y": 0.0529062544227355,
+            "width": 0.09818886492735285,
+            "height": 0.01574072084407585
+          }
+        },
+        {
+          "blockId": "p3-b5",
+          "start": 49,
+          "end": 62,
+          "category": "name",
+          "box": {
+            "x": 0.5522875816993464,
+            "y": 0.4128787878787879,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.5514084380068257,
+            "y": 0.41180037510151746,
+            "width": 0.12759973867829144,
+            "height": 0.01591762024488086
+          }
+        },
+        {
+          "blockId": "p3-b5",
+          "start": 22,
+          "end": 39,
+          "category": "provider",
+          "box": {
+            "x": 0.2875816993464052,
+            "y": 0.4128787878787879,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.28671057424837787,
+            "y": 0.4131566038410223,
+            "width": 0.16681423701287618,
+            "height": 0.016153486112620852
+          }
+        },
+        {
+          "blockId": "p3-b5",
+          "start": 133,
+          "end": 145,
+          "category": "phone",
+          "box": {
+            "x": 0.16013071895424835,
+            "y": 0.45075757575757575,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.15964500238820345,
+            "y": 0.45209564068266705,
+            "width": 0.11779611409464519,
+            "height": 0.015858653777945875
+          }
+        },
+        {
+          "blockId": "p3-b5",
+          "start": 156,
+          "end": 195,
+          "category": "address",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.4696969696969697,
+            "width": 0.38235294117647056,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07160315499900066,
+            "y": 0.4699730644962447,
+            "width": 0.382493977853093,
+            "height": 0.017450748385190673
+          }
+        },
+        {
+          "blockId": "p3-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07618172772571774,
+            "y": 0.9260378778783336,
+            "width": 0.12759973867829139,
+            "height": 0.01591762024488086
+          }
+        },
+        {
+          "blockId": "p3-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.23303972106405718,
+            "y": 0.9253302802751138,
+            "width": 0.0883852403437066,
+            "height": 0.01568175437714081
+          }
+        },
+        {
+          "blockId": "p3-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.38989771440239673,
+            "y": 0.9243278503372188,
+            "width": 0.09818886492735274,
+            "height": 0.01574072084407585
+          }
+        }
+      ]
+    },
+    {
+      "page": 3,
+      "rotation": -0.5030489079654217,
+      "blocks": [
+        {
+          "id": "p4-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-13  130    mg/dL  70-99       H\nSodium     2026-02-13  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17045454545454544,
+            "width": 0.5326797385620915,
+            "height": 0.06691919191919192
+          },
+          "continues": "p3-b3"
+        },
+        {
+          "id": "p4-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-13)\n- Pulse: 76 beats/min (2026-02-13)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2904040404040404,
+            "width": 0.3660130718954248,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-13. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 130 mg/dL on 2026-02-13; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.41035353535353536,
+            "width": 0.630718954248366,
+            "height": 0.14267676767676768
+          },
+          "continues": "p3-b5"
+        },
+        {
+          "id": "p4-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 4/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p4-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06005386641855193,
+            "y": 0.031384171596606336,
+            "width": 0.46457954942983404,
+            "height": 0.05112624180333064
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06091462592270619,
+            "y": 0.10803675611564034,
+            "width": 0.3320165196198045,
+            "height": 0.03128964917515137
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-13  130    mg/dL  70-99       H\nSodium     2026-02-13  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06163192550950147,
+            "y": 0.16980211468892326,
+            "width": 0.5334195451975717,
+            "height": 0.07053049840783238
+          },
+          "continues": "p3-b3"
+        },
+        {
+          "id": "p4-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-13)\n- Pulse: 76 beats/min (2026-02-13)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06299479472441238,
+            "y": 0.2908777114435082,
+            "width": 0.36675930231773124,
+            "height": 0.06939977342282966
+          },
+          "continues": null
+        },
+        {
+          "id": "p4-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-13. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 130 mg/dL on 2026-02-13; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.0643576639393234,
+            "y": 0.4090267258839685,
+            "width": 0.6323157416898676,
+            "height": 0.1469502866064245
+          },
+          "continues": "p3-b5"
+        },
+        {
+          "id": "p4-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 4/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.070167790592365,
+            "y": 0.9210357852457803,
+            "width": 0.5332043553215332,
+            "height": 0.051591834444214
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p4-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.17445723488818882,
+            "y": 0.03475182776097313,
+            "width": 0.22565365697355622,
+            "height": 0.016680735562368876
+          }
+        },
+        {
+          "blockId": "p4-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06683344407727171,
+            "y": 0.05508726964724181,
+            "width": 0.12761821998541473,
+            "height": 0.016015603218249574
+          }
+        },
+        {
+          "blockId": "p4-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2629043180535547,
+            "y": 0.05402305789665102,
+            "width": 0.08840404519015815,
+            "height": 0.015749550280601876
+          }
+        },
+        {
+          "blockId": "p4-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.41976101723458104,
+            "y": 0.0528923329116483,
+            "width": 0.09820758888897241,
+            "height": 0.0158160635150138
+          }
+        },
+        {
+          "blockId": "p4-b5",
+          "start": 49,
+          "end": 62,
+          "category": "name",
+          "box": {
+            "x": 0.5522875816993464,
+            "y": 0.4128787878787879,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.551295692963898,
+            "y": 0.4116627364698041,
+            "width": 0.12761821998541478,
+            "height": 0.01601560321824963
+          }
+        },
+        {
+          "blockId": "p4-b5",
+          "start": 22,
+          "end": 39,
+          "category": "provider",
+          "box": {
+            "x": 0.2875816993464052,
+            "y": 0.4128787878787879,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.28660001309591593,
+            "y": 0.41319254086127843,
+            "width": 0.1668323947806714,
+            "height": 0.016281656155897273
+          }
+        },
+        {
+          "blockId": "p4-b5",
+          "start": 133,
+          "end": 145,
+          "category": "phone",
+          "box": {
+            "x": 0.16013071895424835,
+            "y": 0.45075757575757575,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.15958432476340917,
+            "y": 0.4522671070079295,
+            "width": 0.11781467628660064,
+            "height": 0.015949089983837705
+          }
+        },
+        {
+          "blockId": "p4-b5",
+          "start": 156,
+          "end": 195,
+          "category": "address",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.4696969696969697,
+            "width": 0.38235294117647056,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07156762135012046,
+            "y": 0.47000853275213317,
+            "width": 0.38251035615458256,
+            "height": 0.017744947312959614
+          }
+        },
+        {
+          "blockId": "p4-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07673217837504631,
+            "y": 0.9262658119736809,
+            "width": 0.12761821998541473,
+            "height": 0.016015603218249685
+          }
+        },
+        {
+          "blockId": "p4-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2335888775560726,
+            "y": 0.9254676531607378,
+            "width": 0.08840404519015821,
+            "height": 0.015749550280601987
+          }
+        },
+        {
+          "blockId": "p4-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.3904455767370991,
+            "y": 0.9243369281757351,
+            "width": 0.0982075888889723,
+            "height": 0.015816063515013856
+          }
+        }
+      ]
+    },
+    {
+      "page": 4,
+      "rotation": 0.1690455809235573,
+      "blocks": [
+        {
+          "id": "p5-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03156565656565657,
+            "width": 0.46405228758169936,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.10732323232323232,
+            "width": 0.33169934640522875,
+            "height": 0.02904040404040404
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-14  124    mg/dL  70-99       H\nSodium     2026-02-14  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.17045454545454544,
+            "width": 0.5326797385620915,
+            "height": 0.06691919191919192
+          },
+          "continues": "p4-b3"
+        },
+        {
+          "id": "p5-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-14)\n- Pulse: 76 beats/min (2026-02-14)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2904040404040404,
+            "width": 0.3660130718954248,
+            "height": 0.06691919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-14. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 124 mg/dL on 2026-02-14; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.41035353535353536,
+            "width": 0.630718954248366,
+            "height": 0.14267676767676768
+          },
+          "continues": "p4-b5"
+        },
+        {
+          "id": "p5-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 5/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9217171717171717,
+            "width": 0.5326797385620915,
+            "height": 0.047979797979797977
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p5-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7304 | DOB 1978-04-12",
+          "box": {
+            "x": 0.06696673231820433,
+            "y": 0.030576778997878917,
+            "width": 0.46423346245329894,
+            "height": 0.04903756004072002
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b2",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.06674979131139658,
+            "y": 0.10633402502570138,
+            "width": 0.3318087836651673,
+            "height": 0.029796503315204337
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b3",
+          "kind": "table",
+          "text": "Test       Date        Value  Unit   Reference   Flag\nGlucose    2026-02-14  124    mg/dL  70-99       H\nSodium     2026-02-14  140    mmol/L 135-145     N",
+          "box": {
+            "x": 0.06636411841040485,
+            "y": 0.16946506338222,
+            "width": 0.5329329284062623,
+            "height": 0.06813333203137334
+          },
+          "continues": "p4-b3"
+        },
+        {
+          "id": "p5-b4",
+          "kind": "list",
+          "text": "- BP: 128/82 mmHg (2026-02-14)\n- Pulse: 76 beats/min (2026-02-14)\n- Symptoms: mild fatigue; no dyspnea",
+          "box": {
+            "x": 0.06590613184047739,
+            "y": 0.2894140362596056,
+            "width": 0.36626698714505285,
+            "height": 0.06775335657096443
+          },
+          "continues": null
+        },
+        {
+          "id": "p5-b5",
+          "kind": "paragraph",
+          "text": "Encounter 2026-02-14. Dr. Zavi Fableton reviewed Aven Testmere.\nGlucose was 124 mg/dL on 2026-02-14; sodium was 140 mmol/L.\nContact: 202-555-0147. Address:\n17 Fiction Lane, Exampleville, ZZ 00000\nMild nausea began 2026-02-01 and ended 2026-02-03.\nSeriousness: non-serious. No hospitalization was needed.\nContinued note: hydration improved; maintain follow-up plan.",
+          "box": {
+            "x": 0.06515889059480612,
+            "y": 0.4093630091369911,
+            "width": 0.631260972059188,
+            "height": 0.14411409303590672
+          },
+          "continues": "p4-b5"
+        },
+        {
+          "id": "p5-b6",
+          "kind": "footer",
+          "text": "Aven Testmere | FAKE-7304 | DOB 1978-04-12 | Page 5/5\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.06356798987821555,
+            "y": 0.9207244198247925,
+            "width": 0.5328606147373264,
+            "height": 0.04919402052441757
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "blockId": "p5-b1",
+          "start": 11,
+          "end": 34,
+          "category": "facility",
+          "box": {
+            "x": 0.17973856209150327,
+            "y": 0.03409090909090909,
+            "width": 0.22549019607843138,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.18146102132854747,
+            "y": 0.033362788004969224,
+            "width": 0.22554706558266718,
+            "height": 0.015665533651999963
+          }
+        },
+        {
+          "blockId": "p5-b1",
+          "start": 35,
+          "end": 48,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.05303030303030303,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.0735460397847113,
+            "y": 0.052056233037542754,
+            "width": 0.12750827660548525,
+            "height": 0.015442018675288827
+          }
+        },
+        {
+          "blockId": "p5-b1",
+          "start": 55,
+          "end": 64,
+          "category": "id",
+          "box": {
+            "x": 0.2679738562091503,
+            "y": 0.05303030303030303,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.2696236177390753,
+            "y": 0.052503262990964916,
+            "width": 0.08829276101461248,
+            "height": 0.015352612684604416
+          }
+        },
+        {
+          "blockId": "p5-b1",
+          "start": 71,
+          "end": 81,
+          "category": "dob",
+          "box": {
+            "x": 0.42483660130718953,
+            "y": 0.05303030303030303,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.4264856801025664,
+            "y": 0.05286088695370261,
+            "width": 0.09809663991233075,
+            "height": 0.015374964182275519
+          }
+        },
+        {
+          "blockId": "p5-b5",
+          "start": 49,
+          "end": 62,
+          "category": "name",
+          "box": {
+            "x": 0.5522875816993464,
+            "y": 0.4128787878787879,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.5525621460631203,
+            "y": 0.41299837505558346,
+            "width": 0.12750827660548536,
+            "height": 0.015442018675288827
+          }
+        },
+        {
+          "blockId": "p5-b5",
+          "start": 22,
+          "end": 39,
+          "category": "provider",
+          "box": {
+            "x": 0.2875816993464052,
+            "y": 0.4128787878787879,
+            "width": 0.16666666666666666,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.28785741582472896,
+            "y": 0.41239488461846363,
+            "width": 0.16672379219635802,
+            "height": 0.015531424665973237
+          }
+        },
+        {
+          "blockId": "p5-b5",
+          "start": 133,
+          "end": 145,
+          "category": "phone",
+          "box": {
+            "x": 0.16013071895424835,
+            "y": 0.45075757575757575,
+            "width": 0.11764705882352941,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.1602623628165205,
+            "y": 0.4499829381626504,
+            "width": 0.11770439770776708,
+            "height": 0.01541966717761778
+          }
+        },
+        {
+          "blockId": "p5-b5",
+          "start": 156,
+          "end": 195,
+          "category": "address",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.4696969696969697,
+            "width": 0.38235294117647056,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07195513906812079,
+            "y": 0.46872108619056607,
+            "width": 0.3824091279461584,
+            "height": 0.016023157614737604
+          }
+        },
+        {
+          "blockId": "p5-b6",
+          "start": 0,
+          "end": 13,
+          "category": "name",
+          "box": {
+            "x": 0.0718954248366013,
+            "y": 0.9242424242424242,
+            "width": 0.12745098039215685,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.07021961101365848,
+            "y": 0.9232645623575005,
+            "width": 0.1275082766054853,
+            "height": 0.015442018675288938
+          }
+        },
+        {
+          "blockId": "p5-b6",
+          "start": 16,
+          "end": 25,
+          "category": "id",
+          "box": {
+            "x": 0.22875816993464052,
+            "y": 0.9242424242424242,
+            "width": 0.08823529411764706,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.22708167337714957,
+            "y": 0.9236221863202383,
+            "width": 0.08829276101461259,
+            "height": 0.015352612684604416
+          }
+        },
+        {
+          "blockId": "p5-b6",
+          "start": 32,
+          "end": 42,
+          "category": "dob",
+          "box": {
+            "x": 0.38562091503267976,
+            "y": 0.9242424242424242,
+            "width": 0.09803921568627451,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.38394373574064083,
+            "y": 0.9239798102829759,
+            "width": 0.09809663991233064,
+            "height": 0.015374964182275574
+          }
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "o1",
+      "blockId": "p1-b3",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "113",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-10"
+    },
+    {
+      "id": "o2",
+      "blockId": "p1-b3",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-10"
+    },
+    {
+      "id": "o3",
+      "blockId": "p1-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "113",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-10"
+    },
+    {
+      "id": "o4",
+      "blockId": "p1-b5",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-10"
+    },
+    {
+      "id": "o5",
+      "blockId": "p1-b4",
+      "kind": "vital",
+      "name": "Blood pressure",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Blood pressure-2026-02-10"
+    },
+    {
+      "id": "o6",
+      "blockId": "p1-b4",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-02-10"
+    },
+    {
+      "id": "o7",
+      "blockId": "p1-b4",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Fatigue-2026-02-10"
+    },
+    {
+      "id": "o8",
+      "blockId": "p1-b5",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious"
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    },
+    {
+      "id": "o9",
+      "blockId": "p2-b3",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "125",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-11"
+    },
+    {
+      "id": "o10",
+      "blockId": "p2-b3",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-11"
+    },
+    {
+      "id": "o11",
+      "blockId": "p2-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "125",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-11"
+    },
+    {
+      "id": "o12",
+      "blockId": "p2-b5",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-11"
+    },
+    {
+      "id": "o13",
+      "blockId": "p2-b4",
+      "kind": "vital",
+      "name": "Blood pressure",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Blood pressure-2026-02-11"
+    },
+    {
+      "id": "o14",
+      "blockId": "p2-b4",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-02-11"
+    },
+    {
+      "id": "o15",
+      "blockId": "p2-b4",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Fatigue-2026-02-11"
+    },
+    {
+      "id": "o16",
+      "blockId": "p2-b5",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious"
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    },
+    {
+      "id": "o17",
+      "blockId": "p3-b3",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "110",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-12"
+    },
+    {
+      "id": "o18",
+      "blockId": "p3-b3",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-12"
+    },
+    {
+      "id": "o19",
+      "blockId": "p3-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "110",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-12"
+    },
+    {
+      "id": "o20",
+      "blockId": "p3-b5",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-12"
+    },
+    {
+      "id": "o21",
+      "blockId": "p3-b4",
+      "kind": "vital",
+      "name": "Blood pressure",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Blood pressure-2026-02-12"
+    },
+    {
+      "id": "o22",
+      "blockId": "p3-b4",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-02-12"
+    },
+    {
+      "id": "o23",
+      "blockId": "p3-b4",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Fatigue-2026-02-12"
+    },
+    {
+      "id": "o24",
+      "blockId": "p3-b5",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious"
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    },
+    {
+      "id": "o25",
+      "blockId": "p4-b3",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "130",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-13"
+    },
+    {
+      "id": "o26",
+      "blockId": "p4-b3",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-13"
+    },
+    {
+      "id": "o27",
+      "blockId": "p4-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "130",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-13"
+    },
+    {
+      "id": "o28",
+      "blockId": "p4-b5",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-13"
+    },
+    {
+      "id": "o29",
+      "blockId": "p4-b4",
+      "kind": "vital",
+      "name": "Blood pressure",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Blood pressure-2026-02-13"
+    },
+    {
+      "id": "o30",
+      "blockId": "p4-b4",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-02-13"
+    },
+    {
+      "id": "o31",
+      "blockId": "p4-b4",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Fatigue-2026-02-13"
+    },
+    {
+      "id": "o32",
+      "blockId": "p4-b5",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious"
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    },
+    {
+      "id": "o33",
+      "blockId": "p5-b3",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "124",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-14"
+    },
+    {
+      "id": "o34",
+      "blockId": "p5-b3",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-14"
+    },
+    {
+      "id": "o35",
+      "blockId": "p5-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "124",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H"
+      },
+      "duplicateGroup": "Glucose-2026-02-14"
+    },
+    {
+      "id": "o36",
+      "blockId": "p5-b5",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N"
+      },
+      "duplicateGroup": "Sodium-2026-02-14"
+    },
+    {
+      "id": "o37",
+      "blockId": "p5-b4",
+      "kind": "vital",
+      "name": "Blood pressure",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Blood pressure-2026-02-14"
+    },
+    {
+      "id": "o38",
+      "blockId": "p5-b4",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-02-14"
+    },
+    {
+      "id": "o39",
+      "blockId": "p5-b4",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Fatigue-2026-02-14"
+    },
+    {
+      "id": "o40",
+      "blockId": "p5-b5",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious"
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    }
+  ]
+}
