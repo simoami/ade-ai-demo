@@ -1,6 +1,6 @@
 {
   "id": "clinical-01",
-  "datasetVersion": "synthetic-v2",
+  "datasetVersion": "synthetic-v3",
   "seed": 7300,
   "split": "development",
   "documentClass": "clinical",
@@ -206,9 +206,7 @@
       ],
       "pii": [
         {
-          "blockId": "p1-b1",
-          "start": 0,
-          "end": 21,
+          "text": "Imaginary Fern Clinic",
           "category": "facility",
           "box": {
             "x": 0.06535947712418301,
@@ -221,12 +219,13 @@
             "y": 0.02347779422074414,
             "width": 0.141786744032126,
             "height": 0.017365322560835228
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 0,
+          "end": 21
         },
         {
-          "blockId": "p1-b1",
-          "start": 31,
-          "end": 45,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.11917892156862746,
@@ -239,12 +238,13 @@
             "y": 0.03892900605904337,
             "width": 0.10871129841500105,
             "height": 0.01643772275208194
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 31,
+          "end": 45
         },
         {
-          "blockId": "p1-b1",
-          "start": 51,
-          "end": 61,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2697761437908497,
@@ -257,12 +257,13 @@
             "y": 0.043149721428875853,
             "width": 0.07161072513150324,
             "height": 0.015397238367357902
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 51,
+          "end": 61
         },
         {
-          "blockId": "p1-b2",
-          "start": 23,
-          "end": 32,
+          "text": "FAKE-7300",
           "category": "id",
           "box": {
             "x": 0.8624321895424836,
@@ -275,12 +276,13 @@
             "y": 0.05975980523000285,
             "width": 0.07279050393026765,
             "height": 0.015430325225832098
-          }
+          },
+          "blockId": "p1-b2",
+          "start": 23,
+          "end": 32
         },
         {
-          "blockId": "p1-b6",
-          "start": 49,
-          "end": 63,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.4034150326797386,
@@ -293,12 +295,13 @@
             "y": 0.2853429596867728,
             "width": 0.11120728626903592,
             "height": 0.0188704728659701
-          }
+          },
+          "blockId": "p1-b6",
+          "start": 49,
+          "end": 63
         },
         {
-          "blockId": "p1-b6",
-          "start": 22,
-          "end": 39,
+          "text": "Dr. Zavi Fableton",
           "category": "provider",
           "box": {
             "x": 0.22101307189542482,
@@ -311,12 +314,13 @@
             "y": 0.28023086832140953,
             "width": 0.11582842675416155,
             "height": 0.019000072602277207
-          }
+          },
+          "blockId": "p1-b6",
+          "start": 22,
+          "end": 39
         },
         {
-          "blockId": "p1-b6",
-          "start": 134,
-          "end": 146,
+          "text": "202-555-0147",
           "category": "phone",
           "box": {
             "x": 0.18565359477124183,
@@ -329,12 +333,13 @@
             "y": 0.2956432069778764,
             "width": 0.09326158523315903,
             "height": 0.01836718625748357
-          }
+          },
+          "blockId": "p1-b6",
+          "start": 134,
+          "end": 146
         },
         {
-          "blockId": "p1-b6",
-          "start": 157,
-          "end": 196,
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
           "category": "address",
           "box": {
             "x": 0.3476797385620915,
@@ -347,12 +352,13 @@
             "y": 0.300184235194211,
             "width": 0.2720164435040817,
             "height": 0.023380360509623
-          }
+          },
+          "blockId": "p1-b6",
+          "start": 157,
+          "end": 196
         },
         {
-          "blockId": "p1-b8",
-          "start": 0,
-          "end": 14,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.06535947712418301,
@@ -365,12 +371,13 @@
             "y": 0.9243997860044876,
             "width": 0.08896582901522865,
             "height": 0.015096378292775992
-          }
+          },
+          "blockId": "p1-b8",
+          "start": 0,
+          "end": 14
         },
         {
-          "blockId": "p1-b8",
-          "start": 17,
-          "end": 26,
+          "text": "FAKE-7300",
           "category": "id",
           "box": {
             "x": 0.16294117647058823,
@@ -383,12 +390,13 @@
             "y": 0.9271346610052893,
             "width": 0.06421088563907823,
             "height": 0.01440212670181562
-          }
+          },
+          "blockId": "p1-b8",
+          "start": 17,
+          "end": 26
         },
         {
-          "blockId": "p1-b8",
-          "start": 33,
-          "end": 43,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2666143790849673,
@@ -401,9 +409,13 @@
             "y": 0.930040259616322,
             "width": 0.06154597352892799,
             "height": 0.01432738932737987
-          }
+          },
+          "blockId": "p1-b8",
+          "start": 33,
+          "end": 43
         }
-      ]
+      ],
+      "figures": []
     },
     {
       "page": 1,
@@ -582,9 +594,7 @@
       ],
       "pii": [
         {
-          "blockId": "p2-b1",
-          "start": 0,
-          "end": 21,
+          "text": "Imaginary Fern Clinic",
           "category": "facility",
           "box": {
             "x": 0.06535947712418301,
@@ -597,12 +607,13 @@
             "y": 0.04232931599750017,
             "width": 0.14170536371066877,
             "height": 0.016668123051792272
-          }
+          },
+          "blockId": "p2-b1",
+          "start": 0,
+          "end": 21
         },
         {
-          "blockId": "p2-b1",
-          "start": 31,
-          "end": 45,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.11917892156862746,
@@ -615,12 +626,13 @@
             "y": 0.055797045841449455,
             "width": 0.10862289575314815,
             "height": 0.015904555629713324
-          }
+          },
+          "blockId": "p2-b1",
+          "start": 31,
+          "end": 45
         },
         {
-          "blockId": "p2-b1",
-          "start": 51,
-          "end": 61,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2697761437908497,
@@ -633,12 +645,13 @@
             "y": 0.053179191943679704,
             "width": 0.0715144455431388,
             "height": 0.015048065609059913
-          }
+          },
+          "blockId": "p2-b1",
+          "start": 51,
+          "end": 61
         },
         {
-          "blockId": "p2-b2",
-          "start": 23,
-          "end": 32,
+          "text": "FAKE-7300",
           "category": "id",
           "box": {
             "x": 0.8624321895424836,
@@ -651,12 +664,13 @@
             "y": 0.039479121292680275,
             "width": 0.07269447482404079,
             "height": 0.015075301543124808
-          }
+          },
+          "blockId": "p2-b2",
+          "start": 23,
+          "end": 32
         },
         {
-          "blockId": "p2-b6",
-          "start": 49,
-          "end": 63,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.369609477124183,
@@ -669,12 +683,13 @@
             "y": 0.36510428462361855,
             "width": 0.09998976598674414,
             "height": 0.016493382609275464
-          }
+          },
+          "blockId": "p2-b6",
+          "start": 49,
+          "end": 63
         },
         {
-          "blockId": "p2-b6",
-          "start": 22,
-          "end": 39,
+          "text": "Dr. Zavi Fableton",
           "category": "provider",
           "box": {
             "x": 0.20544771241830065,
@@ -687,12 +702,13 @@
             "y": 0.3687955547463,
             "width": 0.10414967543789588,
             "height": 0.016589396345003282
-          }
+          },
+          "blockId": "p2-b6",
+          "start": 22,
+          "end": 39
         },
         {
-          "blockId": "p2-b6",
-          "start": 134,
-          "end": 146,
+          "text": "202-555-0147",
           "category": "phone",
           "box": {
             "x": 0.11887418300653596,
@@ -705,12 +721,13 @@
             "y": 0.3860278585465856,
             "width": 0.08383520596265992,
             "height": 0.016120523614346516
-          }
+          },
+          "blockId": "p2-b6",
+          "start": 134,
+          "end": 146
         },
         {
-          "blockId": "p2-b6",
-          "start": 157,
-          "end": 196,
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
           "category": "address",
           "box": {
             "x": 0.26469771241830065,
@@ -723,12 +740,13 @@
             "y": 0.3789496445236533,
             "width": 0.24474873515615292,
             "height": 0.01983452490414378
-          }
+          },
+          "blockId": "p2-b6",
+          "start": 157,
+          "end": 196
         },
         {
-          "blockId": "p2-b7",
-          "start": 0,
-          "end": 14,
+          "text": "Bex Samplewick",
           "category": "name",
           "box": {
             "x": 0.06535947712418301,
@@ -741,12 +759,13 @@
             "y": 0.9446611339338091,
             "width": 0.088879791988217,
             "height": 0.014660784541578264
-          }
+          },
+          "blockId": "p2-b7",
+          "start": 0,
+          "end": 14
         },
         {
-          "blockId": "p2-b7",
-          "start": 17,
-          "end": 26,
+          "text": "FAKE-7300",
           "category": "id",
           "box": {
             "x": 0.16294117647058823,
@@ -759,12 +778,13 @@
             "y": 0.9429813647685039,
             "width": 0.06411959282078045,
             "height": 0.014089301136146815
-          }
+          },
+          "blockId": "p2-b7",
+          "start": 17,
+          "end": 26
         },
         {
-          "blockId": "p2-b7",
-          "start": 33,
-          "end": 43,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2666143790849673,
@@ -777,9 +797,13 @@
             "y": 0.9406510997163832,
             "width": 0.061454114915684255,
             "height": 0.014027779967435205
-          }
+          },
+          "blockId": "p2-b7",
+          "start": 33,
+          "end": 43
         }
-      ]
+      ],
+      "figures": []
     }
   ],
   "observations": [

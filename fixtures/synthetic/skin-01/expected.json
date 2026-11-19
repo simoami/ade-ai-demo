@@ -1,0 +1,438 @@
+{
+  "id": "skin-01",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7315,
+  "split": "held-out",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -1.6707412186078727,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "Fictional Quartz Health\nPatient: Aven Testmere  DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.27715522875816995,
+            "height": 0.03746843434343434
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "header",
+          "text": "Printed 2026-02-10\nMRN FAKE-7315",
+          "box": {
+            "x": 0.8053684640522876,
+            "y": 0.030303030303030304,
+            "width": 0.13580800653594774,
+            "height": 0.03746843434343434
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "heading",
+          "text": "Dermatology follow-up",
+          "box": {
+            "x": 0.3810866013071895,
+            "y": 0.08544823232323231,
+            "width": 0.23782679738562088,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Aven Testmere returns for review of a pigmented lesion on the left forearm, first noted on 2026-02-10. The lesion is stable in size\nand color. No change in symptoms.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.13027146464646464,
+            "width": 0.8573529411764707,
+            "height": 0.042297979797979814
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Figure 1. Left forearm, 2026-02-10",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.49327651515151516,
+            "width": 0.19749019607843138,
+            "height": 0.022727272727272728
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Clinic line: 202-555-0147",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.5362058080808081,
+            "width": 0.18282679738562088,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "paragraph",
+          "text": "Follow-up: 2026-05-10",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.569665404040404,
+            "width": 0.16537581699346407,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7315 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.43848202614379084,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b9",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8764967320261439,
+            "y": 0.9318181818181818,
+            "width": 0.06467973856209142,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "Fictional Quartz Health\nPatient: Aven Testmere  DOB 1978-04-12",
+          "box": {
+            "x": 0.04128892797669165,
+            "y": 0.03419802220518753,
+            "width": 0.27845112727021176,
+            "height": 0.04369667004811956
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "header",
+          "text": "Printed 2026-02-10\nMRN FAKE-7315",
+          "box": {
+            "x": 0.7875164908477175,
+            "y": 0.020563229975927244,
+            "width": 0.13716399469021812,
+            "height": 0.040512190054826036
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "heading",
+          "text": "Dermatology follow-up",
+          "box": {
+            "x": 0.3654956849145817,
+            "y": 0.0829454093734423,
+            "width": 0.23894051739269911,
+            "height": 0.03754139714221516
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Aven Testmere returns for review of a pigmented lesion on the left forearm, first noted on 2026-02-10. The lesion is stable in size\nand color. No change in symptoms.",
+          "box": {
+            "x": 0.04506084088045309,
+            "y": 0.12105240276205115,
+            "width": 0.8585844093492192,
+            "height": 0.061595717489679014
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Figure 1. Left forearm, 2026-02-10",
+          "box": {
+            "x": 0.058757398630139346,
+            "y": 0.4987694994876001,
+            "width": 0.19826376250665373,
+            "height": 0.027166963120408005
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Clinic line: 202-555-0147",
+          "box": {
+            "x": 0.0897764266130166,
+            "y": 0.5413482692047866,
+            "width": 0.18372569803159405,
+            "height": 0.029991828047841507
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "paragraph",
+          "text": "Follow-up: 2026-05-10",
+          "box": {
+            "x": 0.0910388919360311,
+            "y": 0.57518680237963,
+            "width": 0.1662821364139404,
+            "height": 0.029598666462856027
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7315 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.07530403139678216,
+            "y": 0.931695311376486,
+            "width": 0.43952711751258194,
+            "height": 0.04250378724766557
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b9",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.892629624136467,
+            "y": 0.9216951286611568,
+            "width": 0.06545021522533412,
+            "height": 0.022597200164233833
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Fictional Quartz Health",
+          "category": "facility",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03535353535353535,
+            "width": 0.15154166666666669,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.048012657925354196,
+            "y": 0.04192913739886234,
+            "width": 0.15198342028842926,
+            "height": 0.016823856440436213
+          },
+          "blockId": "p1-b1",
+          "start": 0,
+          "end": 23
+        },
+        {
+          "text": "Aven Testmere",
+          "category": "name",
+          "box": {
+            "x": 0.11917892156862746,
+            "y": 0.049305555555555554,
+            "width": 0.09679166666666668,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.10233564682486396,
+            "y": 0.05589619124366374,
+            "width": 0.09725669565146983,
+            "height": 0.015590367186868126
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 46
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.2584150326797386,
+            "y": 0.049305555555555554,
+            "width": 0.07102777777777777,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.24151256577096158,
+            "y": 0.05333972061919606,
+            "width": 0.07150375952727928,
+            "height": 0.015009920062218407
+          },
+          "blockId": "p1-b1",
+          "start": 52,
+          "end": 62
+        },
+        {
+          "text": "FAKE-7315",
+          "category": "id",
+          "box": {
+            "x": 0.8624321895424836,
+            "y": 0.049305555555555554,
+            "width": 0.07220833333333335,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.845272942385144,
+            "y": 0.03970492838993578,
+            "width": 0.07268381320412887,
+            "height": 0.01503651736981687
+          },
+          "blockId": "p1-b2",
+          "start": 23,
+          "end": 32
+        },
+        {
+          "text": "Aven Testmere",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.1353219696969697,
+            "width": 0.09738562091503268,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.051784570829115695,
+            "y": 0.14307518085368354,
+            "width": 0.09793972277416724,
+            "height": 0.017970166470822113
+          },
+          "blockId": "p1-b4",
+          "start": 0,
+          "end": 13
+        },
+        {
+          "text": "202-555-0147",
+          "category": "phone",
+          "box": {
+            "x": 0.17194444444444446,
+            "y": 0.5412563131313132,
+            "width": 0.09258169934640524,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.17364055124349453,
+            "y": 0.5465438787105714,
+            "width": 0.09313784345245357,
+            "height": 0.01786193659630353
+          },
+          "blockId": "p1-b6",
+          "start": 13,
+          "end": 25
+        },
+        {
+          "text": "Aven Testmere",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.06816993464052287,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.08246128717334777,
+            "y": 0.9564243725887915,
+            "width": 0.06855780594191713,
+            "height": 0.01257911652957544
+          },
+          "blockId": "p1-b8",
+          "start": 33,
+          "end": 46
+        },
+        {
+          "text": "FAKE-7315",
+          "category": "id",
+          "box": {
+            "x": 0.17045098039215686,
+            "y": 0.9483585858585859,
+            "width": 0.055702614379084976,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.18750811385883664,
+            "y": 0.9543375975320044,
+            "width": 0.056095785797469655,
+            "height": 0.01229823423618226
+          },
+          "blockId": "p1-b8",
+          "start": 53,
+          "end": 62
+        }
+      ],
+      "figures": [
+        {
+          "kind": "clinicalPhoto",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.19024621212121215,
+            "width": 0.39215686274509803,
+            "height": 0.30303030303030304
+          },
+          "scannedBox": {
+            "x": 0.05385691956689426,
+            "y": 0.19133502983974365,
+            "width": 0.40342379691975466,
+            "height": 0.3117365703470831
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.5425189393939394,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06714853560919848,
+            "y": 0.5518513358612747,
+            "width": 0.02017118984598787,
+            "height": 0.015586828517354157
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.5759785353535354,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.06841100093221308,
+            "y": 0.5852967074511327,
+            "width": 0.020171189845987814,
+            "height": 0.015586828517354157
+          },
+          "redaction": "keep"
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

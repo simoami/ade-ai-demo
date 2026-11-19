@@ -1,6 +1,6 @@
 {
   "id": "invoice-01",
-  "datasetVersion": "synthetic-v2",
+  "datasetVersion": "synthetic-v3",
   "seed": 7309,
   "split": "held-out",
   "documentClass": "other",
@@ -206,9 +206,7 @@
       ],
       "pii": [
         {
-          "blockId": "p1-b1",
-          "start": 0,
-          "end": 23,
+          "text": "Fictional Quartz Health",
           "category": "facility",
           "box": {
             "x": 0.06535947712418301,
@@ -221,12 +219,13 @@
             "y": 0.04605480938613776,
             "width": 0.15218616527064827,
             "height": 0.01885885257383385
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 0,
+          "end": 23
         },
         {
-          "blockId": "p1-b1",
-          "start": 33,
-          "end": 46,
+          "text": "Aven Testmere",
           "category": "name",
           "box": {
             "x": 0.11917892156862746,
@@ -239,12 +238,13 @@
             "y": 0.06002518165986537,
             "width": 0.09749566914401714,
             "height": 0.01688693895904031
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 46
         },
         {
-          "blockId": "p1-b1",
-          "start": 52,
-          "end": 62,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2584150326797386,
@@ -257,12 +257,13 @@
             "y": 0.05593828814569418,
             "width": 0.07175978118995824,
             "height": 0.015959009036300154
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 52,
+          "end": 62
         },
         {
-          "blockId": "p1-b2",
-          "start": 23,
-          "end": 32,
+          "text": "FAKE-7309",
           "category": "id",
           "box": {
             "x": 0.8624321895424836,
@@ -275,12 +276,13 @@
             "y": 0.03414107154734686,
             "width": 0.07293905368381004,
             "height": 0.016001528736264037
-          }
+          },
+          "blockId": "p1-b2",
+          "start": 23,
+          "end": 32
         },
         {
-          "blockId": "p1-b4",
-          "start": 9,
-          "end": 22,
+          "text": "Aven Testmere",
           "category": "name",
           "box": {
             "x": 0.11357843137254903,
@@ -293,12 +295,13 @@
             "y": 0.1457841523734158,
             "width": 0.10778021231623974,
             "height": 0.01961745963645345
-          }
+          },
+          "blockId": "p1-b4",
+          "start": 9,
+          "end": 22
         },
         {
-          "blockId": "p1-b4",
-          "start": 23,
-          "end": 62,
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
           "category": "address",
           "box": {
             "x": 0.06535947712418301,
@@ -311,12 +314,13 @@
             "y": 0.15730466599513032,
             "width": 0.29117544748465984,
             "height": 0.026229935052282827
-          }
+          },
+          "blockId": "p1-b4",
+          "start": 23,
+          "end": 62
         },
         {
-          "blockId": "p1-b7",
-          "start": 33,
-          "end": 46,
+          "text": "Aven Testmere",
           "category": "name",
           "box": {
             "x": 0.06535947712418301,
@@ -329,12 +333,13 @@
             "y": 0.9608293593355606,
             "width": 0.07544614862136784,
             "height": 0.013732221745517359
-          }
+          },
+          "blockId": "p1-b7",
+          "start": 33,
+          "end": 46
         },
         {
-          "blockId": "p1-b7",
-          "start": 53,
-          "end": 62,
+          "text": "FAKE-7309",
           "category": "id",
           "box": {
             "x": 0.17877777777777779,
@@ -347,9 +352,13 @@
             "y": 0.9573442152084208,
             "width": 0.05881065345550324,
             "height": 0.01313241443474733
-          }
+          },
+          "blockId": "p1-b7",
+          "start": 53,
+          "end": 62
         }
-      ]
+      ],
+      "figures": []
     }
   ],
   "observations": []

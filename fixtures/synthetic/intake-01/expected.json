@@ -1,0 +1,551 @@
+{
+  "id": "intake-01",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7311,
+  "split": "development",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -2.0911237774416804,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nCora Fictionvale | MRN FAKE-7311 | DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.3771895424836601,
+            "height": 0.03907828282828283
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Patient intake form",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.2178562091503268,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Name: Cora Fictionvale\nDate of birth: 1978-04-12\nMRN: FAKE-7311",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.13945707070707072,
+            "width": 0.21270751633986926,
+            "height": 0.0635732323232323
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Phone: 202-555-0147",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.28592171717171716,
+            "width": 0.17031045751633989,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Address: 17 Fiction Lane, Exampleville, ZZ 00000",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.3193813131313131,
+            "width": 0.3718137254901961,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Next visit: 2026-03-02",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.3528409090909091,
+            "width": 0.17068627450980395,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "paragraph",
+          "text": "Messages: patient portal only",
+          "box": {
+            "x": 0.08823529411764706,
+            "y": 0.38630050505050506,
+            "width": 0.22542483660130722,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "paragraph",
+          "text": "Reason for visit: annual review. Allergies: none reported. Current medication: none.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.4323863636363636,
+            "width": 0.6087254901960785,
+            "height": 0.025883838383838384
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b9",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nCora Fictionvale | MRN FAKE-7311 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.47860620915032676,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b10",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nCora Fictionvale | MRN FAKE-7311 | DOB 1978-04-12",
+          "box": {
+            "x": 0.036937803887982956,
+            "y": 0.03241999400133666,
+            "width": 0.3787836688345919,
+            "height": 0.04968748128122502
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Patient intake form",
+          "box": {
+            "x": 0.039617829607761834,
+            "y": 0.09362980570440949,
+            "width": 0.21923150022424498,
+            "height": 0.03831819396563513
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Name: Cora Fictionvale\nDate of birth: 1978-04-12\nMRN: FAKE-7311",
+          "box": {
+            "x": 0.04209215813658984,
+            "y": 0.14613907329778036,
+            "width": 0.21556785214004892,
+            "height": 0.06952838948896023
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Phone: 202-555-0147",
+          "box": {
+            "x": 0.07840053173672729,
+            "y": 0.2928723157609696,
+            "width": 0.17141929940349765,
+            "height": 0.030668668584779513
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Address: 17 Fiction Lane, Exampleville, ZZ 00000",
+          "box": {
+            "x": 0.07998052465272582,
+            "y": 0.32062805094763736,
+            "width": 0.37278837800992615,
+            "height": 0.036350247227688925
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Next visit: 2026-03-02",
+          "box": {
+            "x": 0.08156051756872451,
+            "y": 0.3597363468981659,
+            "width": 0.17179486612486872,
+            "height": 0.03067926510673752
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "paragraph",
+          "text": "Messages: patient portal only",
+          "box": {
+            "x": 0.08314051048472315,
+            "y": 0.39163025426863285,
+            "width": 0.2264969755419572,
+            "height": 0.03222267156584774
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "paragraph",
+          "text": "Reason for visit: annual review. Allergies: none reported. Current medication: none.",
+          "box": {
+            "x": 0.05592454894835153,
+            "y": 0.4277071844357884,
+            "width": 0.6095423733646622,
+            "height": 0.043030202526386896
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b9",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nCora Fictionvale | MRN FAKE-7311 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.07950817905866331,
+            "y": 0.9304752487004857,
+            "width": 0.4798287238363919,
+            "height": 0.04611191615895294
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b10",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8902016051138575,
+            "y": 0.9190912208735929,
+            "width": 0.0720705945401603,
+            "height": 0.02314018251212624
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Fictional Quartz Health",
+          "category": "facility",
+          "box": {
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.16045588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.13519104316864006,
+            "y": 0.040812688052797086,
+            "width": 0.1610197798483884,
+            "height": 0.018719294145641274
+          },
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 34
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.11352941176470586,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.04440547031702363,
+            "y": 0.05947988910628038,
+            "width": 0.11412455953945216,
+            "height": 0.01739615712775522
+          },
+          "blockId": "p1-b1",
+          "start": 35,
+          "end": 51
+        },
+        {
+          "text": "FAKE-7311",
+          "category": "id",
+          "box": {
+            "x": 0.22875653594771242,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.2076937162752156,
+            "y": 0.055918075573330894,
+            "width": 0.07707571892559184,
+            "height": 0.01635083327250897
+          },
+          "blockId": "p1-b1",
+          "start": 58,
+          "end": 67
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.35427124183006536,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.33312483671920523,
+            "y": 0.05241431255197787,
+            "width": 0.0758265513523359,
+            "height": 0.016315588319039676
+          },
+          "blockId": "p1-b1",
+          "start": 74,
+          "end": 84
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.12239052287581698,
+            "y": 0.14450757575757575,
+            "width": 0.12885457516339868,
+            "height": 0.017361111111111112
+          },
+          "scannedBox": {
+            "x": 0.10585530920507552,
+            "y": 0.151758196834468,
+            "width": 0.12958857321291994,
+            "height": 0.020982728433299402
+          },
+          "blockId": "p1-b3",
+          "start": 6,
+          "end": 22
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.17307679738562093,
+            "y": 0.16256313131313133,
+            "width": 0.09191830065359477,
+            "height": 0.017361111111111112
+          },
+          "scannedBox": {
+            "x": 0.15736042957740826,
+            "y": 0.16941403396000276,
+            "width": 0.09267689609729945,
+            "height": 0.01994127461215961
+          },
+          "blockId": "p1-b3",
+          "start": 38,
+          "end": 48
+        },
+        {
+          "text": "FAKE-7311",
+          "category": "id",
+          "box": {
+            "x": 0.11538071895424837,
+            "y": 0.18061868686868687,
+            "width": 0.09146895424836601,
+            "height": 0.017361111111111112
+          },
+          "scannedBox": {
+            "x": 0.10055537330390585,
+            "y": 0.1890970318079509,
+            "width": 0.09222784893044278,
+            "height": 0.019928604857644583
+          },
+          "blockId": "p1-b3",
+          "start": 54,
+          "end": 63
+        },
+        {
+          "text": "202-555-0147",
+          "category": "phone",
+          "box": {
+            "x": 0.1502777777777778,
+            "y": 0.2909722222222222,
+            "width": 0.10173202614379084,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.14064018823547725,
+            "y": 0.29810374480949564,
+            "width": 0.1024095582537139,
+            "height": 0.018640750266355144
+          },
+          "blockId": "p1-b4",
+          "start": 7,
+          "end": 19
+        },
+        {
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
+          "category": "address",
+          "box": {
+            "x": 0.16297385620915034,
+            "y": 0.32443181818181815,
+            "width": 0.2905392156862745,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.15490780473866328,
+            "y": 0.32585947999616344,
+            "width": 0.2910910132729549,
+            "height": 0.023964350754420105
+          },
+          "blockId": "p1-b5",
+          "start": 9,
+          "end": 48
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.0819983660130719,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.08682082731481355,
+            "y": 0.9580030904442673,
+            "width": 0.0824654556809491,
+            "height": 0.013352645366645266
+          },
+          "blockId": "p1-b9",
+          "start": 33,
+          "end": 49
+        },
+        {
+          "text": "FAKE-7311",
+          "category": "id",
+          "box": {
+            "x": 0.18591503267973855,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.20729609993549375,
+            "y": 0.9552747163992374,
+            "width": 0.05869044931937273,
+            "height": 0.012681839454864785
+          },
+          "blockId": "p1-b9",
+          "start": 56,
+          "end": 65
+        }
+      ],
+      "figures": [
+        {
+          "kind": "patientPhoto",
+          "box": {
+            "x": 0.7189542483660131,
+            "y": 0.13693181818181818,
+            "width": 0.17973856209150327,
+            "height": 0.1388888888888889
+          },
+          "scannedBox": {
+            "x": 0.7016640239704139,
+            "y": 0.1259320726709257,
+            "width": 0.18617732790342778,
+            "height": 0.14386429883446678
+          },
+          "redaction": "redact"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.2922348484848485,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.05583806056769308,
+            "y": 0.3040754538882159,
+            "width": 0.02031025395310121,
+            "height": 0.01569428714557819
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.32569444444444445,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.05741805348369172,
+            "y": 0.33751276771779315,
+            "width": 0.020310253953101265,
+            "height": 0.01569428714557819
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.35915404040404036,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.05899804639969031,
+            "y": 0.3709500815473702,
+            "width": 0.020310253953101265,
+            "height": 0.01569428714557819
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "icon",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.39261363636363633,
+            "width": 0.0196078431372549,
+            "height": 0.015151515151515152
+          },
+          "scannedBox": {
+            "x": 0.060578039315689,
+            "y": 0.40438739537694735,
+            "width": 0.02031025395310121,
+            "height": 0.01569428714557819
+          },
+          "redaction": "keep"
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

@@ -7,11 +7,12 @@ import sharp from 'sharp'
 import { type Expected, expectedSchema } from '#evals/fixtures/expected'
 import type { Box } from '#stages/ocr/ocr-result'
 import { initializePdfium } from '#stages/render/render-pages'
+import { drawPictureForm } from './synthetic-pictures.ts'
 
 const log = logger.getSubLogger({ name: 'synthetic-generator' })
 
 /** Version changes whenever generated content or geometry changes. */
-export const datasetVersion = 'synthetic-v2'
+export const datasetVersion = 'synthetic-v3'
 
 /** Fixture list; `scan` is the base scan severity (0 mild to 1 worst) for the scanned variant. */
 export const fixtureSpecs = [
@@ -26,6 +27,46 @@ export const fixtureSpecs = [
   { id: 'fax-01', pages: 1, kind: 'other', scan: 1 },
   { id: 'invoice-01', pages: 1, kind: 'other', scan: 0.35 },
   { id: 'clinical-20', pages: 20, kind: 'clinical', scan: 0.4 },
+  {
+    id: 'intake-01',
+    pages: 1,
+    kind: 'clinical',
+    scan: 0.3,
+    form: 'intake',
+    title: 'Patient intake form',
+  },
+  {
+    id: 'referral-01',
+    pages: 2,
+    kind: 'clinical',
+    scan: 0.35,
+    form: 'referral',
+    title: 'Specialist referral',
+  },
+  {
+    id: 'consent-03',
+    pages: 1,
+    kind: 'consent',
+    scan: 0.3,
+    form: 'consent',
+    title: 'Consent and signatures',
+  },
+  {
+    id: 'radiology-01',
+    pages: 1,
+    kind: 'clinical',
+    scan: 0.4,
+    form: 'radiology',
+    title: 'Radiology report',
+  },
+  {
+    id: 'skin-01',
+    pages: 1,
+    kind: 'clinical',
+    scan: 0.3,
+    form: 'skin',
+    title: 'Dermatology follow-up',
+  },
 ] as const
 
 type Run = { text: string; x: number; align?: 'right' | 'center' }
@@ -184,6 +225,8 @@ export async function generateFixture(
   const dob = '1978-04-12'
   const phone = '202-555-0147'
   const address = '17 Fiction Lane, Exampleville, ZZ 00000'
+  const guardian = 'Jun Mockridge'
+  const witness = 'Pat Exemplar'
   const identifiers = [
     [person, 'name'],
     [provider, 'provider'],
@@ -192,6 +235,8 @@ export async function generateFixture(
     [dob, 'dob'],
     [phone, 'phone'],
     [address, 'address'],
+    [guardian, 'name'],
+    [witness, 'provider'],
   ] as const
   const keep = identifiers.map(([value]) => value)
   const clean = await PDFDocument.create()
@@ -216,7 +261,9 @@ export async function generateFixture(
     id: spec.id,
     datasetVersion,
     seed,
-    split: ['clinical-06', 'consent-02', 'invoice-01'].includes(spec.id)
+    split: ['clinical-06', 'consent-02', 'invoice-01', 'skin-01'].includes(
+      spec.id
+    )
       ? 'held-out'
       : 'development',
     documentClass: spec.kind,
@@ -234,6 +281,7 @@ export async function generateFixture(
       blocks: [],
       scannedBlocks: [],
       pii: [],
+      figures: [],
     }
     const add = (
       kind: Expected['pages'][number]['blocks'][number]['kind'],
@@ -337,6 +385,7 @@ export async function generateFixture(
                 height: (size * 1.25) / 792,
               }
               entry.pii.push({
+                text: value,
                 blockId: id,
                 start: column + start,
                 end: column + start + value.length,
@@ -385,19 +434,61 @@ export async function generateFixture(
             ).bottom
           )
     const title =
-      spec.kind === 'clinical'
-        ? 'Clinical encounter record'
-        : spec.kind === 'consent'
-          ? 'Consent to synthetic care'
-          : spec.id === 'fax-01'
-            ? 'Fax transmission cover'
-            : 'Service invoice'
+      'title' in spec
+        ? spec.title
+        : spec.kind === 'clinical'
+          ? 'Clinical encounter record'
+          : spec.kind === 'consent'
+            ? 'Consent to synthetic care'
+            : spec.id === 'fax-01'
+              ? 'Fax transmission cover'
+              : 'Service invoice'
     top = add(
       'heading',
       [headerStyle === 0 ? title : [{ text: title, x: 306, align: 'center' }]],
       { y: top + 4, font: bold, size: 14 }
     ).bottom
-    if (spec.kind === 'clinical') {
+    if ('form' in spec)
+      await drawPictureForm(spec.form, {
+        pdf: clean,
+        page,
+        pageIndex: index,
+        top,
+        date,
+        random,
+        body,
+        bold,
+        identity: {
+          person,
+          provider,
+          facility,
+          mrn,
+          dob,
+          phone,
+          address,
+          guardian,
+          witness,
+        },
+        wrap: (text, size, width) => wrap(text, body, size, width, keep),
+        add,
+        figure: (kind, redaction, box) =>
+          entry.figures.push({
+            kind,
+            redaction,
+            box,
+            scannedBox: rotateBox(box, rotation),
+          }) - 1,
+        burnedIn: (figure, text, category, box) => {
+          entry.pii.push({
+            text,
+            category,
+            figure,
+            box,
+            scannedBox: rotateBox(box, rotation),
+          })
+        },
+      })
+    else if (spec.kind === 'clinical') {
       const layout = pick(['single', 'columns', 'dense'] as const)
       const glucose = 106 + Math.floor(random() * 30)
       const panel = [

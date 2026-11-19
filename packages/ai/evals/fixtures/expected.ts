@@ -1,6 +1,24 @@
 import { z } from 'zod'
 import { blockSchema, boxSchema } from '#stages/ocr/ocr-result'
 
+/** Identifier text and box; it lies in a text block span or is burned into a figure's pixels. */
+const piiSpan = z.object({
+  text: z.string(),
+  category: z.enum([
+    'name',
+    'id',
+    'dob',
+    'address',
+    'phone',
+    'email',
+    'ssn',
+    'facility',
+    'provider',
+  ]),
+  box: boxSchema,
+  scannedBox: boxSchema,
+})
+
 /** Synthetic truth shared by OCR, classification, identifier and extraction evals. */
 export const expectedSchema = z.object({
   id: z.string(),
@@ -15,23 +33,29 @@ export const expectedSchema = z.object({
       blocks: z.array(blockSchema),
       scannedBlocks: z.array(blockSchema),
       pii: z.array(
+        z.union([
+          piiSpan.extend({
+            blockId: z.string(),
+            start: z.number().int().nonnegative(),
+            end: z.number().int().positive(),
+          }),
+          piiSpan.extend({ figure: z.number().int().nonnegative() }),
+        ])
+      ),
+      figures: z.array(
         z.object({
-          blockId: z.string(),
-          start: z.number().int().nonnegative(),
-          end: z.number().int().positive(),
-          category: z.enum([
-            'name',
-            'id',
-            'dob',
-            'address',
-            'phone',
-            'email',
-            'ssn',
-            'facility',
-            'provider',
+          kind: z.enum([
+            'patientPhoto',
+            'face',
+            'signature',
+            'logo',
+            'icon',
+            'medicalImage',
+            'clinicalPhoto',
           ]),
           box: boxSchema,
           scannedBox: boxSchema,
+          redaction: z.enum(['redact', 'keep', 'review']),
         })
       ),
     })
@@ -59,3 +83,7 @@ export const expectedSchema = z.object({
 })
 
 export type Expected = z.infer<typeof expectedSchema>
+
+export type ExpectedPage = Expected['pages'][number]
+
+export type ExpectedFigure = ExpectedPage['figures'][number]

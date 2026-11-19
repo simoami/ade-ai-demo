@@ -1,0 +1,62 @@
+[
+  {
+    "file": "portrait-01.jpg",
+    "prompt": "Photorealistic portrait of a fictional woman in her thirties with dark curly hair, ID photo, plain light gray background, neutral expression, flat lighting. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-02.jpg",
+    "prompt": "Photorealistic portrait of a fictional man in his fifties with a gray beard and glasses, ID photo, plain blue background, neutral expression. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-03.jpg",
+    "prompt": "Photorealistic portrait of a fictional woman in her eighties with short white hair, ID photo, plain off-white background, soft window light. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-04.jpg",
+    "prompt": "Photorealistic portrait of a fictional young man in his twenties with dark skin and short hair, ID photo, plain light background, slight smile. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-05.jpg",
+    "prompt": "Photorealistic portrait of a fictional woman in her forties wearing a white coat and stethoscope, professional staff headshot, blurred clinic background. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-06.jpg",
+    "prompt": "Photorealistic portrait of a fictional man in his sixties with East Asian features wearing scrubs, professional staff headshot, studio lighting, gray backdrop. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-07.jpg",
+    "prompt": "Photorealistic portrait of a fictional teenage girl with freckles and glasses, candid photo outdoors, warm afternoon light. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "portrait-08.jpg",
+    "prompt": "Photorealistic portrait of a fictional middle-aged man with a shaved head, candid photo indoors, mixed lighting, looking slightly off camera. Head and shoulders, no text, no logos, no watermark.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "xray-chest.jpg",
+    "prompt": "Synthetic posteroanterior chest X-ray radiograph, grayscale, normal anatomy, black background. No text, no letters, no markers, no labels.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  },
+  {
+    "file": "skin-lesion.jpg",
+    "prompt": "Dermatology documentation photograph: close-up of a small benign mole on the skin of a forearm, even clinical lighting, neutral background. No face, no text, no ruler.",
+    "model": "gpt-image-2.6-flare",
+    "generated": "2026-11-19"
+  }
+]

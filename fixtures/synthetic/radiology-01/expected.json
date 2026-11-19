@@ -1,0 +1,366 @@
+{
+  "id": "radiology-01",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7314,
+  "split": "development",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": 2.7728163306601346,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7314 | DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.36614542483660134,
+            "height": 0.03907828282828283
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Radiology report",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.19655882352941173,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Exam: Chest X-ray, PA view\nDate: 2026-02-10\nOrdered by: Dr. Neri Mockwell",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.13188131313131313,
+            "width": 0.22869281045751635,
+            "height": 0.058712121212121195
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Findings: The lungs are clear. Heart size is\nnormal. No pleural effusion or pneumothorax.\nImpression: no acute cardiopulmonary\nabnormality.",
+          "box": {
+            "x": 0.5816993464052288,
+            "y": 0.20321969696969697,
+            "width": 0.3400163398692811,
+            "height": 0.07512626262626262
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7314 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.471468954248366,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Fictional Quartz Health\nAven Testmere | MRN FAKE-7314 | DOB 1978-04-12",
+          "box": {
+            "x": 0.08629854837129863,
+            "y": 0.014361171454571275,
+            "width": 0.3681632025558507,
+            "height": 0.05271954638998577
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Radiology report",
+          "box": {
+            "x": 0.08317624852641547,
+            "y": 0.07104977322778261,
+            "width": 0.19834435466553896,
+            "height": 0.03950691097421771
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Exam: Chest X-ray, PA view\nDate: 2026-02-10\nOrdered by: Dr. Neri Mockwell",
+          "box": {
+            "x": 0.07871017406474723,
+            "y": 0.11582052657481268,
+            "width": 0.2321006760473328,
+            "height": 0.06719223093403093
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Findings: The lungs are clear. Heart size is\nnormal. No pleural effusion or pneumothorax.\nImpression: no acute cardiopulmonary\nabnormality.",
+          "box": {
+            "x": 0.5954801419849272,
+            "y": 0.20662120014336288,
+            "width": 0.344321460384327,
+            "height": 0.08774858036044114
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nAven Testmere | MRN FAKE-7314 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.030263146851358003,
+            "y": 0.9148208303215988,
+            "width": 0.472960286945203,
+            "height": 0.05022482914964432
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8412663304225612,
+            "y": 0.9451458531792536,
+            "width": 0.07236002791873164,
+            "height": 0.023782764609889262
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Fictional Quartz Health",
+          "category": "facility",
+          "box": {
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.16045588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.18550479711212015,
+            "y": 0.023072130261566737,
+            "width": 0.1611572834497576,
+            "height": 0.020185974956422215
+          },
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 34
+        },
+        {
+          "text": "Aven Testmere",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.10248529411764705,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.09314302606826985,
+            "y": 0.034405517423390375,
+            "width": 0.10325456709613617,
+            "height": 0.018018955144862958
+          },
+          "blockId": "p1-b1",
+          "start": 35,
+          "end": 48
+        },
+        {
+          "text": "FAKE-7314",
+          "category": "id",
+          "box": {
+            "x": 0.2177124183006536,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.24531759263943115,
+            "y": 0.040100678571983406,
+            "width": 0.07725563052944168,
+            "height": 0.01704594016098171
+          },
+          "blockId": "p1-b1",
+          "start": 55,
+          "end": 64
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.3432271241830065,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.3706853460839159,
+            "y": 0.044792589807817584,
+            "width": 0.07600709402765121,
+            "height": 0.01699921345271621
+          },
+          "blockId": "p1-b1",
+          "start": 71,
+          "end": 81
+        },
+        {
+          "text": "Dr. Neri Mockwell",
+          "category": "provider",
+          "box": {
+            "x": 0.15503267973856208,
+            "y": 0.169760101010101,
+            "width": 0.12594771241830066,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.17512286511891845,
+            "y": 0.1572513955428394,
+            "width": 0.12678832258816602,
+            "height": 0.02047244738198095
+          },
+          "blockId": "p1-b3",
+          "start": 56,
+          "end": 73
+        },
+        {
+          "text": "AVEN TESTMERE",
+          "category": "name",
+          "box": {
+            "x": 0.07876327614379085,
+            "y": 0.21862768308080807,
+            "width": 0.11967677696078431,
+            "height": 0.009617660984848484
+          },
+          "scannedBox": {
+            "x": 0.096269411899148,
+            "y": 0.20321070898136845,
+            "width": 0.12013876445666466,
+            "height": 0.014080082115703108
+          },
+          "figure": 0
+        },
+        {
+          "text": "FAKE-7314",
+          "category": "id",
+          "box": {
+            "x": 0.07876327614379085,
+            "y": 0.23120462436868686,
+            "width": 0.07276348039215687,
+            "height": 0.00887784090909091
+          },
+          "scannedBox": {
+            "x": 0.09552835972077384,
+            "y": 0.21577292520440178,
+            "width": 0.07323407814731597,
+            "height": 0.011587445082203052
+          },
+          "figure": 0
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.07876327614379085,
+            "y": 0.24304174558080807,
+            "width": 0.06989123774509803,
+            "height": 0.00887784090909091
+          },
+          "scannedBox": {
+            "x": 0.09478730754239972,
+            "y": 0.22759618753196253,
+            "width": 0.07036519831783428,
+            "height": 0.011480076726813615
+          },
+          "figure": 0
+        },
+        {
+          "text": "Aven Testmere",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.0748611111111111,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.03710762454832922,
+            "y": 0.9315861915382411,
+            "width": 0.07546511252926413,
+            "height": 0.01383345547851178
+          },
+          "blockId": "p1-b5",
+          "start": 33,
+          "end": 46
+        },
+        {
+          "text": "FAKE-7314",
+          "category": "id",
+          "box": {
+            "x": 0.17877777777777779,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.1503931352179716,
+            "y": 0.935825922615527,
+            "width": 0.05883101576292693,
+            "height": 0.013210921346953897
+          },
+          "blockId": "p1-b5",
+          "start": 53,
+          "end": 62
+        }
+      ],
+      "figures": [
+        {
+          "kind": "medicalImage",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.208270202020202,
+            "width": 0.49019607843137253,
+            "height": 0.3787878787878788
+          },
+          "scannedBox": {
+            "x": 0.06041816187126686,
+            "y": 0.1923643021196021,
+            "width": 0.5133358272728423,
+            "height": 0.3966685938017418
+          },
+          "redaction": "keep"
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

@@ -1,6 +1,6 @@
 {
   "id": "clinical-03",
-  "datasetVersion": "synthetic-v2",
+  "datasetVersion": "synthetic-v3",
   "seed": 7302,
   "split": "development",
   "documentClass": "clinical",
@@ -182,9 +182,7 @@
       ],
       "pii": [
         {
-          "blockId": "p1-b1",
-          "start": 11,
-          "end": 32,
+          "text": "Imaginary Fern Clinic",
           "category": "facility",
           "box": {
             "x": 0.15690359477124183,
@@ -197,12 +195,13 @@
             "y": 0.023354391077646364,
             "width": 0.15025993701898477,
             "height": 0.019645115121852685
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 32
         },
         {
-          "blockId": "p1-b1",
-          "start": 33,
-          "end": 49,
+          "text": "Cora Fictionvale",
           "category": "name",
           "box": {
             "x": 0.06535947712418301,
@@ -215,12 +214,13 @@
             "y": 0.034770805654919634,
             "width": 0.11427070497460512,
             "height": 0.01833064062411066
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 49
         },
         {
-          "blockId": "p1-b1",
-          "start": 56,
-          "end": 65,
+          "text": "FAKE-7302",
           "category": "id",
           "box": {
             "x": 0.22875653594771242,
@@ -233,12 +233,13 @@
             "y": 0.040732081632230244,
             "width": 0.07723851967506162,
             "height": 0.01697807319194433
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 56,
+          "end": 65
         },
         {
-          "blockId": "p1-b1",
-          "start": 72,
-          "end": 82,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.35427124183006536,
@@ -251,12 +252,13 @@
             "y": 0.045311281566200734,
             "width": 0.07598991366535868,
             "height": 0.016932468974675763
-          }
+          },
+          "blockId": "p1-b1",
+          "start": 72,
+          "end": 82
         },
         {
-          "blockId": "p1-b5",
-          "start": 49,
-          "end": 65,
+          "text": "Cora Fictionvale",
           "category": "name",
           "box": {
             "x": 0.4034150326797386,
@@ -269,12 +271,13 @@
             "y": 0.2862311819894427,
             "width": 0.10916053289222866,
             "height": 0.01971699675829236
-          }
+          },
+          "blockId": "p1-b5",
+          "start": 49,
+          "end": 65
         },
         {
-          "blockId": "p1-b5",
-          "start": 22,
-          "end": 39,
+          "text": "Dr. Zavi Fableton",
           "category": "provider",
           "box": {
             "x": 0.22101307189542482,
@@ -287,12 +290,13 @@
             "y": 0.2795765430695817,
             "width": 0.11599930306302003,
             "height": 0.01996677671954128
-          }
+          },
+          "blockId": "p1-b5",
+          "start": 22,
+          "end": 39
         },
         {
-          "blockId": "p1-b5",
-          "start": 136,
-          "end": 148,
+          "text": "202-555-0147",
           "category": "phone",
           "box": {
             "x": 0.18565359477124183,
@@ -305,12 +309,13 @@
             "y": 0.29468234653881054,
             "width": 0.09344278665243827,
             "height": 0.019142920140911235
-          }
+          },
+          "blockId": "p1-b5",
+          "start": 136,
+          "end": 148
         },
         {
-          "blockId": "p1-b5",
-          "start": 159,
-          "end": 198,
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
           "category": "address",
           "box": {
             "x": 0.3476797385620915,
@@ -323,12 +328,13 @@
             "y": 0.3005936069105155,
             "width": 0.27211585839385544,
             "height": 0.025668794212013735
-          }
+          },
+          "blockId": "p1-b5",
+          "start": 159,
+          "end": 198
         },
         {
-          "blockId": "p1-b7",
-          "start": 0,
-          "end": 16,
+          "text": "Cora Fictionvale",
           "category": "name",
           "box": {
             "x": 0.06535947712418301,
@@ -341,12 +347,13 @@
             "y": 0.9205243416290572,
             "width": 0.08732842631378301,
             "height": 0.015773597406633866
-          }
+          },
+          "blockId": "p1-b7",
+          "start": 0,
+          "end": 16
         },
         {
-          "blockId": "p1-b7",
-          "start": 19,
-          "end": 28,
+          "text": "FAKE-7302",
           "category": "id",
           "box": {
             "x": 0.16116339869281046,
@@ -359,12 +366,13 @@
             "y": 0.9240195919125768,
             "width": 0.06436060439412244,
             "height": 0.014934718262315294
-          }
+          },
+          "blockId": "p1-b7",
+          "start": 19,
+          "end": 28
         },
         {
-          "blockId": "p1-b7",
-          "start": 35,
-          "end": 45,
+          "text": "1978-04-12",
           "category": "dob",
           "box": {
             "x": 0.2648366013071895,
@@ -377,9 +385,13 @@
             "y": 0.9278019401181428,
             "width": 0.061696911573422886,
             "height": 0.014837429265475599
-          }
+          },
+          "blockId": "p1-b7",
+          "start": 35,
+          "end": 45
         }
-      ]
+      ],
+      "figures": []
     }
   ],
   "observations": [

@@ -34,8 +34,11 @@ custom-channel routing to the eve service, and Deployment Protection.
 
 `pnpm --filter @repo/ai bench:render` measures rendering of the 20-page fixture
 at 144 DPI with 240-pixel WebP thumbnails, using
-`fixtures/synthetic/clinical-20/clean.pdf`. Regenerate all 11 fixture pairs with
-`node packages/ai/scripts/generate-synthetic.ts`.
+`fixtures/synthetic/clinical-20/clean.pdf`. Regenerate all 16 fixture pairs with
+`node packages/ai/scripts/generate-synthetic.ts`. Fixture images live in
+`fixtures/assets`; `node --env-file=packages/ai/.env.local packages/ai/scripts/generate-assets.ts`
+generates only missing images with OpenAI's image model and records each
+prompt in `fixtures/assets/manifest.json`.
 
 `pnpm workflows` opens the Workflow inspector using pinned `@workflow/cli@5.1.0`,
 whose core 5.5.0 and local world 5.3.0 match eve 1.0.0. From the repository root:

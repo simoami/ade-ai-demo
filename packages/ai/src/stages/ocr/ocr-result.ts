@@ -8,7 +8,7 @@ export const boxSchema = z.object({
   height: z.number().positive().max(1),
 })
 
-/** Reading-order OCR block; continuation IDs refer to an earlier page. */
+/** Reading-order OCR block; continuation IDs refer to an earlier page. Figures may carry text read inside them. */
 export const blockSchema = z.object({
   id: z.string(),
   kind: z.enum([
@@ -18,6 +18,7 @@ export const blockSchema = z.object({
     'table',
     'header',
     'footer',
+    'figure',
     'other',
   ]),
   text: z.string(),

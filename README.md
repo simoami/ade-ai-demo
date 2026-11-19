@@ -55,5 +55,5 @@ Run from the repository root.
 | `pnpm check`     | Lint, format and import-order check across the repository |
 
 OCR runs independently of the review workflow. `pnpm eval:ocr` evaluates both
-variants of 11 synthetic fixtures; see [the scorecard](docs/evals.md).
+variants of 16 synthetic fixtures; see [the scorecard](docs/evals.md).
 Regenerate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.

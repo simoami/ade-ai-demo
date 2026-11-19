@@ -1,5 +1,5 @@
 /** Version recorded with every OCR experiment. */
-export const promptVersion = 'ocr-v1'
+export const promptVersion = 'ocr-v3'
 
 /** Transcription rules shared by all page calls. */
 export const ocrPrompt = `Transcribe the supplied document page as reading-order blocks.
@@ -9,7 +9,13 @@ Use one block per visual heading, paragraph, list, table, header or footer.
 Keep each whole table in one block: rows on separate lines, cells separated by
 spaces, preserving every value, unit, reference range and flag. Preserve printed
 line breaks in paragraphs and lists. Include list bullets as printed.
-Use kinds heading, paragraph, list, table, header, footer, other.
+Use kinds heading, paragraph, list, table, header, footer, figure, other.
+Emit one figure block for every photo, portrait, logo, icon, signature,
+medical image or other picture. Its box encloses the picture; its text holds
+any text printed inside the picture, or an empty string. A handwritten
+signature is a figure; printed text beside or under it is a separate block.
+Stamps, seals and boxed annotations made of printed text are kind other, not
+figure.
 Boxes are tight enclosing rectangles with a small margin, normalized to 0..1,
 with x/y at top left and width/height. Include all text in each block's box.
 IDs must be p{one-based page number}-b{one-based reading-order block number}.

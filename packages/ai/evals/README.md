@@ -7,14 +7,18 @@ calls require `OPENAI_API_KEY`. Braintrust `Eval()` runs with `noSendLogs` when
 
 Datasets load only `fixtures/synthetic/*/expected.json`, both PDF variants.
 Private documents are gitignored and never accepted as dataset arguments.
-The held-out fixtures are clinical-06, consent-02 and invoice-01; do not tune
-prompts on them. The 20-page clinical fixture is included in the full suite.
+The held-out fixtures are clinical-06, consent-02, invoice-01 and skin-01; do
+not tune prompts on them. The 20-page clinical fixture is included in the full suite.
 
 Scorers are plain functions tested by `pnpm test`. CER and WER normalize
 whitespace, retaining case and punctuation, and ignore block order: output
 blocks are reordered to the expected blocks they overlap most, and reading
 order is scored separately. Block metrics use monotonic text-edit alignment;
-missing and extra blocks contribute zero. Local reports
+missing and extra blocks contribute zero. Figure blocks are left out of text
+metrics and scored in `scorers/figures.ts`: an output figure matches a
+ground-truth figure one-to-one at box IoU 0.5 or more, and burned-in recall is
+the share of identifiers printed inside images found anywhere in the page
+output text. Local reports
 contain only identifiers, metrics, token counts, costs and timings, never OCR
 text.
 

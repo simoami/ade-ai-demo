@@ -88,13 +88,16 @@ function readingOrder(anchors: readonly number[], unmatched: number) {
 }
 
 /**
- * Scores transcription independently of block order: output blocks are reordered to the
+ * Scores non-figure transcription independently of block order: output blocks are reordered to the
  * expected blocks they overlap most, then aligned by text. Order is scored separately.
  */
 export function scoreBlocks(
-  expected: readonly Block[],
-  output: readonly Block[]
+  expectedBlocks: readonly Block[],
+  outputBlocks: readonly Block[]
 ) {
+  // Figures are scored by scoreFigures; their text is not page transcription.
+  const expected = expectedBlocks.filter((block) => block.kind !== 'figure')
+  const output = outputBlocks.filter((block) => block.kind !== 'figure')
   const anchors = anchorBlocks(expected, output)
   const actual = output
     .map((block, index) => ({ block, anchor: anchors[index] ?? 0 }))

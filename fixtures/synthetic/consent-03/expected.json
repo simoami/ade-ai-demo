@@ -1,0 +1,466 @@
+{
+  "id": "consent-03",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7313,
+  "split": "development",
+  "documentClass": "consent",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -2.5345191583037376,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nCora Fictionvale | MRN FAKE-7313 | DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.3771895424836601,
+            "height": 0.03907828282828283
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Consent and signatures",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.24144117647058824,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Cora Fictionvale authorizes evaluation and treatment at Imaginary Fern Clinic. The purpose, alternatives and right to withdraw\nwere explained. A guardian countersigns for this synthetic record.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.13188131313131313,
+            "width": 0.8395751633986928,
+            "height": 0.04229797979797978
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Patient: Cora Fictionvale    Date: 2026-02-10",
+          "box": {
+            "x": 0.07516339869281045,
+            "y": 0.26508838383838385,
+            "width": 0.2778071895424837,
+            "height": 0.024305555555555556
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Guardian: Jun Mockridge    Date: 2026-02-10",
+          "box": {
+            "x": 0.07516339869281045,
+            "y": 0.36609848484848484,
+            "width": 0.2830424836601307,
+            "height": 0.024305555555555556
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Witness: Pat Exemplar    Date: 2026-02-10",
+          "box": {
+            "x": 0.07516339869281045,
+            "y": 0.46710858585858583,
+            "width": 0.2656895424836601,
+            "height": 0.024305555555555556
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "Cora Fictionvale | FAKE-7313 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.3278823529411765,
+            "height": 0.03585858585858583
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nCora Fictionvale | MRN FAKE-7313 | DOB 1978-04-12",
+          "box": {
+            "x": 0.03237550460770089,
+            "y": 0.03294900287688579,
+            "width": 0.37905691477023296,
+            "height": 0.051928994356951697
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Consent and signatures",
+          "box": {
+            "x": 0.03562345638746778,
+            "y": 0.0942871891898639,
+            "width": 0.24304754252941752,
+            "height": 0.04041575697114591
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Cora Fictionvale authorizes evaluation and treatment at Imaginary Fern Clinic. The purpose, alternatives and right to withdraw\nwere explained. A guardian countersigns for this synthetic record.",
+          "box": {
+            "x": 0.03818857959507016,
+            "y": 0.11862774420753147,
+            "width": 0.8411744672593889,
+            "height": 0.07094571532897198
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Patient: Cora Fictionvale    Date: 2026-02-10",
+          "box": {
+            "x": 0.06213557720597651,
+            "y": 0.2703423239046667,
+            "width": 0.2789263747420788,
+            "height": 0.0337747251273568
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Guardian: Jun Mockridge    Date: 2026-02-10",
+          "box": {
+            "x": 0.06791613654705214,
+            "y": 0.3710747176971202,
+            "width": 0.28415654748962677,
+            "height": 0.03395362030132826
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Witness: Pat Exemplar    Date: 2026-02-10",
+          "box": {
+            "x": 0.07369669588812777,
+            "y": 0.4725789738132257,
+            "width": 0.2668205816410125,
+            "height": 0.03336065315164766
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "Cora Fictionvale | FAKE-7313 | DOB 1978-04-12 | Page 1/1\nSYNTHETIC - NOT A PATIENT RECORD",
+          "box": {
+            "x": 0.08396699672680108,
+            "y": 0.9352671322985338,
+            "width": 0.3296137041260021,
+            "height": 0.047027571624841724
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Imaginary Fern Clinic",
+          "category": "facility",
+          "box": {
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.14955882352941174,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.13064865216638155,
+            "y": 0.04242144119172525,
+            "width": 0.1502254103780235,
+            "height": 0.019301222817896202
+          },
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 32
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.11352941176470586,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.040039493370332246,
+            "y": 0.06153903078228429,
+            "width": 0.11423124399742585,
+            "height": 0.01807006221050861
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 49
+        },
+        {
+          "text": "FAKE-7313",
+          "category": "id",
+          "box": {
+            "x": 0.22875653594771242,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.20327671078046283,
+            "y": 0.05722243093842322,
+            "width": 0.0771939813666151,
+            "height": 0.016803223071233386
+          },
+          "blockId": "p1-b1",
+          "start": 56,
+          "end": 65
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.35427124183006536,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.32866863325327944,
+            "y": 0.05297618312927005,
+            "width": 0.07594520416565553,
+            "height": 0.01676050933587503
+          },
+          "blockId": "p1-b1",
+          "start": 72,
+          "end": 82
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.13693181818181818,
+            "width": 0.1083169934640523,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.04500716155406914,
+            "y": 0.14843778322250273,
+            "width": 0.10911424592855395,
+            "height": 0.019468687615912084
+          },
+          "blockId": "p1-b3",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "text": "Imaginary Fern Clinic",
+          "category": "facility",
+          "box": {
+            "x": 0.4297058823529412,
+            "y": 0.13693181818181818,
+            "width": 0.14522875816993464,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.4089971488350512,
+            "y": 0.13472639499773276,
+            "width": 0.14598990209806428,
+            "height": 0.02072999909531742
+          },
+          "blockId": "p1-b3",
+          "start": 56,
+          "end": 77
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.13009640522875818,
+            "y": 0.2701388888888889,
+            "width": 0.09748529411764704,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.1173038740868313,
+            "y": 0.2796725506064895,
+            "width": 0.09820282133569858,
+            "height": 0.01752181885432097
+          },
+          "blockId": "p1-b4",
+          "start": 9,
+          "end": 25
+        },
+        {
+          "text": "Jun Mockridge",
+          "category": "name",
+          "box": {
+            "x": 0.14418464052287583,
+            "y": 0.37114898989898987,
+            "width": 0.08863235294117647,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.1371588870575447,
+            "y": 0.38040494439894307,
+            "width": 0.0893585404536088,
+            "height": 0.01721930510507702
+          },
+          "blockId": "p1-b5",
+          "start": 10,
+          "end": 23
+        },
+        {
+          "text": "Pat Exemplar",
+          "category": "provider",
+          "box": {
+            "x": 0.13625816993464052,
+            "y": 0.4721590909090909,
+            "width": 0.07920588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.13502072979488883,
+            "y": 0.48190920051504865,
+            "width": 0.07994129120872606,
+            "height": 0.016897193289021784
+          },
+          "blockId": "p1-b6",
+          "start": 9,
+          "end": 21
+        },
+        {
+          "text": "Cora Fictionvale",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9368686868686869,
+            "width": 0.08665359477124183,
+            "height": 0.012626262626262626
+          },
+          "scannedBox": {
+            "x": 0.09078557868580006,
+            "y": 0.948332382023966,
+            "width": 0.08729139674284314,
+            "height": 0.015574950092729689
+          },
+          "blockId": "p1-b7",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "text": "FAKE-7313",
+          "category": "id",
+          "box": {
+            "x": 0.16116339869281046,
+            "y": 0.9368686868686869,
+            "width": 0.06366013071895425,
+            "height": 0.012626262626262626
+          },
+          "scannedBox": {
+            "x": 0.18649578109973197,
+            "y": 0.9458443767330276,
+            "width": 0.06432042579918018,
+            "height": 0.014789240701928774
+          },
+          "blockId": "p1-b7",
+          "start": 19,
+          "end": 28
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.2648366013071895,
+            "y": 0.9368686868686869,
+            "width": 0.06099346405228759,
+            "height": 0.012626262626262626
+          },
+          "scannedBox": {
+            "x": 0.2900675665199658,
+            "y": 0.9423928835762805,
+            "width": 0.061656367770466625,
+            "height": 0.01469811806649779
+          },
+          "blockId": "p1-b7",
+          "start": 35,
+          "end": 45
+        }
+      ],
+      "figures": [
+        {
+          "kind": "signature",
+          "box": {
+            "x": 0.09238987806023603,
+            "y": 0.22251652454913493,
+            "width": 0.2391238538336294,
+            "height": 0.056393144069260465
+          },
+          "scannedBox": {
+            "x": 0.07690892228252277,
+            "y": 0.22854531206508233,
+            "width": 0.2421171742640581,
+            "height": 0.06450907649170784
+          },
+          "redaction": "redact"
+        },
+        {
+          "kind": "signature",
+          "box": {
+            "x": 0.09161415720541334,
+            "y": 0.31849915305983645,
+            "width": 0.2066287179608356,
+            "height": 0.05130683764137323
+          },
+          "scannedBox": {
+            "x": 0.08162680973847708,
+            "y": 0.3255709446584735,
+            "width": 0.2093627496163173,
+            "height": 0.05831735478103317
+          },
+          "redaction": "redact"
+        },
+        {
+          "kind": "signature",
+          "box": {
+            "x": 0.09310686244090047,
+            "y": 0.4246378397046746,
+            "width": 0.19735007963114065,
+            "height": 0.04701079332964882
+          },
+          "scannedBox": {
+            "x": 0.08919211041883024,
+            "y": 0.4318718553045241,
+            "width": 0.19984733597780907,
+            "height": 0.053708452786718264
+          },
+          "redaction": "redact"
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

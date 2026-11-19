@@ -25,10 +25,10 @@ test('same seed produces identical PDF bytes and valid ground truth', async () =
       assert.ok(block.box.y + block.box.height <= 1)
     }
     for (const span of page.pii) {
+      if (!('blockId' in span)) continue
       const block = page.blocks.find((block) => block.id === span.blockId)
       assert.ok(block)
-      assert.ok(span.end <= block.text.length)
-      assert.ok(span.end > span.start)
+      assert.equal(block.text.slice(span.start, span.end), span.text)
     }
   }
   assert.ok(
@@ -48,7 +48,7 @@ test('rotation preserves center and exchanges physical axes at ninety degrees', 
 test('all checked-in synthetic variants validate and have real continuation references', async () => {
   const { syntheticDataset } = await import('#evals/fixtures/dataset')
   const rows = await syntheticDataset()
-  assert.equal(rows.length, 22)
+  assert.equal(rows.length, 32)
   for (const row of rows) {
     const priorIds = new Set<string>()
     for (const { blocks, pii } of row.expected) {
@@ -75,4 +75,33 @@ test('checked-in fixtures cover two-column pages, dense tables and stamps', asyn
     )
   )
   assert.ok(blocks.some((block) => block.kind === 'other'))
+})
+
+test('checked-in fixtures cover every figure kind and redaction decision', async () => {
+  const { syntheticDataset } = await import('#evals/fixtures/dataset')
+  const pages = (await syntheticDataset())
+    .filter((row) => row.input.variant === 'clean')
+    .flatMap((row) => row.expected)
+  const figures = pages.flatMap((page) => page.figures)
+
+  assert.deepEqual(
+    new Set(figures.map((figure) => figure.kind)),
+    new Set([
+      'patientPhoto',
+      'face',
+      'signature',
+      'logo',
+      'icon',
+      'medicalImage',
+      'clinicalPhoto',
+    ])
+  )
+  assert.deepEqual(
+    new Set(figures.map((figure) => figure.redaction)),
+    new Set(['redact', 'keep', 'review'])
+  )
+  assert.ok(pages.some((page) => page.burnedIn.length === 3))
+  assert.ok(
+    pages.every((page) => page.blocks.every((block) => block.kind !== 'figure'))
+  )
 })

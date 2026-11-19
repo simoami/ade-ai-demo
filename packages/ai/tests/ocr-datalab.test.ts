@@ -23,7 +23,7 @@ const completed = {
             id: '/page/0/Picture/1',
             block_type: 'Picture',
             bbox: [700, 100, 900, 300],
-            html: '<img src="x.png"/>',
+            html: '<img alt="Photo" src="x.png"/><div class="img-description"><p>A generated caption.</p><p class="img-desc">AVEN TESTMERE<br/>FAKE-7314</p></div>',
           },
         ],
       },
@@ -48,7 +48,7 @@ function stubFetch(responses: Response[]) {
   return calls
 }
 
-test('maps Datalab blocks and word spans to normalized OCR output, waiting out rate limits', async () => {
+test('maps Datalab blocks, word spans and picture text to normalized OCR output, waiting out rate limits', async () => {
   process.env.DATALAB_API_KEY = 'test-key'
   const calls = stubFetch([
     Response.json({ request_check_url: checkUrl }),
@@ -69,7 +69,7 @@ test('maps Datalab blocks and word spans to normalized OCR output, waiting out r
     page.blocks.map(({ kind, text }) => ({ kind, text })),
     [
       { kind: 'heading', text: 'Clinical R&D' },
-      { kind: 'other', text: '' },
+      { kind: 'figure', text: 'AVEN TESTMERE\nFAKE-7314' },
     ]
   )
   assert.deepEqual(page.blocks[0]?.box, {

@@ -14,6 +14,8 @@ const blockKinds: Record<string, Block['kind']> = {
   Table: 'table',
   PageHeader: 'header',
   PageFooter: 'footer',
+  Picture: 'figure',
+  Figure: 'figure',
 }
 
 const rectSchema = z.tuple([z.number(), z.number(), z.number(), z.number()])
@@ -46,6 +48,9 @@ const resultSchema = z.object({
 })
 
 const submitSchema = z.object({ request_check_url: z.url() })
+
+// Datalab transcribes text inside a picture here, apart from its generated caption.
+const pictureText = /<p class="img-desc">([\s\S]*?)<\/p>/
 
 const wordSpan =
   /<span data-bbox="([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+)" data-confidence="([\d.]+)">([^<]*)<\/span>/g
@@ -106,11 +111,21 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
         confidence: Number(match[5]),
       }))
 
+      const kind = blockKinds[block.block_type] ?? 'other'
+      const text =
+        kind === 'figure'
+          ? decodeEntities(
+              (block.html.match(pictureText)?.[1] ?? '')
+                .replace(/<br\s*\/?>/g, '\n')
+                .replace(/<[^>]+>/g, '')
+            ).trim()
+          : blockWords.map((word) => word.text).join(' ')
+
       words.push(...blockWords)
       blocks.push({
         id: block.id,
-        kind: blockKinds[block.block_type] ?? 'other',
-        text: blockWords.map((word) => word.text).join(' '),
+        kind,
+        text,
         box: normalize(block.bbox),
         continues: null,
       })

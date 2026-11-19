@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Box } from '#stages/ocr/ocr-result'
 import { expectedSchema } from './expected.ts'
 
 /** Loads only the checked-in synthetic root; no caller-supplied paths are accepted. */
@@ -30,18 +31,23 @@ export async function syntheticDataset() {
           variant,
           pdf: join(root, entry.name, `${variant}.pdf`),
         },
-        expected: fixture.pages.map((page) => ({
-          blocks: variant === 'clean' ? page.blocks : page.scannedBlocks,
-          pii: page.pii.map((span) => {
-            const block = page.blocks.find(({ id }) => id === span.blockId)
-            if (!block) throw new Error('PII span references a missing block')
+        expected: fixture.pages.map((page) => {
+          const box = (item: { box: Box; scannedBox: Box }) =>
+            variant === 'clean' ? item.box : item.scannedBox
 
-            return {
-              text: block.text.slice(span.start, span.end),
-              box: variant === 'clean' ? span.box : span.scannedBox,
-            }
-          }),
-        })),
+          return {
+            blocks: variant === 'clean' ? page.blocks : page.scannedBlocks,
+            pii: page.pii.map((span) => ({ text: span.text, box: box(span) })),
+            figures: page.figures.map((figure) => ({
+              kind: figure.kind,
+              redaction: figure.redaction,
+              box: box(figure),
+            })),
+            burnedIn: page.pii.flatMap((span) =>
+              'figure' in span ? [span.text] : []
+            ),
+          }
+        }),
         metadata: {
           split: fixture.split,
           datasetVersion: fixture.datasetVersion,

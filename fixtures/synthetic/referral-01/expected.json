@@ -1,0 +1,698 @@
+{
+  "id": "referral-01",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7312,
+  "split": "development",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": 1.73283674987033,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7312 | DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.3781748366013072,
+            "height": 0.03907828282828283
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Specialist referral",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.20483986928104578,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Imaginary Fern Clinic\nReferral letter",
+          "box": {
+            "x": 0.14705882352941177,
+            "y": 0.14198232323232324,
+            "width": 0.19586601307189544,
+            "height": 0.04551767676767676
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Dr. Zavi Fableton\nAttending physician",
+          "box": {
+            "x": 0.761437908496732,
+            "y": 0.2505681818181818,
+            "width": 0.12602614379084975,
+            "height": 0.03585858585858587
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Dear colleague, I am referring Bex Samplewick (DOB\n1978-04-12) for evaluation of intermittent palpitations\nfirst noted on 2026-02-10. Episodes last under a minute\nand resolve at rest. There is no syncope or chest pain.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.29602272727272727,
+            "width": 0.41428104575163394,
+            "height": 0.07512626262626262
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "A resting ECG showed sinus rhythm at 72 beats/min.\nThyroid function was normal. Please assess for\nambulatory rhythm monitoring and advise on further\nmanagement.",
+          "box": {
+            "x": 0.5163398692810458,
+            "y": 0.29602272727272727,
+            "width": 0.39524509803921565,
+            "height": 0.07512626262626262
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7312 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.4797042483660131,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 2",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7312 | DOB 1978-04-12",
+          "box": {
+            "x": 0.07587666084162659,
+            "y": 0.020209042722035886,
+            "width": 0.3795311433826847,
+            "height": 0.04789706256443499
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "heading",
+          "text": "Specialist referral",
+          "box": {
+            "x": 0.07392495446057068,
+            "y": 0.07693813879980538,
+            "width": 0.2060061571192715,
+            "height": 0.03696865188219295
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "paragraph",
+          "text": "Imaginary Fern Clinic\nReferral letter",
+          "box": {
+            "x": 0.15944927197213782,
+            "y": 0.13389902060460668,
+            "width": 0.19755768324849993,
+            "height": 0.05007357903400017
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "paragraph",
+          "text": "Dr. Zavi Fableton\nAttending physician",
+          "box": {
+            "x": 0.7696761015994744,
+            "y": 0.2567911568450676,
+            "width": 0.12737176345718804,
+            "height": 0.038786986781056076
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "paragraph",
+          "text": "Dear colleague, I am referring Bex Samplewick (DOB\n1978-04-12) for evaluation of intermittent palpitations\nfirst noted on 2026-02-10. Episodes last under a minute\nand resolve at rest. There is no syncope or chest pain.",
+          "box": {
+            "x": 0.06406760197903494,
+            "y": 0.2858072244699025,
+            "width": 0.4170315046716133,
+            "height": 0.08477223582746007
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "A resting ECG showed sinus rhythm at 72 beats/min.\nThyroid function was normal. Please assess for\nambulatory rhythm monitoring and advise on further\nmanagement.",
+          "box": {
+            "x": 0.5213747168636262,
+            "y": 0.2964978140830512,
+            "width": 0.3980042622130222,
+            "height": 0.08432743093819878
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7312 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.04084970758768841,
+            "y": 0.9213119259150827,
+            "width": 0.4807621326649068,
+            "height": 0.043833007956636916
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 2",
+          "box": {
+            "x": 0.8521620192893942,
+            "y": 0.9402676776228971,
+            "width": 0.07191438009525764,
+            "height": 0.022801132312899153
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Imaginary Fern Clinic",
+          "category": "facility",
+          "box": {
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.14955882352941174,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.17468761511862047,
+            "y": 0.02754903329440539,
+            "width": 0.1500462951178208,
+            "height": 0.01769272701332647
+          },
+          "blockId": "p1-b1",
+          "start": 11,
+          "end": 32
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.11451470588235294,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.08260726077820424,
+            "y": 0.04017593247019402,
+            "width": 0.11501820335735713,
+            "height": 0.01687386602963653
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "FAKE-7312",
+          "category": "id",
+          "box": {
+            "x": 0.22974183006535945,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.2469144406768457,
+            "y": 0.04401698495684403,
+            "width": 0.0769767843577433,
+            "height": 0.01598456169653123
+          },
+          "blockId": "p1-b1",
+          "start": 54,
+          "end": 63
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.3552565359477124,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.37237174792634536,
+            "y": 0.0469498336751798,
+            "width": 0.07572735599029068,
+            "height": 0.015955353478481094
+          },
+          "blockId": "p1-b1",
+          "start": 70,
+          "end": 80
+        },
+        {
+          "text": "Imaginary Fern Clinic",
+          "category": "facility",
+          "box": {
+            "x": 0.15359477124183007,
+            "y": 0.1470328282828283,
+            "width": 0.1827941176470588,
+            "height": 0.017361111111111112
+          },
+          "scannedBox": {
+            "x": 0.1668864390289458,
+            "y": 0.13909993873741672,
+            "width": 0.1833899162551143,
+            "height": 0.021624444127399056
+          },
+          "blockId": "p1-b3",
+          "start": 0,
+          "end": 21
+        },
+        {
+          "text": "Dr. Zavi Fableton",
+          "category": "provider",
+          "box": {
+            "x": 0.7679738562091504,
+            "y": 0.25561868686868683,
+            "width": 0.09763398692810459,
+            "height": 0.012626262626262626
+          },
+          "scannedBox": {
+            "x": 0.7769205685325833,
+            "y": 0.2619920749778775,
+            "width": 0.09808344119765178,
+            "height": 0.014901860383572718
+          },
+          "blockId": "p1-b4",
+          "start": 0,
+          "end": 17
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.2855392156862745,
+            "y": 0.3010732323232323,
+            "width": 0.1187091503267974,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.2928042521908141,
+            "y": 0.29615298885404023,
+            "width": 0.11927249251719124,
+            "height": 0.01854943689799854
+          },
+          "blockId": "p1-b5",
+          "start": 31,
+          "end": 45
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.31748737373737373,
+            "width": 0.08356209150326797,
+            "height": 0.015782828282828284
+          },
+          "scannedBox": {
+            "x": 0.07208286940694053,
+            "y": 0.3074147777308771,
+            "width": 0.08414150665587855,
+            "height": 0.017728170531645604
+          },
+          "blockId": "p1-b5",
+          "start": 51,
+          "end": 61
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.08309640522875818,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.04758030752426606,
+            "y": 0.9379974886376081,
+            "width": 0.08349074476203383,
+            "height": 0.01298460582859895
+          },
+          "blockId": "p1-b7",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "FAKE-7312",
+          "category": "id",
+          "box": {
+            "x": 0.18701307189542482,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.16917826937207886,
+            "y": 0.9408401164157444,
+            "width": 0.05861323771231214,
+            "height": 0.012403037753643598
+          },
+          "blockId": "p1-b7",
+          "start": 54,
+          "end": 63
+        }
+      ],
+      "figures": [
+        {
+          "kind": "logo",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.13693181818181818,
+            "width": 0.0718954248366013,
+            "height": 0.05555555555555555
+          },
+          "scannedBox": {
+            "x": 0.07759211653321241,
+            "y": 0.1269417913210652,
+            "width": 0.07403659930235335,
+            "height": 0.057210099460909436
+          },
+          "redaction": "keep"
+        },
+        {
+          "kind": "face",
+          "box": {
+            "x": 0.7843137254901961,
+            "y": 0.13693181818181818,
+            "width": 0.14705882352941177,
+            "height": 0.11363636363636363
+          },
+          "scannedBox": {
+            "x": 0.7939447095265393,
+            "y": 0.14374128928458474,
+            "width": 0.15143849857299574,
+            "height": 0.11702065798822386
+          },
+          "redaction": "keep"
+        }
+      ]
+    },
+    {
+      "page": 1,
+      "rotation": 2.6379940612241626,
+      "blocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7312 | DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.3781748366013072,
+            "height": 0.03907828282828283
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Specialist referral",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.0870580808080808,
+            "width": 0.20483986928104578,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "paragraph",
+          "text": "Community wellness program: free blood pressure checks are offered\nevery Thursday in the main lobby. Volunteers can explain home\nmonitoring and healthy eating resources.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.37373737373737376,
+            "width": 0.5144444444444445,
+            "height": 0.058712121212121215
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b4",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7312 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.4797042483660131,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "footer",
+          "text": "Page 2 of 2",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p2-b1",
+          "kind": "header",
+          "text": "DEMO EHR | Imaginary Fern Clinic\nBex Samplewick | MRN FAKE-7312 | DOB 1978-04-12",
+          "box": {
+            "x": 0.08493969905227983,
+            "y": 0.01511029970458927,
+            "width": 0.38010166556923375,
+            "height": 0.05248669431381914
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b2",
+          "kind": "heading",
+          "text": "Specialist referral",
+          "box": {
+            "x": 0.08196910433184912,
+            "y": 0.07180520512225386,
+            "width": 0.20654051982366528,
+            "height": 0.03944799896058421
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b3",
+          "kind": "paragraph",
+          "text": "Community wellness program: free blood pressure checks are offered\nevery Thursday in the main lobby. Volunteers can explain home\nmonitoring and healthy eating resources.",
+          "box": {
+            "x": 0.06331452153684075,
+            "y": 0.3581806951129265,
+            "width": 0.5173963009380431,
+            "height": 0.07694616764557954
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b4",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7312 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.03162692443675286,
+            "y": 0.9156700876514742,
+            "width": 0.48113993832604607,
+            "height": 0.0496650275648467
+          },
+          "continues": null
+        },
+        {
+          "id": "p2-b5",
+          "kind": "footer",
+          "text": "Page 2 of 2",
+          "box": {
+            "x": 0.842685259955521,
+            "y": 0.9445216897631417,
+            "width": 0.07230359630904959,
+            "height": 0.02365594163829665
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Imaginary Fern Clinic",
+          "category": "facility",
+          "box": {
+            "x": 0.15690359477124183,
+            "y": 0.03535353535353535,
+            "width": 0.14955882352941174,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.18409654331956504,
+            "y": 0.023643679410917384,
+            "width": 0.1502463868636169,
+            "height": 0.019508566209663347
+          },
+          "blockId": "p2-b1",
+          "start": 11,
+          "end": 32
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.05012626262626263,
+            "width": 0.11451470588235294,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.09176954013670707,
+            "y": 0.03514497633435154,
+            "width": 0.11523940655498865,
+            "height": 0.018262218839727562
+          },
+          "blockId": "p2-b1",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "FAKE-7312",
+          "category": "id",
+          "box": {
+            "x": 0.22974183006535945,
+            "y": 0.05012626262626263,
+            "width": 0.07645588235294117,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.25597769199984066,
+            "y": 0.04099125031720663,
+            "width": 0.07722091514133778,
+            "height": 0.01690865316897877
+          },
+          "blockId": "p2-b1",
+          "start": 54,
+          "end": 63
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.3552565359477124,
+            "y": 0.05012626262626263,
+            "width": 0.07520588235294116,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.38135938605529285,
+            "y": 0.045455192743729056,
+            "width": 0.07597223980510892,
+            "height": 0.016864196800349174
+          },
+          "blockId": "p2-b1",
+          "start": 70,
+          "end": 80
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.08309640522875818,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.0384567655211801,
+            "y": 0.9324254149133628,
+            "width": 0.0836663885250169,
+            "height": 0.013991603449235224
+          },
+          "blockId": "p2-b4",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "FAKE-7312",
+          "category": "id",
+          "box": {
+            "x": 0.18701307189542482,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.15998144020472538,
+            "y": 0.9367520365567846,
+            "width": 0.05880387516365981,
+            "height": 0.013106427753852956
+          },
+          "blockId": "p2-b4",
+          "start": 54,
+          "end": 63
+        }
+      ],
+      "figures": [
+        {
+          "kind": "face",
+          "box": {
+            "x": 0.6862745098039216,
+            "y": 0.3661616161616162,
+            "width": 0.17973856209150327,
+            "height": 0.1388888888888889
+          },
+          "scannedBox": {
+            "x": 0.6857762892096998,
+            "y": 0.372928319467548,
+            "width": 0.18782062982174896,
+            "height": 0.1451341230440788
+          },
+          "redaction": "review"
+        }
+      ]
+    }
+  ],
+  "observations": []
+}

@@ -2,41 +2,51 @@
 
 ## OCR scorecard
 
-Measured 2026-11-19 on `synthetic-v2` at 144 DPI with prompt `ocr-v1` for the
-LLM arms. Git SHA `1c8975190bc584915f0737442e5ccbadd9de5fc2` plus the
-uncommitted scorer and Datalab changes. Every arm passed all 22 cases and the
-CER and WER ceilings.
+Measured 2026-11-19 on `synthetic-v3` (96 pages: 16 fixtures, clean and
+scanned) at 144 DPI. Git SHA `b09d61f` plus the uncommitted `synthetic-v3`
+changes. Both arms passed all 32 cases and the CER and WER ceilings.
 
-| Arm                | CER    | WER    | Block kind | Box IoU | Reading order | PII word-box coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                      |
-| ------------------ | ------ | ------ | ---------- | ------- | ------------- | --------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `gpt-6.1-sol`      | 0.028% | 0.126% | 99.85%     | 0.713   | 1.000         | no words                          | 8.82 s       | $0.01315  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v1-144-1795055423654)           |
-| `gpt-6-luna`       | 0.571% | 1.142% | 98.37%     | 0.653   | 0.986         | no words                          | 10.41 s      | $0.00090  | [luna](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6-luna-ocr-v1-144-1795055650760)           |
-| `datalab-balanced` | 0.060% | 0.563% | 91.94%     | 0.748   | 0.996         | 0.822 / 0.964                     | 8.35 s       | $0.00386  | [balanced](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v1-144-1795055423654) |
-| `datalab-accurate` | 0.055% | 0.515% | 92.12%     | 0.749   | 0.996         | 0.822 / 0.964                     | 8.68 s       | $0.00771  | [accurate](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-accurate-ocr-v1-144-1795055623276) |
+| Arm                     | CER    | WER    | Block kind | Box IoU | Reading order | PII word boxes coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                     |
+| ----------------------- | ------ | ------ | ---------- | ------- | ------------- | ----------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `gpt-6.1-sol`, `ocr-v3` | 0.012% | 0.082% | 99.74%     | 0.711   | 1.000         | no words                            | 9.30 s       | $0.01320  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v3-144-1795068667095)          |
+| `datalab-balanced`      | 0.284% | 0.853% | 92.03%     | 0.741   | 0.997         | 0.823 / 0.964                       | 8.49 s       | $0.00600  | [datalab](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v2-144-1795068297742) |
 
-| Arm                | Clean CER / WER | Scanned CER / WER | Held-out CER / WER |
-| ------------------ | --------------- | ----------------- | ------------------ |
-| `gpt-6.1-sol`      | 0.017% / 0.031% | 0.040% / 0.222%   | 0.012% / 0.086%    |
-| `gpt-6-luna`       | 0.674% / 1.436% | 0.469% / 0.847%   | 0.037% / 0.259%    |
-| `datalab-balanced` | 0.008% / 0.056% | 0.112% / 1.070%   | 0.012% / 0.086%    |
-| `datalab-accurate` | 0.008% / 0.056% | 0.102% / 0.974%   | 0.012% / 0.086%    |
+| Arm                     | Clean CER / WER | Scanned CER / WER | Held-out CER / WER |
+| ----------------------- | --------------- | ----------------- | ------------------ |
+| `gpt-6.1-sol`, `ocr-v3` | 0.000% / 0.000% | 0.024% / 0.164%   | 0.031% / 0.216%    |
+| `datalab-balanced`      | 0.243% / 0.436% | 0.326% / 1.270%   | 0.144% / 0.510%    |
 
-Means are page-weighted over 84 pages; Braintrust averages pages within each
-document before averaging cases. LLM cost is a token estimate at the rates in
-`packages/ai/evals/prices.ts`; Datalab cost is the `final_cost_cents` the API
-reports, with word boxes included.
+Figures found (output figure at box IoU 0.5 or more), summed over clean and
+scanned pages:
+
+| Figure kind     | Redaction    | `gpt-6.1-sol` | `datalab-balanced` |
+| --------------- | ------------ | ------------- | ------------------ |
+| Patient photo   | redact       | 2/2           | 2/2                |
+| Face            | keep, review | 4/4           | 4/4                |
+| Signature       | redact       | 5/6           | 0/6                |
+| Logo            | keep         | 2/2           | 2/2                |
+| Icon            | keep         | 12/12         | 0/12               |
+| Medical image   | keep         | 2/2           | 2/2                |
+| Clinical photo  | keep         | 2/2           | 2/2                |
+| **Recall**      |              | **29/30**     | **12/30**          |
+| **Precision**   |              | **29/30**     | **12/12**          |
+| Burned-in label |              | 6/6 strings   | 6/6 strings        |
 
 Findings:
 
-- All four arms transcribe the synthetic set within the ceilings, so text
-  accuracy no longer separates them; cost, geometry and word boxes do.
-- Datalab returns typed layout blocks, word boxes and per-word confidence in
-  one call, at 29% of `gpt-6.1-sol`'s cost in balanced mode. Its block boxes
-  are tighter (IoU 0.748 against 0.713).
-- Datalab's lower block-kind accuracy is a labelling difference: it types
-  review stamps as paragraphs, where ground truth uses `other`.
-- Accurate mode costs twice as much as balanced mode for no measurable gain
-  on this set.
+- Both arms read the name, MRN and date of birth burned into the X-ray pixels.
+  Datalab returns that text in the picture's `img-desc` paragraph without word
+  boxes, so a burned-in identifier can be found but not located below the
+  picture box.
+- Datalab detects photos, logos and medical images, but transcribes signatures
+  as plain text blocks and outline icons as emoji. Signature text is the
+  signer's name, so text PII detection still sees it, but the signature region
+  is not a figure. That extra text and the emoji explain its higher CER on
+  `consent-03` (8.6%) and `intake-01` (1.6%).
+- `gpt-6.1-sol` with `ocr-v3` finds every figure kind; its one miss is a
+  scanned signature whose box overlaps the ground truth below IoU 0.5.
+- Datalab's lower block-kind accuracy is the same labelling difference as on
+  `synthetic-v2`: review stamps become paragraphs.
 - PII word-box coverage of 0.82 reflects the ground-truth box convention:
   span boxes cover the full 1.25 em line height and inter-word spaces, while
   word boxes hug the glyphs.
@@ -45,19 +55,22 @@ Findings:
 
 ## Metrics and thresholds
 
-| Stage | Metric                    | Gate or score | Threshold                | Why                                                                                     |
-| ----- | ------------------------- | ------------- | ------------------------ | --------------------------------------------------------------------------------------- |
-| OCR   | Runtime / schema validity | Gate          | All cases succeed        | Invalid output cannot be consumed safely.                                               |
-| OCR   | CER, clean                | Gate          | Page mean <= 1%          | Digital text should transcribe almost exactly; 1% is about one wrong value per page.    |
-| OCR   | CER, scanned              | Gate          | Page mean <= 3%          | Typical scanned-document OCR tolerance; above it, identifiers and values become unsafe. |
-| OCR   | WER, clean                | Gate          | Page mean <= 3%          | One character error spoils a whole word, so WER runs about 3x CER.                      |
-| OCR   | WER, scanned              | Gate          | Page mean <= 9%          | The same 3x ratio applied to the scanned CER ceiling.                                   |
-| OCR   | Block-kind accuracy       | Score         | Target >= 95%, not gated | Kinds for stamps and captions are partly judgment calls; a miss does not lose text.     |
-| OCR   | Box IoU                   | Score         | None                     | Block geometry quality; LLM boxes are approximate, layout-model boxes are tighter.      |
-| OCR   | Reading order             | Score         | None                     | Share of matched block pairs in ground-truth order; multi-column order is ambiguous.    |
-| OCR   | PII word-box coverage     | Score         | None                     | Share of each ground-truth PII box covered by the provider's matched word boxes.        |
-| OCR   | PII word-box precision    | Score         | None                     | 1 minus over-coverage: share of matched word-box area inside the PII box.               |
-| OCR   | Cost per page             | Metric        | None                     | Token estimate from `packages/ai/evals/prices.ts`, or the cost a vendor API reports.    |
+| Stage | Metric                    | Gate or score | Threshold                | Why                                                                                      |
+| ----- | ------------------------- | ------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| OCR   | Runtime / schema validity | Gate          | All cases succeed        | Invalid output cannot be consumed safely.                                                |
+| OCR   | CER, clean                | Gate          | Page mean <= 1%          | Digital text should transcribe almost exactly; 1% is about one wrong value per page.     |
+| OCR   | CER, scanned              | Gate          | Page mean <= 3%          | Typical scanned-document OCR tolerance; above it, identifiers and values become unsafe.  |
+| OCR   | WER, clean                | Gate          | Page mean <= 3%          | One character error spoils a whole word, so WER runs about 3x CER.                       |
+| OCR   | WER, scanned              | Gate          | Page mean <= 9%          | The same 3x ratio applied to the scanned CER ceiling.                                    |
+| OCR   | Block-kind accuracy       | Score         | Target >= 95%, not gated | Kinds for stamps and captions are partly judgment calls; a miss does not lose text.      |
+| OCR   | Box IoU                   | Score         | None                     | Block geometry quality; LLM boxes are approximate, layout-model boxes are tighter.       |
+| OCR   | Reading order             | Score         | None                     | Share of matched block pairs in ground-truth order; multi-column order is ambiguous.     |
+| OCR   | Figure recall             | Score         | None                     | Share of ground-truth pictures found at box IoU >= 0.5; unfound pictures go unredacted.  |
+| OCR   | Figure precision          | Score         | None                     | Share of output figure blocks that match a picture; extras hide text from transcription. |
+| OCR   | Burned-in recall          | Score         | None                     | Share of identifiers printed inside images found anywhere in the page output text.       |
+| OCR   | PII word-box coverage     | Score         | None                     | Share of each ground-truth PII box covered by the provider's matched word boxes.         |
+| OCR   | PII word-box precision    | Score         | None                     | 1 minus over-coverage: share of matched word-box area inside the PII box.                |
+| OCR   | Cost per page             | Metric        | None                     | Token estimate from `packages/ai/evals/prices.ts`, or the cost a vendor API reports.     |
 
 Ceilings are fixed tolerances, not observed envelopes, so normal run-to-run
 variation does not fail the suite. They apply to the page mean of each variant
@@ -100,6 +113,9 @@ truth retains links for later document-level stages.
 | 5   | `gpt-6-luna`, order-independent scorer       | 84    | 0.571%    | 1.142%    | 0.653    | 261.5 s   | $0.0759        |
 | 6   | `datalab-balanced` with word boxes           | 84    | 0.060%    | 0.563%    | 0.748    | 199.3 s   | $0.3240        |
 | 7   | `datalab-accurate` with word boxes           | 84    | 0.055%    | 0.515%    | 0.749    | 231.7 s   | $0.6480        |
+| 8   | `gpt-6.1-sol`, `ocr-v2`, `synthetic-v3`      | 96    | 0.590%    | 0.579%    | 0.693    | 321.1 s   | $1.2437        |
+| 9   | `datalab-balanced`, `synthetic-v3`           | 96    | 0.284%    | 0.853%    | 0.741    | 252.0 s   | $0.5760        |
+| 10  | `gpt-6.1-sol`, `ocr-v3`, `synthetic-v3`      | 96    | 0.012%    | 0.082%    | 0.711    | 287.5 s   | $1.2668        |
 
 Experiment 1 was replaced because its monospaced, single-column, near-pristine
 pages saturated every metric, so no prompt change could register. It ran
@@ -126,6 +142,24 @@ The first Datalab runs failed 14 of 22 cases on HTTP 429 rate limits, which
 count status polls. The adapter now waits out `Retry-After` within its
 per-page timeout.
 
+Experiments 4 to 7 compared four arms on `synthetic-v2`, where all four passed
+the ceilings: `gpt-6.1-sol` (0.028% CER, $0.0132/page), `gpt-6-luna` (0.571%,
+$0.0009/page), and Datalab balanced and accurate (0.060% and 0.055%, $0.0039
+and $0.0077/page). Accurate mode cost twice as much for no measurable gain, so
+it was not rerun on `synthetic-v3`. Experiments:
+[4](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v1-144-1795055423654),
+[5](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6-luna-ocr-v1-144-1795055650760),
+[6](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v1-144-1795055423654) and
+[7](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-accurate-ocr-v1-144-1795055623276).
+
+`synthetic-v3` added pictures and signatures, and prompt `ocr-v2` added figure
+blocks. In experiment 8, `gpt-6.1-sol` typed the boxed review stamp as a figure
+on 15 pages, which removed its text from transcription (3.7-3.8% CER on those
+pages) and gave 16 unmatched figures. Prompt `ocr-v3` states that text stamps
+are `other` blocks; experiment 10 has no unmatched figures. The Datalab arm
+ignores the prompt, so experiment 9 carries the `ocr-v2` label without effect.
+Experiment 8: [sol ocr-v2](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v2-144-1795068297742).
+
 ## Scope and reproduction
 
 Generate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.
@@ -139,12 +173,27 @@ EVAL_FIXTURE=clinical-01 EVAL_VARIANT=scanned EVAL_DPI=216 pnpm eval:ocr
 ```
 
 There are six short clinical fixtures (2, 3, 1, 4, 5 and 2 pages), two consent
-fixtures (1 and 2 pages), a fax cover and invoice (1 page each), and the
-20-page clinical benchmark. Every fixture has clean and image-only scanned PDFs
-and schema-validated ground truth. Clinical-06, consent-02 and invoice-01 are
-held out from tuning. Private files are excluded by the fixed synthetic loader.
+fixtures (1 and 2 pages), a fax cover and invoice (1 page each), the 20-page
+clinical benchmark, and five picture fixtures: an intake form with a patient
+photo and contact icons, a two-page referral with a logo, a captioned
+clinician portrait, a two-column letter and an unlabeled face, a consent form
+with patient, guardian and witness signatures, a radiology report whose X-ray
+carries a burned-in name, MRN and date of birth, and a dermatology note with a
+skin photo. Every fixture has clean and image-only scanned PDFs and
+schema-validated ground truth. Clinical-06, consent-02, invoice-01 and skin-01
+are held out from tuning. Private files are excluded by the fixed synthetic
+loader.
 
-`synthetic-v2` pages mix Helvetica, Times and Courier at 7 to 14 pt. Clinical
+Ground truth lists each picture with its kind, box and expected redaction
+(`redact`, `keep` or `review`, per ADR 0002). Identifiers burned into image
+pixels are PII spans that point at their figure instead of a text block.
+Portraits, the X-ray and the skin photo were generated once with
+`gpt-image-2.6-flare` and are listed with their prompts in
+`fixtures/assets/manifest.json`; no image depicts a real person. Logos and
+icons are vector paths, and signatures use the OFL-licensed Dancing Script
+font.
+
+`synthetic-v3` pages mix Helvetica, Times and Courier at 7 to 14 pt. Clinical
 pages use one of three seeded layouts: a single column with a ruled table and
 a review stamp, two columns with an unruled lab table, or a dense unruled
 ten-row panel at 7.5 pt. Result columns are right-aligned. Headers and footers

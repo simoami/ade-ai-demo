@@ -5,7 +5,9 @@ import { join } from 'node:path'
 import { logger } from '@repo/logger'
 import { Eval } from 'braintrust'
 import { syntheticDataset } from '#evals/fixtures/dataset'
+import type { ExpectedFigure } from '#evals/fixtures/expected'
 import { ocrPageCost } from '#evals/prices'
+import { burnedInRecall, scoreFigures } from '#evals/scorers/figures'
 import { exceededOcrCeilings, scoreBlocks } from '#evals/scorers/ocr'
 import {
   type PiiSpan,
@@ -15,7 +17,7 @@ import {
 import { models } from '#models'
 import { datalabOcr } from '#stages/ocr/datalab-ocr'
 import { defaultOcrModel, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
-import type { Block, OcrPage } from '#stages/ocr/ocr-result'
+import type { Block, Box, OcrPage } from '#stages/ocr/ocr-result'
 import { promptVersion } from '#stages/ocr/prompt'
 import { renderPdf } from '#stages/render/render-pages'
 
@@ -66,17 +68,28 @@ const metadata = {
   dpi,
 }
 
-/** Page scores plus PII word-box metrics, which are null for providers without words. */
+/** Page scores plus figure counts and PII word-box metrics, which are null for providers without words. */
 function scorePage(
-  expected: { blocks: Block[]; pii: PiiSpan[] },
+  expected: {
+    blocks: Block[]
+    pii: PiiSpan[]
+    figures: { kind: ExpectedFigure['kind']; box: Box }[]
+    burnedIn: string[]
+  },
   page: OcrPage
 ) {
   return {
     ...scoreBlocks(expected.blocks, page.blocks),
+    figures: scoreFigures(expected.figures, page.blocks),
+    burnedInRecall: burnedInRecall(expected.burnedIn, page.blocks),
     piiWordBoxes: page.words
       ? scorePiiWordBoxes(expected.pii, page.words)
       : null,
   }
+}
+
+function ratio(numerator: number, denominator: number) {
+  return denominator ? numerator / denominator : null
 }
 
 function mean(values: readonly number[]) {
@@ -136,6 +149,11 @@ const result = await Eval(
               scores.flatMap((page) => page.piiWordBoxes ?? [])
             )
           : { coverage: null, overCoverage: null }
+        const total = (key: 'expected' | 'output' | 'matched') =>
+          scores.reduce((sum, page) => sum + page.figures[key], 0)
+        const burnedIn = scores.flatMap((page) =>
+          page.burnedInRecall === null ? [] : [page.burnedInRecall]
+        )
 
         return [
           {
@@ -146,6 +164,18 @@ const result = await Eval(
           { name: 'blockKindAccuracy', score: pageMean('blockKindAccuracy') },
           { name: 'boxIoU', score: pageMean('boxIoU') },
           { name: 'readingOrder', score: pageMean('readingOrder') },
+          {
+            name: 'figureRecall',
+            score: ratio(total('matched'), total('expected')),
+          },
+          {
+            name: 'figurePrecision',
+            score: ratio(total('matched'), total('output')),
+          },
+          {
+            name: 'burnedInRecall',
+            score: burnedIn.length ? mean(burnedIn) : null,
+          },
           { name: 'piiWordBoxCoverage', score: wordBoxes.coverage },
           {
             name: 'piiWordBoxPrecision',
