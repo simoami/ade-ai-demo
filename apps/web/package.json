@@ -18,24 +18,27 @@
     "test": "node --experimental-strip-types --test lib/server/*.test.ts"
   },
   "dependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/api-logs": "catalog:",
+    "@repo/ai": "workspace:*",
+    "@repo/logger": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@vercel/oidc": "catalog:",
+    "@vercel/otel": "catalog:",
+    "eve": "catalog:",
     "next": "16.4.5",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "eve": "catalog:",
-    "@repo/ai": "workspace:*",
-    "zod": "^4.6.7",
-    "@vercel/oidc": "catalog:",
-    "@repo/logger": "workspace:*"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "@tailwindcss/postcss": "catalog:",
     "tailwindcss": "catalog:",
-    "@biomejs/biome": "catalog:"
+    "typescript": "catalog:"
   },
   "imports": {
     "#lib/*": "./lib/*.ts"
