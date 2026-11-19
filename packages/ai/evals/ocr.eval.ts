@@ -19,6 +19,7 @@ import { datalabOcr } from '#stages/ocr/datalab-ocr'
 import { defaultOcrModel, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
 import type { Block, Box, OcrPage } from '#stages/ocr/ocr-result'
 import { promptVersion } from '#stages/ocr/prompt'
+import { reductoOcr } from '#stages/ocr/reducto-ocr'
 import { renderPdf } from '#stages/render/render-pages'
 
 const log = logger.getSubLogger({ name: 'ocr-eval' })
@@ -33,6 +34,8 @@ const providers = {
   ),
   'datalab-balanced': datalabOcr('balanced'),
   'datalab-accurate': datalabOcr('accurate'),
+  'reducto-r-1': reductoOcr('r-1'),
+  'reducto-r-1-mini': reductoOcr('r-1-mini'),
 }
 
 const providerName = process.env.EVAL_OCR_PROVIDER ?? defaultOcrModel.modelId

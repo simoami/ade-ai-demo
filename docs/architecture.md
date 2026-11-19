@@ -27,7 +27,9 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 
 | Service                          | Use                                                                                                      |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| OpenAI (direct, AI SDK provider) | OCR, classification, demographics, PII detection, extraction, agents, embeddings                         |
+| OpenAI (direct, AI SDK provider) | Picture pass, classification, demographics, PII detection, extraction, agents, embeddings                |
+| OCR vendor (Datalab or Reducto)  | Page text, layout blocks and word boxes; the OCR evaluation chooses the provider                         |
+| Tesseract (WASM, in-process)     | Character boxes inside regions that hold identifiers, for exact redaction geometry                       |
 | AWS Comprehend Medical           | Clinical entity enrichment of redacted note text, behind an `Enricher` interface                         |
 | Vercel Workflow (via eve)        | Durable pipeline run and review loop                                                                     |
 | Vercel Blob (private)            | Originals, page renders, OCR artifacts                                                                   |
@@ -64,11 +66,11 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 ```
 
 1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: PDF, PNG or JPEG, 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
-2. **Render.** pdfium (WASM) renders pages; Sharp produces thumbnails. Runs in a normal step.
-3. **OCR.** The vision model returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
+2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. Sharp produces thumbnails. Runs in a normal step.
+3. **OCR.** An `OcrProvider` returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page), figure blocks for pictures and signatures, and word boxes where the provider has them. Providers are compared in [`docs/evals.md`](evals.md). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
 5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
-6. **PII detection.** The model returns identifier spans per block ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). Tesseract runs on the block crop to find exact word boxes; if it cannot, the redaction falls back to the whole block and needs review.
+6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review.
 7. **Redact.** High-confidence redactions are burned into page images and thumbnails and removed from `ocr.redacted.json`. Low-confidence candidates are masked in text only, so embeddings and enrichment never see them, while the reviewer can still read the page.
 8. **Observations.** Structured extraction over tables, lists and narrative, then within-document deduplication that is date-aware and prefers table over list over narrative. The review agent checks each batch against the source with `viewSourceRegion` and `readBlocks`, and returns a verdict per observation:
    - `confirmed`: accepted.

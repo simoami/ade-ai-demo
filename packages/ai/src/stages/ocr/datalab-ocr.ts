@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { htmlText } from './html-text.ts'
 import type { Block, OcrProvider, Word } from './ocr-result.ts'
 
 const apiUrl = 'https://www.datalab.to/api/v1/convert'
@@ -106,7 +107,7 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
     const words: Word[] = []
     for (const block of pageResult.children ?? []) {
       const blockWords = Array.from(block.html.matchAll(wordSpan), (match) => ({
-        text: decodeEntities(match[6] ?? ''),
+        text: htmlText(match[6] ?? ''),
         box: normalize(rectSchema.parse(match.slice(1, 5).map(Number))),
         confidence: Number(match[5]),
       }))
@@ -114,11 +115,7 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
       const kind = blockKinds[block.block_type] ?? 'other'
       const text =
         kind === 'figure'
-          ? decodeEntities(
-              (block.html.match(pictureText)?.[1] ?? '')
-                .replace(/<br\s*\/?>/g, '\n')
-                .replace(/<[^>]+>/g, '')
-            ).trim()
+          ? htmlText(block.html.match(pictureText)?.[1] ?? '')
           : blockWords.map((word) => word.text).join(' ')
 
       words.push(...blockWords)
@@ -162,13 +159,4 @@ async function request(url: string, init: RequestInit): Promise<unknown> {
 
 function clamp(value: number) {
   return Math.min(Math.max(value, 0), 1)
-}
-
-function decodeEntities(text: string) {
-  return text
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-    .replaceAll('&amp;', '&')
 }

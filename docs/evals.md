@@ -3,34 +3,39 @@
 ## OCR scorecard
 
 Measured 2026-11-19 on `synthetic-v3` (96 pages: 16 fixtures, clean and
-scanned) at 144 DPI. Git SHA `b09d61f` plus the uncommitted `synthetic-v3`
-changes. Both arms passed all 32 cases and the CER and WER ceilings.
+scanned) at 144 DPI. LLM and Datalab rows ran at `b09d61f` plus the
+`synthetic-v3` changes; Reducto rows at `a51ef36` plus the Reducto adapter.
+Every arm passed all 32 cases and the CER and WER ceilings.
 
-| Arm                     | CER    | WER    | Block kind | Box IoU | Reading order | PII word boxes coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                     |
-| ----------------------- | ------ | ------ | ---------- | ------- | ------------- | ----------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `gpt-6.1-sol`, `ocr-v3` | 0.012% | 0.082% | 99.74%     | 0.711   | 1.000         | no words                            | 9.30 s       | $0.01320  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v3-144-1795068667095)          |
-| `datalab-balanced`      | 0.284% | 0.853% | 92.03%     | 0.741   | 0.997         | 0.823 / 0.964                       | 8.49 s       | $0.00600  | [datalab](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v2-144-1795068297742) |
+| Arm                     | CER    | WER    | Block kind | Box IoU | Reading order | PII word boxes coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                      |
+| ----------------------- | ------ | ------ | ---------- | ------- | ------------- | ----------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `gpt-6.1-sol`, `ocr-v3` | 0.012% | 0.082% | 99.74%     | 0.711   | 1.000         | no words                            | 9.30 s       | $0.01320  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v3-144-1795068667095)           |
+| `datalab-balanced`      | 0.284% | 0.853% | 92.03%     | 0.741   | 0.997         | 0.823 / 0.964                       | 8.49 s       | $0.00600  | [datalab](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v2-144-1795068297742)  |
+| `reducto-r-1`           | 0.222% | 0.264% | 77.24%     | 0.501   | 0.999         | no words                            | 1.30 s       | $0.01000  | [r-1](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-ocr-v3-144-1795116497014)           |
+| `reducto-r-1-mini`      | 0.198% | 0.303% | 77.29%     | 0.490   | 0.999         | no words                            | 1.40 s       | $0.00100  | [r-1-mini](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-mini-ocr-v3-144-1795116546074) |
 
 | Arm                     | Clean CER / WER | Scanned CER / WER | Held-out CER / WER |
 | ----------------------- | --------------- | ----------------- | ------------------ |
 | `gpt-6.1-sol`, `ocr-v3` | 0.000% / 0.000% | 0.024% / 0.164%   | 0.031% / 0.216%    |
 | `datalab-balanced`      | 0.243% / 0.436% | 0.326% / 1.270%   | 0.144% / 0.510%    |
+| `reducto-r-1`           | 0.179% / 0.169% | 0.264% / 0.359%   | 0.010% / 0.072%    |
+| `reducto-r-1-mini`      | 0.189% / 0.239% | 0.207% / 0.367%   | 0.010% / 0.072%    |
 
 Figures found (output figure at box IoU 0.5 or more), summed over clean and
 scanned pages:
 
-| Figure kind     | Redaction    | `gpt-6.1-sol` | `datalab-balanced` |
-| --------------- | ------------ | ------------- | ------------------ |
-| Patient photo   | redact       | 2/2           | 2/2                |
-| Face            | keep, review | 4/4           | 4/4                |
-| Signature       | redact       | 5/6           | 0/6                |
-| Logo            | keep         | 2/2           | 2/2                |
-| Icon            | keep         | 12/12         | 0/12               |
-| Medical image   | keep         | 2/2           | 2/2                |
-| Clinical photo  | keep         | 2/2           | 2/2                |
-| **Recall**      |              | **29/30**     | **12/30**          |
-| **Precision**   |              | **29/30**     | **12/12**          |
-| Burned-in label |              | 6/6 strings   | 6/6 strings        |
+| Figure kind     | Redaction    | `gpt-6.1-sol` | `datalab-balanced` | Reducto (both) |
+| --------------- | ------------ | ------------- | ------------------ | -------------- |
+| Patient photo   | redact       | 2/2           | 2/2                | 2/2            |
+| Face            | keep, review | 4/4           | 4/4                | 4/4            |
+| Signature       | redact       | 5/6           | 0/6                | 0/6            |
+| Logo            | keep         | 2/2           | 2/2                | 2/2            |
+| Icon            | keep         | 12/12         | 0/12               | 0/12           |
+| Medical image   | keep         | 2/2           | 2/2                | 2/2            |
+| Clinical photo  | keep         | 2/2           | 2/2                | 2/2            |
+| **Recall**      |              | **29/30**     | **12/30**          | **12/30**      |
+| **Precision**   |              | **29/30**     | **12/12**          | **12/12**      |
+| Burned-in label |              | 6/6 strings   | 6/6 strings        | 6/6 strings    |
 
 Findings:
 
@@ -43,6 +48,13 @@ Findings:
   signer's name, so text PII detection still sees it, but the signature region
   is not a figure. That extra text and the emoji explain its higher CER on
   `consent-03` (8.6%) and `intake-01` (1.6%).
+- Reducto finds the same figures as Datalab: photos, faces, logos and
+  medical images, but no signatures or icons. Signatures arrive inside
+  key-value blocks as the signer's name. It returns block boxes only, no word
+  boxes, and splits lists into one block per item, which lowers block-kind
+  accuracy and box IoU against whole-list ground truth.
+- Reducto is the fastest arm (1.3-1.4 s/page). `r-1-mini` matches `r-1` on
+  this set at a tenth of the list price ($0.001/page).
 - `gpt-6.1-sol` with `ocr-v3` finds every figure kind; its one miss is a
   scanned signature whose box overlaps the ground truth below IoU 0.5.
 - Datalab's lower block-kind accuracy is the same labelling difference as on
@@ -116,6 +128,9 @@ truth retains links for later document-level stages.
 | 8   | `gpt-6.1-sol`, `ocr-v2`, `synthetic-v3`      | 96    | 0.590%    | 0.579%    | 0.693    | 321.1 s   | $1.2437        |
 | 9   | `datalab-balanced`, `synthetic-v3`           | 96    | 0.284%    | 0.853%    | 0.741    | 252.0 s   | $0.5760        |
 | 10  | `gpt-6.1-sol`, `ocr-v3`, `synthetic-v3`      | 96    | 0.012%    | 0.082%    | 0.711    | 287.5 s   | $1.2668        |
+| -   | Reducto r-1 and r-1-mini, first runs         | 96    | 2.98%     | 19.5%     | 0.50     | 74 s      | $1.0560        |
+| 11  | `reducto-r-1`, `synthetic-v3`                | 96    | 0.222%    | 0.264%    | 0.501    | 49 s      | $0.9600        |
+| 12  | `reducto-r-1-mini`, `synthetic-v3`           | 96    | 0.198%    | 0.303%    | 0.490    | 50 s      | $0.0960        |
 
 Experiment 1 was replaced because its monospaced, single-column, near-pristine
 pages saturated every metric, so no prompt change could register. It ran
@@ -160,12 +175,19 @@ are `other` blocks; experiment 10 has no unmatched figures. The Datalab arm
 ignores the prompt, so experiment 9 carries the `ocr-v2` label without effect.
 Experiment 8: [sol ocr-v2](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v2-144-1795068297742).
 
+The first Reducto runs failed the WER ceilings at about 19.5% with 3% CER:
+Reducto returns tables as HTML, and stripping tags joined adjacent cells into
+one word. The shared HTML-to-text step now separates cells with spaces and
+rows with line breaks. Reducto cost is the list price per page, since the API
+reports pages but not cost.
+
 ## Scope and reproduction
 
 Generate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.
 `pnpm eval` runs all stage suites; `pnpm eval:ocr` or `pnpm eval ocr` selects OCR.
 `EVAL_OCR_PROVIDER` selects the provider arm: `gpt-6.1-sol` (default),
-`gpt-6-luna`, `datalab-balanced` or `datalab-accurate`. Datalab arms require
+`gpt-6-luna`, `datalab-balanced`, `datalab-accurate`, `reducto-r-1` or
+`reducto-r-1-mini`. Reducto arms require `REDUCTO_API_KEY`. Datalab arms require
 `DATALAB_API_KEY` and send only synthetic fixtures. For a focused run:
 
 ```sh
