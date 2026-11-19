@@ -7,12 +7,12 @@ import { PDFDocument } from 'pdf-lib'
 import sharp from 'sharp'
 import { renderImages, renderPdf } from './render-pages.ts'
 
-test('renders every page to a PNG and a WebP thumbnail', async () => {
+test('renders every page to a PNG and a WebP thumbnail, oversized pages at letter size', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'ade-render-test-'))
   try {
     const document = await PDFDocument.create()
     document.addPage([612, 792])
-    document.addPage([612, 792])
+    document.addPage([1584, 1188])
     const input = join(directory, 'input.pdf')
     const output = join(directory, 'pages')
     await writeFile(input, await document.save())
@@ -27,8 +27,7 @@ test('renders every page to a PNG and a WebP thumbnail', async () => {
     for (const page of result.pages) {
       const png = await sharp(join(output, `${page.page}.png`)).metadata()
       assert.equal(png.format, 'png')
-      assert.equal(png.width, 1224)
-      assert.equal(png.height, 1584)
+      assert.equal(Math.max(png.width ?? 0, png.height ?? 0), 1584)
       const thumbnail = await sharp(
         join(output, `${page.page}.webp`)
       ).metadata()

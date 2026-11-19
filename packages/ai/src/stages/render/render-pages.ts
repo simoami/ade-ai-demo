@@ -5,6 +5,9 @@ import sharp, { type Sharp } from 'sharp'
 
 const MAX_PAGES = 30
 
+// Pages larger than US letter, such as printed web screens, render at a letter page's pixel size.
+const LETTER_LONG_EDGE_PT = 792
+
 // Matches the long edge of a letter page rendered at scale 2, so photos cost no more to read than PDFs.
 const MAX_IMAGE_EDGE = 1600
 
@@ -40,7 +43,17 @@ export async function renderPdf(input: string, output: string, scale = 2) {
     for (const page of document.pages()) {
       try {
         const renderStarted = performance.now()
-        const image = await page.render({ scale, render: 'bitmap' })
+        const { originalWidth, originalHeight } = page.getOriginalSize()
+        const pageScale =
+          scale *
+          Math.min(
+            1,
+            LETTER_LONG_EDGE_PT / Math.max(originalWidth, originalHeight)
+          )
+        const image = await page.render({
+          scale: pageScale,
+          render: 'bitmap',
+        })
         const bitmap = sharp(image.data, {
           raw: { width: image.width, height: image.height, channels: 4 },
         })
