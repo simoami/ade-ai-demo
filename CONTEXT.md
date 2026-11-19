@@ -28,6 +28,13 @@ _Avoid_: Approved, signed, completed
 A region of a page whose content is hidden from every derived artifact, either detected automatically or drawn by a reviewer. A redaction is applied, needs review, accepted, or rejected.
 _Avoid_: PII finding, detection, mask
 
+**Patient photo**:
+A picture of a face placed with the patient's name or date of birth, such as an ID card or a chart header. It is always redacted. Other faces, such as a clinician's portrait, are kept unless their owner is unclear, in which case the redaction needs review.
+_Avoid_: Avatar, headshot
+
+**Signature**:
+A handwritten mark of a person's name. Every signature is redacted, whoever signed; that the document was signed, and when, is kept.
+
 ## Patients
 
 **Patient**:
