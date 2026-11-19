@@ -4,22 +4,22 @@
 
 Measured 2026-11-19 on `synthetic-v3` (96 pages: 16 fixtures, clean and
 scanned) at 144 DPI. LLM and Datalab rows ran at `b09d61f` plus the
-`synthetic-v3` changes; Reducto rows at `a51ef36` plus the Reducto adapter.
+`synthetic-v3` changes; Reducto rows at `71d14e9`, with word citations for `r-1`.
 Every arm passed all 32 cases and the CER and WER ceilings.
 
-| Arm                     | CER    | WER    | Block kind | Box IoU | Reading order | PII word boxes coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                      |
-| ----------------------- | ------ | ------ | ---------- | ------- | ------------- | ----------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `gpt-6.1-sol`, `ocr-v3` | 0.012% | 0.082% | 99.74%     | 0.711   | 1.000         | no words                            | 9.30 s       | $0.01320  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v3-144-1795068667095)           |
-| `datalab-balanced`      | 0.284% | 0.853% | 92.03%     | 0.741   | 0.997         | 0.823 / 0.964                       | 8.49 s       | $0.00600  | [datalab](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v2-144-1795068297742)  |
-| `reducto-r-1`           | 0.222% | 0.264% | 77.24%     | 0.501   | 0.999         | no words                            | 1.30 s       | $0.01000  | [r-1](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-ocr-v3-144-1795116497014)           |
-| `reducto-r-1-mini`      | 0.198% | 0.303% | 77.29%     | 0.490   | 0.999         | no words                            | 1.40 s       | $0.00100  | [r-1-mini](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-mini-ocr-v3-144-1795116546074) |
+| Arm                      | CER    | WER    | Block kind | Box IoU | Reading order | PII word boxes coverage / precision | Latency/page | Cost/page | Experiment                                                                                                                      |
+| ------------------------ | ------ | ------ | ---------- | ------- | ------------- | ----------------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `gpt-6.1-sol`, `ocr-v3`  | 0.012% | 0.082% | 99.74%     | 0.711   | 1.000         | no words                            | 9.30 s       | $0.01320  | [sol](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-gpt-6.1-sol-ocr-v3-144-1795068667095)           |
+| `datalab-balanced`       | 0.284% | 0.853% | 92.03%     | 0.741   | 0.997         | 0.823 / 0.964                       | 8.49 s       | $0.00600  | [datalab](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-datalab-balanced-ocr-v2-144-1795068297742)  |
+| `reducto-r-1`, citations | 0.186% | 0.216% | 77.30%     | 0.502   | 0.999         | 0.687 / 0.968                       | 2.24 s       | $0.01000  | [r-1](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-ocr-v3-144-1795117014042)           |
+| `reducto-r-1-mini`       | 0.198% | 0.303% | 77.29%     | 0.490   | 0.999         | no words                            | 1.40 s       | $0.00100  | [r-1-mini](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/ocr-reducto-r-1-mini-ocr-v3-144-1795116546074) |
 
-| Arm                     | Clean CER / WER | Scanned CER / WER | Held-out CER / WER |
-| ----------------------- | --------------- | ----------------- | ------------------ |
-| `gpt-6.1-sol`, `ocr-v3` | 0.000% / 0.000% | 0.024% / 0.164%   | 0.031% / 0.216%    |
-| `datalab-balanced`      | 0.243% / 0.436% | 0.326% / 1.270%   | 0.144% / 0.510%    |
-| `reducto-r-1`           | 0.179% / 0.169% | 0.264% / 0.359%   | 0.010% / 0.072%    |
-| `reducto-r-1-mini`      | 0.189% / 0.239% | 0.207% / 0.367%   | 0.010% / 0.072%    |
+| Arm                      | Clean CER / WER | Scanned CER / WER | Held-out CER / WER |
+| ------------------------ | --------------- | ----------------- | ------------------ |
+| `gpt-6.1-sol`, `ocr-v3`  | 0.000% / 0.000% | 0.024% / 0.164%   | 0.031% / 0.216%    |
+| `datalab-balanced`       | 0.243% / 0.436% | 0.326% / 1.270%   | 0.144% / 0.510%    |
+| `reducto-r-1`, citations | 0.179% / 0.169% | 0.193% / 0.262%   | 0.010% / 0.072%    |
+| `reducto-r-1-mini`       | 0.189% / 0.239% | 0.207% / 0.367%   | 0.010% / 0.072%    |
 
 Figures found (output figure at box IoU 0.5 or more), summed over clean and
 scanned pages:
@@ -53,6 +53,10 @@ Findings:
   key-value blocks as the signer's name. It returns block boxes only, no word
   boxes, and splits lists into one block per item, which lowers block-kind
   accuracy and box IoU against whole-list ground truth.
+- With `return_citations`, `r-1` returns a box for every word, including
+  table cells; `r-1-mini` does not support citations. Its word boxes are
+  tighter than Datalab's (PII coverage 0.687 against 0.823, precision 0.968
+  against 0.964), which the same 1.25 em ground-truth convention explains.
 - Reducto is the fastest arm (1.3-1.4 s/page). `r-1-mini` matches `r-1` on
   this set at a tenth of the list price ($0.001/page).
 - `gpt-6.1-sol` with `ocr-v3` finds every figure kind; its one miss is a
@@ -131,6 +135,7 @@ truth retains links for later document-level stages.
 | -   | Reducto r-1 and r-1-mini, first runs         | 96    | 2.98%     | 19.5%     | 0.50     | 74 s      | $1.0560        |
 | 11  | `reducto-r-1`, `synthetic-v3`                | 96    | 0.222%    | 0.264%    | 0.501    | 49 s      | $0.9600        |
 | 12  | `reducto-r-1-mini`, `synthetic-v3`           | 96    | 0.198%    | 0.303%    | 0.490    | 50 s      | $0.0960        |
+| 13  | `reducto-r-1` with word citations            | 96    | 0.186%    | 0.216%    | 0.502    | 76 s      | $0.9600        |
 
 Experiment 1 was replaced because its monospaced, single-column, near-pristine
 pages saturated every metric, so no prompt change could register. It ran
@@ -179,7 +184,8 @@ The first Reducto runs failed the WER ceilings at about 19.5% with 3% CER:
 Reducto returns tables as HTML, and stripping tags joined adjacent cells into
 one word. The shared HTML-to-text step now separates cells with spaces and
 rows with line breaks. Reducto cost is the list price per page, since the API
-reports pages but not cost.
+reports pages but not cost. Experiment 11 ran without word citations; it scored
+0.222% CER and 0.264% WER at 1.30 s/page. Experiment 13 enables them.
 
 ## Scope and reproduction
 

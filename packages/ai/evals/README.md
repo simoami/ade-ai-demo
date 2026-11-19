@@ -29,7 +29,7 @@ providers that return words; others log a null score, which Braintrust
 excludes from averages. Page cost is the vendor-reported cost when a provider
 returns one, otherwise a token estimate from the dated price table in
 `prices.ts`. `reducto-r-1` and `reducto-r-1-mini` call Reducto parse and require
-`REDUCTO_API_KEY`. `datalab-balanced` and `datalab-accurate` call the Datalab convert
+`REDUCTO_API_KEY`; `reducto-r-1` returns word boxes from word citations. `datalab-balanced` and `datalab-accurate` call the Datalab convert
 API and require `DATALAB_API_KEY`.
 
 Stage suites use the Braintrust SDK directly. There are no agent evals yet;
