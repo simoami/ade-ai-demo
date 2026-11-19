@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { PDFDocument } from 'pdf-lib'
 import sharp from 'sharp'
-import { renderPdf } from './render-pages.ts'
+import { renderImages, renderPdf } from './render-pages.ts'
 
 test('renders every page to a PNG and a WebP thumbnail', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'ade-render-test-'))
@@ -62,4 +62,41 @@ test('rejects unsupported eval render scales before reading a document', async (
     renderPdf('unused.pdf', 'unused-output', 4),
     /scale must be 2 or 3/
   )
+})
+
+test('renders images in upload order, upright and bounded to the page edge', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'ade-render-test-'))
+  try {
+    const photo = join(directory, 'photo.jpg')
+    const scan = join(directory, 'scan.png')
+    const output = join(directory, 'pages')
+    const blank = {
+      width: 3200,
+      height: 2000,
+      channels: 3 as const,
+      background: 'white',
+    }
+    // EXIF orientation 6 means the camera stored a landscape bitmap of a portrait page.
+    await sharp({ create: blank })
+      .jpeg()
+      .withMetadata({ orientation: 6 })
+      .toFile(photo)
+    await sharp({ create: { ...blank, width: 800, height: 1000 } })
+      .png()
+      .toFile(scan)
+
+    const result = await renderImages([photo, scan], output)
+
+    assert.deepEqual(
+      result.pages.map((page) => page.page),
+      [0, 1]
+    )
+    const upright = await sharp(join(output, '0.png')).metadata()
+    assert.deepEqual([upright.width, upright.height], [1000, 1600])
+    const small = await sharp(join(output, '1.png')).metadata()
+    assert.deepEqual([small.width, small.height], [800, 1000])
+    await assert.rejects(renderImages([], output), /no pages/)
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
 })

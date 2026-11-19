@@ -67,7 +67,7 @@ For frontend library-selection work, consult `.agents/skills/pick-ui-library/SKI
 ## Agent environment and runtime
 
 Use `packages/ai/.env.example` and `apps/web/.env.example` for required variables.
-The service requires `OPENAI_API_KEY`; local service calls require the same
+The service requires `OPENAI_API_KEY` and, for OCR, `REDUCTO_API_KEY`; local service calls require the same
 `PIPELINE_SERVICE_SECRET` in both packages. Next.js validates the fixed
 `PIPELINE_SERVICE_ORIGIN`. Startup rejects missing or blank credentials; builds
 need none. Direct OpenAI model instances live in `packages/ai/src/models.ts`.

@@ -16,7 +16,7 @@ import {
 } from '#evals/scorers/pii-word-boxes'
 import { models } from '#models'
 import { datalabOcr } from '#stages/ocr/datalab-ocr'
-import { defaultOcrModel, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
+import { defaultOcrProvider, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
 import type { Block, Box, OcrPage } from '#stages/ocr/ocr-result'
 import { promptVersion } from '#stages/ocr/prompt'
 import { reductoOcr } from '#stages/ocr/reducto-ocr'
@@ -38,7 +38,7 @@ const providers = {
   'reducto-r-1-mini': reductoOcr('r-1-mini'),
 }
 
-const providerName = process.env.EVAL_OCR_PROVIDER ?? defaultOcrModel.modelId
+const providerName = process.env.EVAL_OCR_PROVIDER ?? defaultOcrProvider.name
 
 const provider = providers[providerName as keyof typeof providers]
 

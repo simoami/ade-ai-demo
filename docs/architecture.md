@@ -28,7 +28,7 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 | Service                          | Use                                                                                                      |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | OpenAI (direct, AI SDK provider) | Picture pass, classification, demographics, PII detection, extraction, agents, embeddings                |
-| OCR vendor (Datalab or Reducto)  | Page text, layout blocks and word boxes; the OCR evaluation chooses the provider                         |
+| Reducto parse (`r-1`)            | OCR: page text, layout blocks and word boxes, chosen by the OCR evaluation and re-evaluated over time    |
 | Tesseract (WASM, in-process)     | Character boxes inside regions that hold identifiers, for exact redaction geometry                       |
 | AWS Comprehend Medical           | Clinical entity enrichment of redacted note text, behind an `Enricher` interface                         |
 | Vercel Workflow (via eve)        | Durable pipeline run and review loop                                                                     |
@@ -65,7 +65,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
                                └─► PII detection ─────┘          └► note index ─► enrichment ─────┴─► in_review
 ```
 
-1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: PDF, PNG or JPEG, 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
+1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: one PDF, or up to 30 PNG or JPEG images that become the pages of one document in the order selected; 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
 2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. Sharp produces thumbnails. Runs in a normal step.
 3. **OCR.** An `OcrProvider` returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page), figure blocks for pictures and signatures, and word boxes where the provider has them. Providers are compared in [`docs/evals.md`](evals.md). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
@@ -97,7 +97,8 @@ Statuses: `queued`, `processing`, `in_review`, `reviewed`, `discarded`, and `fai
 - All document content is PHI. Logs and traces carry IDs, counts and durations only; the logger masks sensitive keys as a backstop.
 - Review-only artifacts (original, `ocr.json`, demographics) are encrypted with AES-256-GCM and deleted when review ends. Only `ocr.redacted.json`, redacted renders and derived data remain.
 - Patients are stored as HMAC keys (`PATIENT_KEY_SECRET`) of MRN, first name, last name and date of birth, plus initials, sex and birth year. Ages over 89 store no birth year.
-- Only synthetic fixtures go to Braintrust. Private test documents live in a gitignored folder and are excluded from evals.
+- Only synthetic fixtures go to Braintrust. Private test documents live in a gitignored folder and are excluded from evals; they are used for local human verification only.
+- Reducto keeps API results for 24 hours on the standard tier. Real PHI requires its Growth tier, which adds a BAA and zero data retention.
 - Review events live in Postgres for this demo ([ADR 0001](adr/0001-review-events-in-postgres.md)).
 
 ## Data

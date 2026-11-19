@@ -67,7 +67,12 @@ Findings:
   span boxes cover the full 1.25 em line height and inter-word spaces, while
   word boxes hug the glyphs.
 
-`gpt-6.1-sol` remains the default provider (`defaultOcrModel`).
+Decision: OCR uses `reducto-r-1` with word citations (`defaultOcrProvider`).
+It matches the LLM arms on text within the ceilings, returns layout blocks and
+word boxes in one call, and is about four times faster at $0.01/page. Its
+missed signatures and icons are covered by the picture pass, and Tesseract
+supplies character boxes for redaction, so neither depends on the OCR vendor.
+The provider is re-evaluated as fixtures and real-world failures are added.
 
 ## Metrics and thresholds
 
@@ -191,8 +196,8 @@ reports pages but not cost. Experiment 11 ran without word citations; it scored
 
 Generate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.
 `pnpm eval` runs all stage suites; `pnpm eval:ocr` or `pnpm eval ocr` selects OCR.
-`EVAL_OCR_PROVIDER` selects the provider arm: `gpt-6.1-sol` (default),
-`gpt-6-luna`, `datalab-balanced`, `datalab-accurate`, `reducto-r-1` or
+`EVAL_OCR_PROVIDER` selects the provider arm: `reducto-r-1` (default),
+`gpt-6.1-sol`, `gpt-6-luna`, `datalab-balanced`, `datalab-accurate` or
 `reducto-r-1-mini`. Reducto arms require `REDUCTO_API_KEY`. Datalab arms require
 `DATALAB_API_KEY` and send only synthetic fixtures. For a focused run:
 

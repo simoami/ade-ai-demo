@@ -24,7 +24,7 @@ text.
 
 OCR providers implement `OcrProvider` from `src/stages/ocr/ocr-result.ts`.
 `EVAL_OCR_PROVIDER` selects an arm from the record in `ocr.eval.ts` (default:
-the stage default model). PII word-box coverage and precision apply only to
+`defaultOcrProvider`, Reducto `r-1`). PII word-box coverage and precision apply only to
 providers that return words; others log a null score, which Braintrust
 excludes from averages. Page cost is the vendor-reported cost when a provider
 returns one, otherwise a token estimate from the dated price table in

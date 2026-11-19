@@ -1,7 +1,6 @@
 import { logger } from '@repo/logger'
 import { generateText, type LanguageModel, Output } from 'ai'
 import { z } from 'zod'
-import { models } from '#models'
 import {
   type Box,
   blockSchema,
@@ -9,13 +8,17 @@ import {
   type OcrProvider,
 } from './ocr-result.ts'
 import { ocrPrompt } from './prompt.ts'
+import { reductoOcr } from './reducto-ocr.ts'
 
 const log = logger.getSubLogger({ name: 'ocr' })
 
 const pageSchema = z.object({ blocks: z.array(blockSchema) })
 
-/** Model used when callers do not choose an OCR provider. */
-export const defaultOcrModel = models.pipeline
+/** Provider used when callers do not choose one; the OCR evaluation selects it. */
+export const defaultOcrProvider = {
+  name: 'reducto-r-1',
+  provider: reductoOcr('r-1'),
+}
 
 /** Vision-model OCR provider; output is schema-validated and returns no word boxes. */
 export function llmOcr(model: LanguageModel): OcrProvider {
@@ -55,7 +58,7 @@ export function llmOcr(model: LanguageModel): OcrProvider {
 /** Transcribes PNG pages in input order with at most two calls in flight; failures reject. */
 export async function ocrPages(
   pages: readonly Uint8Array[],
-  provider: OcrProvider = llmOcr(defaultOcrModel)
+  provider: OcrProvider = defaultOcrProvider.provider
 ) {
   const results: OcrPage[] = []
   let next = 0
