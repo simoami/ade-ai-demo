@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there and app routes in `apps/web/app`.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM and Datalab OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 `packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
 

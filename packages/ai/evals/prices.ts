@@ -12,8 +12,10 @@ const ocrPrices: Record<
   'gpt-6-luna': { input: 0.1, cachedInput: 0.01, output: 0.5 },
 }
 
-/** Estimated USD for one page; input token counts include cached tokens. */
+/** USD for one page: the vendor-reported cost, or a token estimate where input counts include cached tokens. */
 export function ocrPageCost(provider: string, usage: OcrUsage) {
+  if (usage.costUsd !== undefined) return usage.costUsd
+
   const price = ocrPrices[provider]
   if (!price || !usage.tokens) throw new Error(`No OCR price for ${provider}`)
 

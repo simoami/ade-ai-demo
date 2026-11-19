@@ -13,6 +13,7 @@ import {
   summarizePiiWordBoxes,
 } from '#evals/scorers/pii-word-boxes'
 import { models } from '#models'
+import { datalabOcr } from '#stages/ocr/datalab-ocr'
 import { defaultOcrModel, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
 import type { Block, OcrPage } from '#stages/ocr/ocr-result'
 import { promptVersion } from '#stages/ocr/prompt'
@@ -21,13 +22,20 @@ import { renderPdf } from '#stages/render/render-pages'
 const log = logger.getSubLogger({ name: 'ocr-eval' })
 
 /** Bake-off arms, keyed by the name `EVAL_OCR_PROVIDER` selects. */
-const providers = Object.fromEntries(
-  [models.pipeline, models.fast].map((model) => [model.modelId, llmOcr(model)])
-)
+const providers = {
+  ...Object.fromEntries(
+    [models.pipeline, models.fast].map((model) => [
+      model.modelId,
+      llmOcr(model),
+    ])
+  ),
+  'datalab-balanced': datalabOcr('balanced'),
+  'datalab-accurate': datalabOcr('accurate'),
+}
 
 const providerName = process.env.EVAL_OCR_PROVIDER ?? defaultOcrModel.modelId
 
-const provider = providers[providerName]
+const provider = providers[providerName as keyof typeof providers]
 
 if (!provider)
   throw new Error(
@@ -121,7 +129,7 @@ const result = await Eval(
           return scorePage(page, actual)
         })
         const pageMean = (
-          key: 'cer' | 'wer' | 'blockKindAccuracy' | 'boxIoU'
+          key: 'cer' | 'wer' | 'blockKindAccuracy' | 'boxIoU' | 'readingOrder'
         ) => mean(scores.map((page) => page[key]))
         const wordBoxes = scores.every((page) => page.piiWordBoxes)
           ? summarizePiiWordBoxes(
@@ -137,6 +145,7 @@ const result = await Eval(
           { name: 'wordAccuracy', score: Math.max(0, 1 - pageMean('wer')) },
           { name: 'blockKindAccuracy', score: pageMean('blockKindAccuracy') },
           { name: 'boxIoU', score: pageMean('boxIoU') },
+          { name: 'readingOrder', score: pageMean('readingOrder') },
           { name: 'piiWordBoxCoverage', score: wordBoxes.coverage },
           {
             name: 'piiWordBoxPrecision',

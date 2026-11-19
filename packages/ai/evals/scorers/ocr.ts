@@ -43,19 +43,63 @@ export function wordErrorRate(expected: string, actual: string) {
   )
 }
 
-/** Intersection over union for two normalized rectangles. */
-export function boxIoU(a: Box, b: Box) {
-  const intersection =
+function intersectionArea(a: Box, b: Box) {
+  return (
     Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) *
     Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y))
+  )
+}
+
+/** Intersection over union for two normalized rectangles. */
+export function boxIoU(a: Box, b: Box) {
+  const intersection = intersectionArea(a, b)
   return intersection / (a.width * a.height + b.width * b.height - intersection)
 }
 
-/** Aligns reading-order blocks by text similarity, penalizing missing and extra blocks. */
+/** Index of the expected block each output block overlaps most; unmatched blocks sort last. */
+function anchorBlocks(expected: readonly Block[], actual: readonly Block[]) {
+  return actual.map((block) => {
+    let anchor = expected.length
+    let best = 0
+    expected.forEach((candidate, index) => {
+      const area = intersectionArea(candidate.box, block.box)
+      if (area > best) {
+        anchor = index
+        best = area
+      }
+    })
+    return anchor
+  })
+}
+
+/** Share of matched output block pairs that keep the expected relative order. */
+function readingOrder(anchors: readonly number[], unmatched: number) {
+  let pairs = 0
+  let ordered = 0
+  for (let i = 0; i < anchors.length; i++) {
+    for (let j = i + 1; j < anchors.length; j++) {
+      const [a, b] = [anchors[i] ?? unmatched, anchors[j] ?? unmatched]
+      if (a === unmatched || b === unmatched) continue
+      pairs++
+      ordered += Number(a <= b)
+    }
+  }
+  return pairs ? ordered / pairs : 1
+}
+
+/**
+ * Scores transcription independently of block order: output blocks are reordered to the
+ * expected blocks they overlap most, then aligned by text. Order is scored separately.
+ */
 export function scoreBlocks(
   expected: readonly Block[],
-  actual: readonly Block[]
+  output: readonly Block[]
 ) {
+  const anchors = anchorBlocks(expected, output)
+  const actual = output
+    .map((block, index) => ({ block, anchor: anchors[index] ?? 0 }))
+    .sort((a, b) => a.anchor - b.anchor)
+    .map(({ block }) => block)
   const costs = Array.from({ length: expected.length + 1 }, () =>
     Array<number>(actual.length + 1).fill(0)
   )
@@ -111,12 +155,13 @@ export function scoreBlocks(
   }
 
   const reference = expected.map((block) => block.text).join('\n')
-  const output = actual.map((block) => block.text).join('\n')
+  const transcript = actual.map((block) => block.text).join('\n')
   return {
-    cer: characterErrorRate(reference, output),
-    wer: wordErrorRate(reference, output),
+    cer: characterErrorRate(reference, transcript),
+    wer: wordErrorRate(reference, transcript),
     blockKindAccuracy: slots ? kinds / slots : 1,
     boxIoU: slots ? boxes / slots : 1,
+    readingOrder: readingOrder(anchors, expected.length),
   }
 }
 

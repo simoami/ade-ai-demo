@@ -38,10 +38,11 @@ export type Block = z.infer<typeof blockSchema>
 
 export type Word = z.infer<typeof wordSchema>
 
-/** Latency plus the counts a provider bills on; token counts apply to LLM providers. */
+/** Latency plus what a provider bills on: tokens for LLM providers, reported cost for per-page vendors. */
 export type OcrUsage = {
   latencyMs: number
   tokens?: { input: number; cachedInput: number; output: number }
+  costUsd?: number
 }
 
 /** One transcribed page; `words` is absent when the provider has no word geometry. */

@@ -37,6 +37,7 @@ test('block alignment penalizes missing, extra and wrong-kind blocks independent
     wer: 0,
     blockKindAccuracy: 1,
     boxIoU: 1,
+    readingOrder: 1,
   })
   assert.equal(scoreBlocks([a, b], [b]).blockKindAccuracy, 0.5)
   assert.equal(scoreBlocks([a], [a, b]).boxIoU, 0.5)
@@ -45,6 +46,28 @@ test('block alignment penalizes missing, extra and wrong-kind blocks independent
       .blockKindAccuracy,
     0
   )
+})
+
+test('transcription ignores block order, which is scored separately', () => {
+  const left: Block = {
+    id: 'left',
+    kind: 'paragraph',
+    text: 'left column narrative',
+    continues: null,
+    box: { x: 0.05, y: 0.2, width: 0.4, height: 0.3 },
+  }
+  const right: Block = {
+    ...left,
+    id: 'right',
+    kind: 'table',
+    text: 'right column labs',
+    box: { x: 0.55, y: 0.2, width: 0.4, height: 0.2 },
+  }
+  const scores = scoreBlocks([left, right], [right, left])
+  assert.equal(scores.cer, 0)
+  assert.equal(scores.wer, 0)
+  assert.equal(scores.blockKindAccuracy, 1)
+  assert.equal(scores.readingOrder, 0)
 })
 
 test('ceilings gate each variant on its page-mean CER and WER', async () => {
