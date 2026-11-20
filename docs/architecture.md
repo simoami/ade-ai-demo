@@ -39,6 +39,62 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 
 AI Gateway is deferred; models are called directly. Model IDs live in one registry in `packages/ai`: `gpt-6.1-sol` for OCR, PII, extraction and agents, `gpt-6-luna` for classification and consent summaries, `text-embedding-3-small` for notes.
 
+## System diagram
+
+One Vercel deployment runs two services from root `vercel.ts`: the Next.js `web` service and the `eve` service that owns the durable workflow. `web` reaches `eve` only through a private service binding.
+
+```mermaid
+flowchart LR
+  user([Reviewer browser])
+
+  subgraph vercel["Vercel project: one deployment"]
+    protection{{"Deployment Protection<br/>Vercel Authentication"}}
+
+    subgraph web["web service: Next.js 16"]
+      pages["Server components<br/>Partial Prerendering + Suspense<br/>#quot;use cache#quot; with tags"]
+      routes["Route handlers<br/>/api/documents, /api/uploads"]
+    end
+
+    binding[["Service binding<br/>PIPELINE_SERVICE_ORIGIN + Vercel OIDC"]]
+
+    subgraph eve["eve service"]
+      channel["Document channel<br/>/pipeline/documents"]
+      subgraph workflow["Vercel Workflow: one durable run per document"]
+        render["Render pages<br/>pdfium WASM, Sharp"]
+        ocr["Read<br/>Reducto r-1 OCR"]
+        classify["Classify"]
+        demographics["Demographics<br/>keyed hashes, patient match"]
+        detect["Detect identifiers<br/>text spans + picture pass"]
+        redact["Redact<br/>Tesseract geometry, burn,<br/>publish versioned pages"]
+        extract["Extract observations"]
+        review["Review loop<br/>accept, reject, link,<br/>mark reviewed, discard"]
+      end
+    end
+  end
+
+  blob[("Vercel Blob, private<br/>originals, renders, encrypted OCR,<br/>versioned page pairs")]
+  neon[("Neon Postgres + pgvector<br/>Vercel Marketplace")]
+  reducto["Reducto"]
+  openai["OpenAI via AI SDK"]
+
+  user --> protection --> pages
+  protection --> routes
+  user -- "client upload token" --> blob
+  user -- "signed GET URLs" --> blob
+  routes --> binding --> channel --> render
+  render --> ocr
+  ocr --> classify & demographics & detect
+  classify & demographics & detect --> redact
+  redact --> extract --> review
+  render & ocr & redact --> blob
+  pages -. "reads" .-> neon
+  demographics & redact & extract & review --> neon
+  ocr --> reducto
+  classify & demographics & detect & extract --> openai
+```
+
+Consent documents skip extraction and other documents end as unsupported after redaction. Signed Blob URLs are issued per request on the server and never cached.
+
 ## Web rendering and cache boundaries
 
 Next.js Cache Components and Partial Prefetching prerender the workspace shell,
