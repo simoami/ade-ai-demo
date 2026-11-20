@@ -47,3 +47,19 @@ test('rejects missing credentials and unsafe origins without exposing values', (
     })
   )
 })
+
+test('defaults the service origin to the deployment URL on Vercel only', () => {
+  assert.equal(
+    validateEnvironment({ VERCEL: '1', VERCEL_URL: 'app-abc.vercel.app' })
+      .PIPELINE_SERVICE_ORIGIN,
+    'https://app-abc.vercel.app'
+  )
+  assert.throws(
+    () =>
+      validateEnvironment({
+        VERCEL_URL: 'app-abc.vercel.app',
+        PIPELINE_SERVICE_SECRET: secret,
+      }),
+    /PIPELINE_SERVICE_ORIGIN/
+  )
+})

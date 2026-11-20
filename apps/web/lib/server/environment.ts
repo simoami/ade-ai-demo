@@ -21,7 +21,15 @@ export function validateEnvironment(env: Record<string, string | undefined>) {
     PIPELINE_SERVICE_SECRET:
       env.VERCEL === '1' ? z.string().optional() : z.string().trim().min(32),
   })
-  const parsed = schema.safeParse(env)
+  // A Vercel deployment serves the eve service itself, so it defaults to its own URL.
+  const parsed = schema.safeParse({
+    ...env,
+    PIPELINE_SERVICE_ORIGIN:
+      env.PIPELINE_SERVICE_ORIGIN ??
+      (env.VERCEL === '1' && env.VERCEL_URL
+        ? `https://${env.VERCEL_URL}`
+        : undefined),
+  })
 
   if (!parsed.success) {
     throw new Error(
