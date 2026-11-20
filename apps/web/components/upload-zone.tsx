@@ -1,33 +1,72 @@
 'use client'
 
+import { upload } from '@repo/storage/client'
 import { buttonVariants } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
 import { CloudUpload } from 'lucide-react'
-import { useId, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useId, useRef, useState } from 'react'
 import { uploadError } from '#lib/upload'
+import { uploadDocument } from '#lib/upload-flow'
 
 /** Drop zone that validates a selection against the upload rule before it is sent. */
 export function UploadZone() {
   const inputId = useId()
+  const router = useRouter()
+  const busy = useRef(false)
+  const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [message, setMessage] = useState<{ error: boolean; text: string }>()
 
-  function select(files: FileList | null) {
+  async function select(files: FileList | null) {
+    if (busy.current) return
+
     const list = Array.from(files ?? [])
     const error = uploadError(list)
-    setMessage(
-      error
-        ? { error: true, text: error }
-        : {
+    if (error) {
+      setMessage({ error: true, text: error })
+      return
+    }
+
+    busy.current = true
+    setUploading(true)
+    setMessage({ error: false, text: 'Uploading: 0%' })
+    try {
+      const documentId = await uploadDocument(
+        list,
+        async (file, progress) => {
+          const blob = await upload(`uploads/${file.name}`, file, {
+            access: 'private',
+            handleUploadUrl: '/api/uploads',
+            onUploadProgress: ({ percentage }) => progress(percentage),
+          })
+          return blob.pathname
+        },
+        (percentage) =>
+          setMessage({
             error: false,
-            text: `${list.length === 1 ? 'File' : `${list.length} pages`} accepted. Uploading arrives with document storage.`,
-          }
-    )
+            text:
+              percentage === 100
+                ? 'Starting document processing…'
+                : `Uploading: ${percentage}%`,
+          })
+      )
+      router.push(`/documents/${documentId}`)
+    } catch {
+      setMessage({
+        error: true,
+        text: 'Upload could not be completed. Please try again.',
+      })
+    } finally {
+      busy.current = false
+      setUploading(false)
+    }
   }
 
   return (
     <label
       htmlFor={inputId}
+      aria-busy={uploading}
       className={cn(
         'relative flex min-h-[90px] items-center gap-3.5 rounded-lg border border-dashed border-primary/30 bg-accent/20 px-[18px] py-4 cursor-pointer flex-wrap has-focus-visible:ring-2 has-focus-visible:ring-ring',
         dragging && 'border-primary bg-accent'
@@ -69,8 +108,12 @@ export function UploadZone() {
         type="file"
         accept="application/pdf,image/png,image/jpeg"
         multiple
+        disabled={uploading}
         className="sr-only"
-        onChange={(event) => select(event.target.files)}
+        onChange={(event) => {
+          void select(event.target.files)
+          event.target.value = ''
+        }}
       />
       <span
         className={cn(

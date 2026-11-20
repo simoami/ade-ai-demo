@@ -16,10 +16,11 @@ import { ArrowLeft, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
+import type { Patient, ReviewDocument } from '#lib/records-types'
 import { matchStrength, pendingCount, reviewMode } from '#lib/review'
-import type { Patient, ReviewDocument } from '#lib/sample-records'
 import { PageViewer } from './page-viewer.tsx'
 import { PatientPanel } from './patient-panel.tsx'
 import { type ReviewItem, ReviewItems } from './review-items.tsx'
@@ -102,6 +103,7 @@ export function ReviewWorkspace({
 
   return (
     <div className="flex h-[calc(100svh-54px)] min-h-[620px] flex-col">
+      <ProcessingRefresh active={mode === 'processing'} />
       <header className="flex min-h-[83px] shrink-0 items-center gap-3 border-b bg-card px-6 py-3">
         <Button
           variant="outline"
@@ -122,8 +124,8 @@ export function ReviewWorkspace({
             <StatusBadge status={outcome ?? document.status} />
           </h1>
           <span className="text-[9.5px] text-muted-foreground capitalize">
-            {document.documentClass} · {document.pages} pages · uploaded{' '}
-            {formatDate(document.uploadedAt)}
+            {document.documentClass ?? 'Pending classification'} ·{' '}
+            {document.pages} pages · uploaded {formatDate(document.uploadedAt)}
           </span>
         </div>
       </header>
@@ -153,7 +155,7 @@ export function ReviewWorkspace({
                     number === page && 'ring-2 ring-primary'
                   )}
                 >
-                  <Image src={src} alt="" fill sizes="5rem" />
+                  <Image src={src} alt="" fill sizes="5rem" unoptimized />
                   {flagged && (
                     <span className="absolute top-1 right-1 size-2 rounded-full bg-warning" />
                   )}
@@ -249,15 +251,17 @@ export function ReviewWorkspace({
           </div>
         </div>
         <p className="ml-auto text-[9px] text-muted-foreground" role="status">
-          {status === 'reviewed'
-            ? 'Reviewed. The document is read-only.'
-            : status === 'discarded'
-              ? 'Discarded. This document contributes no data.'
-              : status === 'unsupported'
-                ? `Unsupported document class: ${document.documentClass} documents are not extracted.`
-                : mode === 'processing'
-                  ? 'Processing. Review becomes available after extraction.'
-                  : blocker}
+          {status === 'failed'
+            ? 'Processing failed. This document cannot be reviewed.'
+            : status === 'reviewed'
+              ? 'Reviewed. The document is read-only.'
+              : status === 'discarded'
+                ? 'Discarded. This document contributes no data.'
+                : status === 'unsupported'
+                  ? `Unsupported document class: ${document.documentClass ?? 'Pending classification'} documents are not extracted.`
+                  : mode === 'processing'
+                    ? 'Processing. Review becomes available after extraction.'
+                    : blocker}
         </p>
         {!readOnly && (
           <div className="flex gap-2 [&_button]:h-[33px] [&_button]:text-[11px]">

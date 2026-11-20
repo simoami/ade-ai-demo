@@ -271,6 +271,9 @@ importers:
       '@repo/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/logger':
         specifier: workspace:*
         version: link:../../packages/logger
@@ -338,9 +341,15 @@ importers:
       '@hyzyla/pdfium':
         specifier: ^3.0.0
         version: 3.0.0
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../db
       '@repo/logger':
         specifier: workspace:*
         version: link:../logger
+      '@repo/storage':
+        specifier: workspace:*
+        version: link:../storage
       ai:
         specifier: ^7.0.173
         version: 7.0.173(zod@4.6.7)

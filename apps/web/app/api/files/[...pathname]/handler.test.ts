@@ -2,17 +2,21 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createFileHandler } from './handler.ts'
 
+const id = 'f38ac619-f99c-4b98-b4f6-0dc2f892c30c'
+
 const request = new Request(
-  'https://example.com/api/files/documents/id/page.png'
+  `https://example.com/api/files/documents/${id}/pages/1.webp`
 )
+
+const valid = ['documents', id, 'pages', '1.webp']
 
 function context(pathname: string[]) {
   return { params: Promise.resolve({ pathname }) }
 }
 
-test('streams allowed private files with content type and privacy headers', async () => {
+test('streams only redacted pages with privacy headers', async () => {
   const handler = createFileHandler(async (pathname) => {
-    assert.equal(pathname, 'documents/id/page.png')
+    assert.equal(pathname, `documents/${id}/pages/1.webp`)
     return {
       stream: new ReadableStream({
         start(controller) {
@@ -20,16 +24,13 @@ test('streams allowed private files with content type and privacy headers', asyn
           controller.close()
         },
       }),
-      contentType: 'image/png',
+      contentType: 'image/webp',
     }
   })
-  const response = await handler(
-    request,
-    context(['documents', 'id', 'page.png'])
-  )
+  const response = await handler(request, context(valid))
   assert.equal(response.status, 200)
-  assert.equal(response.headers.get('cache-control'), 'private, no-cache')
-  assert.equal(response.headers.get('content-type'), 'image/png')
+  assert.equal(response.headers.get('cache-control'), 'private, no-store')
+  assert.equal(response.headers.get('content-type'), 'image/webp')
   assert.equal(response.headers.get('x-content-type-options'), 'nosniff')
   assert.deepEqual(
     new Uint8Array(await response.arrayBuffer()),
@@ -37,35 +38,40 @@ test('streams allowed private files with content type and privacy headers', asyn
   )
 })
 
-test('rejects traversal and non-document paths before accessing storage', async () => {
+test('rejects originals, renders, OCR and malformed paths before accessing storage', async () => {
+  let calls = 0
   const handler = createFileHandler(async () => {
-    throw new Error('must not be called')
+    calls++
+    return null
   })
   for (const pathname of [
     [],
     ['documents'],
     ['uploads', 'a.pdf'],
-    ['documents', '..', 'a'],
-    ['documents', '.'],
-    ['documents', 'a/b'],
-    ['documents', '%2e%2e'],
-    ['documents', 'a\\b'],
-    ['documents', ''],
+    ['documents', '..', 'pages', '1.webp'],
+    ['documents', 'not-a-uuid', 'pages', '1.webp'],
+    ['documents', id, 'render', '1.png'],
+    ['documents', id, 'ocr.json.enc'],
+    ['documents', id, 'pages', '0.webp'],
+    ['documents', id, 'pages', '01.webp'],
+    ['documents', id, 'pages', '-1.webp'],
+    ['documents', id, 'pages', '1.png'],
+    ['documents', id, 'pages', '1.webp', 'extra'],
+    ['documents', id, 'pages', '../1.webp'],
+    ['documents', id, 'pages', '%2e%2e'],
   ]) {
     assert.equal((await handler(request, context(pathname))).status, 400)
   }
+  assert.equal(calls, 0)
 })
 
-test('returns 404 for missing blobs and fixed errors for provider failures', async () => {
+test('returns 404 for missing pages and safe errors for provider failures', async () => {
   const missing = createFileHandler(async () => null)
-  assert.equal(
-    (await missing(request, context(['documents', 'missing']))).status,
-    404
-  )
+  assert.equal((await missing(request, context(valid))).status, 404)
   const failed = createFileHandler(async () => {
     throw new Error('sensitive provider details')
   })
-  const response = await failed(request, context(['documents', 'id']))
+  const response = await failed(request, context(valid))
   assert.equal(response.status, 503)
   assert.deepEqual(await response.json(), { error: 'File unavailable' })
 })

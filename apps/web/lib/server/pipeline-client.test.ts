@@ -44,7 +44,10 @@ test('sends authenticated start, status and review calls to the fixed service', 
     }
   )
 
-  await pipeline.start({ fixtureId: 'clinical-20' })
+  await pipeline.start({
+    fileName: 'sample.pdf',
+    pathnames: ['uploads/sample-a1b2.pdf'],
+  })
   await pipeline.status(documentId)
   await pipeline.review(documentId, { type: 'markReviewed' })
 

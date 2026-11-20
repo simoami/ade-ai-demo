@@ -169,3 +169,19 @@ test('indexes document and patient lookups with btree indexes', () => {
     )
   )
 })
+
+test('stores nullable keyed document identifiers and plaintext limited sex demographics in migration 0001', () => {
+  assert.equal(documents.identifierHashes.notNull, false)
+  assert.equal(documents.sex.notNull, false)
+  assert.equal(documents.identifierHashes.dataType, 'json')
+  const sql = readFileSync(
+    new URL('../migrations/0001_tricky_ghost_rider.sql', import.meta.url),
+    'utf8'
+  )
+  assert.match(
+    sql,
+    /ALTER TABLE "documents" ADD COLUMN "identifier_hashes" jsonb;/
+  )
+  assert.match(sql, /ALTER TABLE "documents" ADD COLUMN "sex" text;/)
+  assert.doesNotMatch(sql, /NOT NULL|DROP|CREATE TABLE/)
+})

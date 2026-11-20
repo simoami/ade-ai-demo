@@ -1,24 +1,28 @@
-import { join } from 'node:path'
 import { logger } from '@repo/logger'
-import { artifactDirectory } from '#local-artifacts'
-import { renderPdf } from '#stages/render/render-pages'
+import { FatalError } from 'eve/workflow'
+import {
+  type IngestInput,
+  renderDocument,
+} from '#workflows/ingest-document/processing'
 
-/** Renders document artifacts and logs aggregate rendering metadata. */
-export async function renderPages(documentId: string) {
+/** Renders originals into internal Blob PNGs; failures never expose document content. */
+export async function renderPages(input: IngestInput) {
   'use step'
   const log = logger.getSubLogger({ name: 'ingest-document.render-pages' })
 
-  const directory = artifactDirectory(documentId)
-  const result = await renderPdf(join(directory, 'original.pdf'), directory)
-
-  log.info(
-    {
-      documentId,
-      pageCount: result.pages.length,
-      durationMs: Math.round(result.totalMs),
-    },
-    'Render completed'
-  )
-
-  return { documentId }
+  const started = performance.now()
+  try {
+    const result = await renderDocument(input)
+    log.info(
+      {
+        documentId: input.documentId,
+        pageCount: result.pageCount,
+        durationMs: Math.round(performance.now() - started),
+      },
+      'Render completed'
+    )
+    return result
+  } catch {
+    throw new FatalError('Document rendering failed')
+  }
 }

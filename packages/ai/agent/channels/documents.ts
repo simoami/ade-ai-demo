@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto'
-import { copyFile, mkdir } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
 import { logger } from '@repo/logger'
 import { defineChannel, GET, POST } from 'eve/channels'
 import { getRun, resumeHook, start } from 'eve/workflow/api'
 import { authenticatePipeline } from '#agent/lib/pipeline-auth'
-import { artifactDirectory, readRunId, saveRun } from '#local-artifacts'
+import {
+  findDocument,
+  insertDocument,
+  updateDocument,
+} from '#workflows/ingest-document/document-store'
 import { ingestDocument } from '#workflows/ingest-document/ingest-document.workflow'
 import {
   documentIdSchema,
@@ -15,10 +17,6 @@ import {
 } from '#workflows/ingest-document/review-action'
 
 const log = logger.getSubLogger({ name: 'documents' })
-
-function missing(error: unknown): boolean {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
-}
 
 async function authenticated(
   request: Request,
@@ -61,31 +59,33 @@ export default defineChannel({
 
         if (!parsed.success)
           return Response.json(
-            { error: 'Invalid fixture request' },
+            { error: 'Invalid document request' },
             { status: 400 }
           )
 
         const documentId = randomUUID()
-        const directory = artifactDirectory(documentId)
-        await mkdir(directory, { recursive: true, mode: 0o700 })
-        await copyFile(
-          resolve('../../fixtures/synthetic/clinical-20/clean.pdf'),
-          join(directory, 'original.pdf')
-        )
-
-        const run = await start(ingestDocument, [{ documentId }])
+        await insertDocument({ documentId, ...parsed.data })
 
         try {
-          await saveRun(documentId, run.runId)
-        } catch (error) {
-          await run.cancel()
+          const run = await start(ingestDocument, [
+            { documentId, ...parsed.data },
+          ])
+          try {
+            await updateDocument(documentId, { runId: run.runId })
+          } catch (error) {
+            await run.cancel()
+            throw error
+          }
 
+          log.info({ documentId, runId: run.runId }, 'Document run started')
+          return Response.json(
+            { documentId, runId: run.runId },
+            { status: 202 }
+          )
+        } catch (error) {
+          await updateDocument(documentId, { status: 'failed' })
           throw error
         }
-
-        log.info({ documentId, runId: run.runId }, 'Document run started')
-
-        return Response.json({ documentId, runId: run.runId }, { status: 202 })
       })
     ),
     GET('/pipeline/documents/:id', async (request, { params }) =>
@@ -98,19 +98,15 @@ export default defineChannel({
             { status: 400 }
           )
 
-        let runId: string
-
-        try {
-          runId = await readRunId(id.data)
-        } catch (error) {
-          if (missing(error))
-            return Response.json(
-              { error: 'Document not found' },
-              { status: 404 }
-            )
-
-          throw error
-        }
+        const document = await findDocument(id.data)
+        if (!document)
+          return Response.json({ error: 'Document not found' }, { status: 404 })
+        const runId = document.runId
+        if (!runId)
+          return Response.json(
+            { error: 'Document run is unavailable' },
+            { status: 409 }
+          )
 
         const run = getRun(runId)
         const status = await run.status
@@ -134,6 +130,27 @@ export default defineChannel({
           return Response.json(
             { error: 'Invalid review action' },
             { status: 400 }
+          )
+
+        const document = await findDocument(id.data)
+        if (!document)
+          return Response.json({ error: 'Document not found' }, { status: 404 })
+        if (
+          !document.runId ||
+          document.status === 'reviewed' ||
+          document.status === 'discarded' ||
+          document.status === 'failed'
+        )
+          return Response.json(
+            { error: 'Review hook is unavailable' },
+            { status: 409 }
+          )
+
+        const runStatus = await getRun(document.runId).status
+        if (runStatus !== 'running')
+          return Response.json(
+            { error: 'Review hook is unavailable' },
+            { status: 409 }
           )
 
         try {

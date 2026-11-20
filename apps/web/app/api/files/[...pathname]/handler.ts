@@ -4,20 +4,16 @@ import { z } from 'zod'
 
 const log = logger.getSubLogger({ name: 'files' })
 
-const pathnameSchema = z
-  .array(
-    z
-      .string()
-      .min(1)
-      .regex(/^[a-zA-Z0-9_.-]+$/)
-      .refine((part) => part !== '.' && part !== '..')
-  )
-  .min(2)
-  .refine((parts) => parts[0] === 'documents')
+const pathnameSchema = z.tuple([
+  z.literal('documents'),
+  z.uuid(),
+  z.literal('pages'),
+  z.string().regex(/^[1-9][0-9]*\.webp$/),
+])
 
 type Context = { params: Promise<{ pathname: string[] }> }
 
-/** Creates a private file endpoint limited to document artifacts. */
+/** Creates a private file endpoint limited to redacted document page images. */
 export function createFileHandler(get = storage.get) {
   return async (_request: Request, context: Context): Promise<Response> => {
     const parsed = pathnameSchema.safeParse((await context.params).pathname)
@@ -31,8 +27,8 @@ export function createFileHandler(get = storage.get) {
       if (result === null) return new Response('Not found', { status: 404 })
       return new Response(result.stream, {
         headers: {
-          'Cache-Control': 'private, no-cache',
-          'Content-Type': result.contentType,
+          'Cache-Control': 'private, no-store',
+          'Content-Type': 'image/webp',
           'X-Content-Type-Options': 'nosniff',
         },
       })

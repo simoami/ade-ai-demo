@@ -5,15 +5,15 @@ import { Inbox, UsersRound } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { documents } from '#lib/sample-records'
+import type { DocumentSummary } from '#lib/records-types'
 
 const links = [
   { href: '/documents', label: 'Documents', icon: Inbox },
   { href: '/patients', label: 'Patients', icon: UsersRound },
 ]
 
-/** Workspace sticky top-0 flex h-svh w-[236px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-3.5 pt-[22px] pb-3 max-md:w-44 navigation with the current section highlighted. */
-export function AppNav() {
+/** Workspace navigation with the current section and pending review count. */
+export function AppNav({ documents }: { documents: DocumentSummary[] }) {
   const pathname = usePathname()
 
   return (

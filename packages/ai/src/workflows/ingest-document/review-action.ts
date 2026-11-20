@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-/** Validates document IDs before filesystem or workflow access. */
+/** Validates document IDs before database or workflow access. */
 export const documentIdSchema = z.uuid()
 
 /** Accepts review decisions without document content. */
@@ -23,9 +23,29 @@ export function reviewToken(documentId: string): string {
   return `document:${documentId}:review`
 }
 
-/** Restricts ingestion to the supported synthetic fixture. */
+/** Accepts only relative original-upload Blob paths without traversal or URL syntax. */
+export const uploadPathname = z
+  .string()
+  .min(9)
+  .max(1024)
+  .refine(
+    (value) =>
+      value.startsWith('uploads/') &&
+      !/[\\?#%]/.test(value) &&
+      [...value].every(
+        (character) =>
+          character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127
+      ) &&
+      value
+        .split('/')
+        .every((part) => part !== '' && part !== '.' && part !== '..'),
+    'Invalid upload pathname'
+  )
+
+/** Validates one PDF or ordered image upload references; content types are checked when rendered. */
 export const startDocumentSchema = z.strictObject({
-  fixtureId: z.literal('clinical-20').default('clinical-20'),
+  fileName: z.string().min(1).max(255),
+  pathnames: z.array(uploadPathname).min(1).max(30),
 })
 
 /** Validates document and workflow identifiers returned at startup. */

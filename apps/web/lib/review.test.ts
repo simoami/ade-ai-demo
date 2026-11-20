@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import type { Redaction } from './records-types.ts'
 import { matchStrength, pendingCount } from './review.ts'
-import type { Redaction } from './sample-records.ts'
 
 const none = {
   lastName: 'absent',

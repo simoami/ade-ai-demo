@@ -2,13 +2,14 @@ import { Badge } from '@repo/ui/components/badge'
 import { ShineBorder } from '@repo/ui/components/shine-border'
 import { cn } from '@repo/ui/lib/utils'
 import { Sparkles } from 'lucide-react'
+import type { DocumentStatus } from '#lib/records-types'
 import { documentStatusLabels, reviewMode } from '#lib/review'
-import type { DocumentStatus } from '#lib/sample-records'
 
 const tones: Partial<Record<DocumentStatus, string>> = {
   needsReview: 'bg-warning-muted text-warning',
   reviewed: 'bg-success-muted text-success',
   discarded: 'bg-destructive/10 text-destructive',
+  failed: 'bg-destructive/10 text-destructive',
 }
 
 /** Shows where a document is in the pipeline or its review. */

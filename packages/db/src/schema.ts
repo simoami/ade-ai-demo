@@ -17,6 +17,11 @@ import {
 /** Normalized top-left rectangle in page coordinates. */
 export type Box = { x: number; y: number; width: number; height: number }
 
+/** Keyed HMAC-SHA256 identifier values; raw identifiers never enter database rows. */
+export type IdentifierHashes = Partial<
+  Record<'lastName' | 'firstName' | 'birthDate' | 'mrn', string>
+>
+
 /** One source region, using a one-based page number and the OCR block ID. */
 export type SourceRegion = { page: number; blockId: string; box: Box }
 
@@ -102,6 +107,8 @@ export const documents = pgTable(
     fileName: text('file_name').notNull(),
     originalPathname: text('original_pathname').notNull(),
     documentClass: documentClass('document_class'),
+    sex: text('sex'),
+    identifierHashes: jsonb('identifier_hashes').$type<IdentifierHashes>(),
     identityMismatch: boolean('identity_mismatch').default(false).notNull(),
     pageDimensions: jsonb('page_dimensions')
       .$type<{ width: number; height: number }[]>()

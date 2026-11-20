@@ -18,7 +18,7 @@ Startup validates environment variables without printing values. On Vercel,
 OIDC replaces the shared secret and eve requires `VERCEL_PROJECT_ID`.
 
 `pnpm dev` from the repository root starts this service on port 8000 and the web
-app together. With both running, `bash scripts/smoke-review.sh` exercises a review.
+app together.
 
 `EVE_BASE_URL` tells `withEve` to reuse this service for protocol routes instead
 of starting its own; the document client uses `PIPELINE_SERVICE_ORIGIN`.
@@ -29,15 +29,28 @@ Deployment Protection for internal calls; no automation bypass secret is needed.
 OIDC still authenticates every channel request. Binding URLs are validated when
 the gateway handles a request because bindings are unavailable during builds.
 
-The smoke script renders, submits a redaction decision,
-completes review, and checks the final status and counter without a model call.
+`POST /api/documents` accepts `{ fileName, pathnames }` after client uploads to
+private Blob under `uploads/`. Supply one PDF or 1–30 PNG/JPEG images in page
+order, up to 20 MB total. The channel inserts a Postgres document, starts its
+workflow and stores `run_id`. Status and review requests look up that row.
 
-`POST /api/documents` accepts `{"fixtureId":"clinical-20"}` or `{}`. Artifacts
-and run-ID mappings are written under `<os-temp>/ade-documents/<documentId>/`.
-Local Workflow history lives in `packages/ai/.eve/.workflow-data`. Artifacts
-are not encrypted or automatically deleted; only the synthetic fixture is
-supported. Deployment requires durable artifacts and document/run metadata
-and Deployment Protection.
+Rendering uses a private, short-lived scratch directory removed after the step.
+Unredacted renders are stored only at `documents/<id>/render/<page>.png`.
+Reducto r-1 reads these pages; AES-256-GCM protects the OCR JSON at
+`documents/<id>/ocr.json.enc` (12-byte IV, 16-byte auth tag, ciphertext).
+Set `DATABASE_URL`, `BLOB_READ_WRITE_TOKEN`, `REDUCTO_API_KEY`, and
+`DOCUMENT_ENCRYPTION_KEY` (base64, exactly 32 bytes) in the service environment.
+Builds need no credentials. Tests replace storage, database and OCR operations.
+
+Database status advances from `rendering` to `reading` to `redacting`, where it
+stays pending the redaction stage. Processing failures write `failed` and fail
+the workflow with a content-free error. The review hook records terminal
+`reviewed` or `discarded` decisions. `redaction.update` currently increments a
+refresh counter only. Terminal review does not yet delete artifacts. Real
+uploads produce no redacted, servable `pages/<page>.webp` images in this step.
+Workflow history includes original upload references and file names as input;
+OCR content remains inside steps and encrypted Blob storage. Local Workflow
+history lives in `packages/ai/.eve/.workflow-data`.
 
 `pnpm --filter @repo/ai bench:render` measures rendering of the 20-page fixture
 at 144 DPI with 240-pixel WebP thumbnails, using
@@ -62,15 +75,16 @@ in `package.json`; callers omit the `.ts` extension. Node strip-types tests,
 TypeScript and eve resolve the same source files without tsconfig aliases.
 
 `@repo/logger` records run starts, accepted review actions, authentication
-rejections and request failures. Steps log render totals, refresh counts and
+rejections and request failures. Steps log render/OCR totals, refresh counts and
 terminal review status; the workflow body has no logging side effects.
 Only metadata is logged; errors contribute their type, never their message.
 See [the logger README](../logger/README.md) for formatting and masked keys.
 
 ## OCR and evaluation
 
-`src/stages/ocr` transcribes page PNGs with `models.pipeline` and structured
-output, at most two calls per invocation. It is not wired into the workflow.
+`src/stages/ocr` transcribes PNG pages with at most two calls in flight. The
+ingestion workflow uses the default Reducto r-1 provider; evaluations can
+select a different provider.
 `pnpm eval` runs the Braintrust stage suites; `pnpm eval:ocr` selects OCR.
 Set `BRAINTRUST_API_KEY` in this package's `.env.local` to upload synthetic
 experiments; without it, results remain local. `OPENAI_API_KEY` is required.

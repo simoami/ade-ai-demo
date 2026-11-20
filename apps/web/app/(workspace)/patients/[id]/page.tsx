@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { ObservationTrend } from '#components/observation-trend'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
-import { documents, findPatient, findReviewDocument } from '#lib/sample-records'
+import { getPatientRecord } from '#lib/server/records'
 
 const trendedLabs = ['Glucose', 'Sodium']
 
@@ -12,20 +12,21 @@ const trendedLabs = ['Glucose', 'Sodium']
 export default async function PatientPage({
   params,
 }: PageProps<'/patients/[id]'>) {
-  const patient = findPatient((await params).id)
-  if (!patient) notFound()
+  const record = await getPatientRecord((await params).id)
+  if (!record) notFound()
 
-  const linked = documents.filter(
-    (document) => document.patientId === patient.id
-  )
-  const observations = linked.flatMap(
-    (document) => findReviewDocument(document.id)?.observations ?? []
-  )
+  const { patient, documents: linked, observations } = record
   const trends = trendedLabs
     .map((name) => {
       const byDate = new Map(
         observations
-          .filter((observation) => observation.name === name)
+          .filter(
+            (observation) =>
+              observation.name === name &&
+              observation.date !== '' &&
+              observation.value.trim() !== '' &&
+              Number.isFinite(Number(observation.value))
+          )
           .map((observation) => [observation.date, observation])
       )
       const sorted = [...byDate.values()].sort((a, b) =>
@@ -64,7 +65,7 @@ export default async function PatientPage({
           </div>
           <h1>{patient.id}</h1>
           <p className="text-[10px] text-muted-foreground">
-            {patient.sex} · born {patient.birthYear}
+            {patient.sex} · born {patient.birthYear ?? 'Unknown'}
           </p>
         </div>
       </header>
@@ -127,7 +128,7 @@ export default async function PatientPage({
                   </strong>
                   <span>
                     {formatDate(document.uploadedAt)} · {document.pages} pages ·{' '}
-                    {document.documentClass}
+                    {document.documentClass ?? 'Pending classification'}
                   </span>
                 </div>
                 <StatusBadge status={document.status} />

@@ -21,16 +21,18 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
+import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { UploadZone } from '#components/upload-zone'
 import { filterDocuments } from '#lib/document-filters'
 import { formatDate } from '#lib/format'
-import { documents } from '#lib/sample-records'
+import type { DocumentSummary } from '#lib/records-types'
+import { reviewMode } from '#lib/review'
 
 const filters = ['All', 'Needs review', 'Clinical', 'Consent'] as const
 
 /** Document operations with real counts, working filters and filename or patient search. */
-export function DocumentsList() {
+export function DocumentsList({ documents }: { documents: DocumentSummary[] }) {
   const searchId = useId()
   const [filter, setFilter] = useState<(typeof filters)[number]>('All')
   const [query, setQuery] = useState('')
@@ -72,6 +74,11 @@ export function DocumentsList() {
 
   return (
     <main className="mx-auto max-w-[1500px] px-[34px] pt-[29px] pb-12 max-lg:px-[22px]">
+      <ProcessingRefresh
+        active={documents.some(
+          (document) => reviewMode(document.status) === 'processing'
+        )}
+      />
       <header className="mb-[23px] flex items-end justify-between [&_h1]:mt-2 [&_h1]:mb-1 [&_h1]:text-[25px] [&_h1]:font-semibold [&_h1]:tracking-tight [&_p]:text-xs [&_p]:text-muted-foreground">
         <div>
           <div className="text-[9px] font-bold tracking-[.12em] text-muted-foreground">
@@ -194,7 +201,7 @@ export function DocumentsList() {
                   </TableCell>
                   <TableCell>
                     <span className="text-[11px] capitalize">
-                      {document.documentClass}
+                      {document.documentClass ?? 'Pending classification'}
                     </span>
                   </TableCell>
                   <TableCell className="tabular-nums">
@@ -214,8 +221,16 @@ export function DocumentsList() {
                   <TableCell colSpan={6}>
                     <div className="flex flex-col items-center gap-2 py-9 text-muted-foreground">
                       <Search size={18} />
-                      <strong>No documents found</strong>
-                      <span>Try another search or filter.</span>
+                      <strong>
+                        {documents.length === 0
+                          ? 'No documents yet'
+                          : 'No documents found'}
+                      </strong>
+                      <span>
+                        {documents.length === 0
+                          ? 'Upload a document to start a review.'
+                          : 'Try another search or filter.'}
+                      </span>
                     </div>
                   </TableCell>
                 </TableRow>

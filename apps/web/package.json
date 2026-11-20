@@ -15,12 +15,13 @@
     "format": "biome format --write .",
     "check:agent": "node scripts/check-agent.mjs",
     "check": "biome check .",
-    "test": "node --experimental-strip-types --test lib/*.test.ts lib/server/*.test.ts"
+    "test": "node --experimental-strip-types --test lib/*.test.ts lib/server/*.test.ts 'app/api/**/*.test.ts'"
   },
   "dependencies": {
     "@opentelemetry/api": "catalog:",
     "@opentelemetry/api-logs": "catalog:",
     "@repo/ai": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/logger": "workspace:*",
     "@repo/storage": "workspace:*",
     "@repo/ui": "workspace:*",

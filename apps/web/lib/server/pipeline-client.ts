@@ -2,6 +2,7 @@ import {
   documentStatusSchema,
   type ReviewAction,
   reviewResultSchema,
+  type startDocumentSchema,
   startResultSchema,
 } from '@repo/ai/review-action'
 import { logger } from '@repo/logger'
@@ -82,7 +83,7 @@ async function call<T>(
 
 /** Authenticated document service client with validated responses. */
 export const pipeline = {
-  start: (input: { fixtureId: 'clinical-20' }) =>
+  start: (input: z.infer<typeof startDocumentSchema>) =>
     call('', startResultSchema, input),
   status: (documentId: string) =>
     call(`/${encodeURIComponent(documentId)}`, documentStatusSchema),

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { filterDocuments } from './document-filters.ts'
-import type { DocumentSummary } from './sample-records.ts'
+import type { DocumentSummary } from './records-types.ts'
 
 const documents: DocumentSummary[] = [
   {

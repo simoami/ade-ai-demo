@@ -1,4 +1,4 @@
-import type { DocumentSummary } from './sample-records.ts'
+import type { DocumentSummary } from './records-types.ts'
 
 /** Applies the document category or status filter and a case-insensitive search. */
 export function filterDocuments(

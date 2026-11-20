@@ -10,13 +10,13 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { Check, Minus, UsersRound, X } from 'lucide-react'
 import { useState } from 'react'
-import { type MatchStrength, matchStrength } from '#lib/review'
 import type {
   FieldMatch,
   MatchField,
   Patient,
   ReviewDocument,
-} from '#lib/sample-records'
+} from '#lib/records-types'
+import { type MatchStrength, matchStrength } from '#lib/review'
 
 const fieldLabels: Record<MatchField, string> = {
   lastName: 'Last name',
@@ -61,7 +61,7 @@ export function PatientPanel({
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="text-sm font-medium">{patient.id}</span>
               <span className="text-xs text-muted-foreground">
-                {patient.sex} · born {patient.birthYear}
+                {patient.sex} · born {patient.birthYear ?? 'Unknown'}
               </span>
             </div>
             <StrengthBadge strength={matchStrength(fields)} />
@@ -84,8 +84,8 @@ export function PatientPanel({
       )}
 
       <p className="rounded-md bg-accent/40 p-2.5 text-[9px] leading-relaxed text-muted-foreground">
-        Identifiers read from the document are compared with each patient's
-        stored hashes. Names and full dates of birth are not stored.
+        Names, date of birth and MRN are compared using stored hashes. Sex is
+        compared directly. Names and full dates of birth are not stored.
       </p>
 
       {!readOnly && (
@@ -122,7 +122,8 @@ export function PatientPanel({
               >
                 <span className="font-medium">{candidate.id}</span>
                 <span className="text-muted-foreground">
-                  {candidate.initials} · {candidate.sex} · {candidate.birthYear}
+                  {candidate.initials} · {candidate.sex} ·{' '}
+                  {candidate.birthYear ?? 'Unknown'}
                 </span>
                 {candidateFields !== undefined && (
                   <span className="ml-auto">

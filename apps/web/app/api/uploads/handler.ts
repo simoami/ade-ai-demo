@@ -1,17 +1,8 @@
+import { uploadPathname } from '@repo/ai/review-action'
 import { logger } from '@repo/logger'
 import { type HandleUploadBody, storage } from '@repo/storage'
-import { z } from 'zod'
 
 const log = logger.getSubLogger({ name: 'uploads' })
-
-const pathnameSchema = z
-  .string()
-  .regex(/^uploads\/[a-zA-Z0-9_-][a-zA-Z0-9_./-]*$/)
-  .refine((pathname) =>
-    pathname
-      .split('/')
-      .every((part) => part !== '' && part !== '.' && part !== '..')
-  )
 
 /** Creates the upload endpoint with an injectable token handler for offline tests. */
 export function createUploadHandler(handleUpload = storage.handleUpload) {
@@ -29,7 +20,7 @@ export function createUploadHandler(handleUpload = storage.handleUpload) {
         request,
         body,
         onBeforeGenerateToken: async (pathname) => {
-          pathnameSchema.parse(pathname)
+          uploadPathname.parse(pathname)
           return {
             allowedContentTypes: ['application/pdf', 'image/png', 'image/jpeg'],
             maximumSizeInBytes: 20 * 1024 * 1024,

@@ -1,13 +1,19 @@
 import { notFound } from 'next/navigation'
 import { ReviewWorkspace } from '#components/review/review-workspace'
-import { findReviewDocument, patients } from '#lib/sample-records'
+import { getPatients, getReviewDocument } from '#lib/server/records'
 
 /** Review screen for one processed document. */
 export default async function DocumentReviewPage({
   params,
 }: PageProps<'/documents/[id]'>) {
-  const document = findReviewDocument((await params).id)
+  const document = await getReviewDocument((await params).id)
   if (!document) notFound()
 
-  return <ReviewWorkspace document={document} patients={patients} />
+  return (
+    <ReviewWorkspace
+      key={`${document.id}:${document.status}`}
+      document={document}
+      patients={await getPatients()}
+    />
+  )
 }

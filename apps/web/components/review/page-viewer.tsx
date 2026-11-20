@@ -3,7 +3,7 @@ import { cn } from '@repo/ui/lib/utils'
 import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import type { Box, Redaction } from '#lib/sample-records'
+import type { Box, Redaction } from '#lib/records-types'
 
 const zoomSteps = [0.75, 1, 1.25, 1.5]
 
@@ -36,7 +36,7 @@ export function PageViewer({
         aria-label="Document viewer"
       >
         <p className="text-xs" role="status">
-          Pages appear once redaction finishes
+          No redacted pages available
         </p>
       </section>
     )
@@ -111,6 +111,7 @@ export function PageViewer({
               alt={`Page ${page}, redacted`}
               fill
               sizes="(min-width: 1024px) 60vw, 100vw"
+              unoptimized
               priority
             />
           )}

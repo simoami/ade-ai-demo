@@ -7,5 +7,6 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
 
 /** Formats an ISO date or timestamp as a short calendar date. */
 export function formatDate(iso: string) {
-  return dateFormat.format(new Date(iso))
+  const date = new Date(iso)
+  return Number.isNaN(date.getTime()) ? 'Unknown date' : dateFormat.format(date)
 }

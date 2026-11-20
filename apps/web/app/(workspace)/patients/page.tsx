@@ -1,8 +1,10 @@
 import Link from 'next/link'
-import { documents, patients } from '#lib/sample-records'
+import { getPatients } from '#lib/server/records'
 
 /** Patient list: stored demographics and linked document counts. */
-export default function PatientsPage() {
+export default async function PatientsPage() {
+  const patients = await getPatients()
+
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
       <header>
@@ -12,6 +14,11 @@ export default function PatientsPage() {
           year.
         </p>
       </header>
+      {patients.length === 0 && (
+        <p className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
+          No patients yet. Patients appear once documents have been linked.
+        </p>
+      )}
       <ul className="flex flex-col divide-y rounded-lg border bg-card">
         {patients.map((patient) => (
           <li key={patient.id}>
@@ -24,13 +31,8 @@ export default function PatientsPage() {
               </span>
               <span className="flex-1 text-sm font-medium">{patient.id}</span>
               <span className="text-sm text-muted-foreground">
-                {patient.sex} · born {patient.birthYear} ·{' '}
-                {
-                  documents.filter(
-                    (document) => document.patientId === patient.id
-                  ).length
-                }{' '}
-                documents
+                {patient.sex} · born {patient.birthYear ?? 'Unknown'} ·{' '}
+                {patient.documentCount} documents
               </span>
             </Link>
           </li>

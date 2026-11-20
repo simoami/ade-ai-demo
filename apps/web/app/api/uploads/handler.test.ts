@@ -106,3 +106,21 @@ test('passes protocol fields through to the Blob SDK unchanged', async () => {
   )
   assert.equal(response.status, 200)
 })
+
+test('accepts filenames with spaces and unicode using the shared pathname contract', async () => {
+  const handler = createUploadHandler(async (options) => {
+    if (options.body.type !== 'blob.generate-client-token')
+      throw new Error('Unexpected event')
+
+    await options.onBeforeGenerateToken(
+      options.body.payload.pathname,
+      null,
+      false
+    )
+    return { type: 'blob.generate-client-token', clientToken: 'test-token' }
+  })
+  assert.equal(
+    (await handler(request('uploads/clinical résumé 2026.pdf'))).status,
+    200
+  )
+})

@@ -5,10 +5,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppNav } from '#components/app-nav'
 import { ThemeToggle } from '#components/theme-toggle'
-import { documents } from '#lib/sample-records'
+import type { DocumentSummary } from '#lib/records-types'
 
 /** Shared brand, navigation, breadcrumbs and appearance control. */
-export function WorkspaceShell({ children }: { children: React.ReactNode }) {
+export function WorkspaceShell({
+  children,
+  documents,
+}: {
+  children: React.ReactNode
+  documents: DocumentSummary[]
+}) {
   const pathname = usePathname()
   const section = pathname.startsWith('/patients') ? 'Patients' : 'Documents'
   const id = pathname.split('/')[2]
@@ -33,7 +39,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         <div className="mx-2 mt-[33px] mb-2.5 text-[10px] font-bold tracking-widest text-muted-foreground">
           WORKSPACE
         </div>
-        <AppNav />
+        <AppNav documents={documents} />
       </aside>
       <div className="min-w-0 flex-1">
         <header className="flex h-[54px] items-center justify-between border-b bg-card px-8">

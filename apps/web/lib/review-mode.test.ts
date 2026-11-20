@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import type { DocumentStatus } from './records-types.ts'
 import { reviewMode } from './review.ts'
-import type { DocumentStatus } from './sample-records.ts'
 
 test('allows changes only to documents awaiting review', () => {
   assert.equal(reviewMode('needsReview'), 'review')
@@ -10,6 +10,7 @@ test('allows changes only to documents awaiting review', () => {
     'reviewed',
     'discarded',
     'unsupported',
+    'failed',
   ] satisfies DocumentStatus[]) {
     assert.equal(reviewMode(status), 'read-only')
   }

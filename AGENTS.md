@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The documents, review and patient screens read synthetic sample records from `apps/web/lib/sample-records.ts`; the review sample's redacted page images in `apps/web/public/samples/clinical-20` and its redactions and observations are generated from the `clinical-20` fixture's ground truth.
+`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The screens read Postgres through `apps/web/lib/server/records.ts`. `pnpm --filter @repo/ai seed:samples` loads six synthetic fixtures (redacted pages to Blob, rows to Postgres); run it, and `pnpm --filter @repo/db db:migrate`, for each Neon branch a deployment uses.
 
 `packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM, Datalab and Reducto OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
@@ -78,11 +78,14 @@ Default agent tools and trace emission are disabled.
 
 See `packages/ai/README.md` for the separate local service and web startup
 commands. `pnpm check:agent` checks health without a model request;
-`bash scripts/smoke-review.sh` checks rendering, refresh and review completion.
 `pnpm workflows` uses CLI 5.1.0, matching eve's Workflow dependencies; live
 inspector compatibility requires verification against a running service.
 
-Artifacts and run-ID mappings are stored under the OS temp directory. The workflow supports only the
-`clinical-20` synthetic fixture. OCR is evaluated separately from the workflow. Deployment requires durable artifact/run
-metadata storage, Deployment Protection and service
-credentials. Keep document content out of logs and workflow history.
+Originals and internal renders live in private Blob; encrypted OCR uses
+`DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
+Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered
+PNG/JPEG images, runs rendering and Reducto OCR, then stays at `redacting`
+until the redaction stage is implemented. Rendering scratch directories are
+removed inside the step. Terminal review writes status; artifact cleanup is
+not implemented. Deployment requires Deployment Protection and service
+credentials. Keep document content out of logs and OCR out of workflow history.

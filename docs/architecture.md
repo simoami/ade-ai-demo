@@ -12,14 +12,14 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 
 ## Packages
 
-| Package            | Responsibility                                                                                                   |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `apps/web`         | Next.js document API gateway; validates requests and calls the authenticated eve service                         |
-| `packages/ai`      | eve service, ingestion workflow and steps, plain rendering stage, model instances, local artifacts and contracts |
-| `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                                                    |
-| `packages/storage` | Provider-agnostic wrapper over Vercel Blob: put, get, head, list, delete, client upload tokens. No app logic     |
-| `packages/logger`  | Shared tslog root and named children: pretty locally, JSON on Vercel/production, sensitive keys masked           |
-| `packages/ui`      | shadcn components on Base UI                                                                                     |
+| Package            | Responsibility                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `apps/web`         | Next.js document API gateway; validates requests and calls the authenticated eve service                        |
+| `packages/ai`      | eve service, ingestion workflow and steps, plain rendering stage, model instances, Blob artifacts and contracts |
+| `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                                                   |
+| `packages/storage` | Provider-agnostic wrapper over Vercel Blob: put, get, head, list, delete, client upload tokens. No app logic    |
+| `packages/logger`  | Shared tslog root and named children: pretty locally, JSON on Vercel/production, sensitive keys masked          |
+| `packages/ui`      | shadcn components on Base UI                                                                                    |
 
 `packages/ai` owns everything document-specific about storage: the artifact path layout, AES-256-GCM encryption of review-only artifacts, and their deletion.
 
@@ -56,10 +56,16 @@ public protocol routes; document calls use the binding. Local Next.js retains
 
 `agent/tools/ingest-document.ts` registers the workflow from
 `src/workflows/ingest-document/ingest-document.workflow.ts`. Its steps call
-ordinary functions under `src/stages/render`. The implemented workflow renders
-the synthetic fixture, waits on the review hook, increments a refresh counter
-for redaction decisions, and finishes on `markReviewed` or `discard`.
-Milestone logs use `@repo/logger` and carry metadata only. Render, refresh and
+ordinary functions under `src/stages/render` and `src/stages/ocr`. The channel
+creates a Postgres document and persists its run ID. The workflow reads private
+Blob originals, renders PNG pages, records dimensions, and runs Reducto r-1 OCR.
+It encrypts OCR JSON with AES-256-GCM (12-byte IV, 16-byte tag, ciphertext) using
+`DOCUMENT_ENCRYPTION_KEY`, then leaves status at `redacting`. It waits on the
+review hook, increments a refresh counter for redaction decisions, and writes
+terminal status on `markReviewed` or `discard`. Artifact cleanup and real-upload
+redaction are not implemented. Only redacted `pages/<page>.webp` can be served;
+this workflow produces internal `render/<page>.png` and `ocr.json.enc` only.
+Milestone logs use `@repo/logger` and carry metadata only. Render, OCR, refresh and
 terminal review logs run in durable steps, outside workflow replay; request
 failures include only fixed paths, statuses and error types.
 Only the contract is exported to Next.js. The clinical processing design is:
@@ -95,7 +101,7 @@ After processing, the run waits on a single review hook in a loop. The UI resume
 - **Mark as reviewed** is enabled when nothing blocks it: no flagged or unchecked observations, no redactions needing review, no identity mismatch. It creates the patient if needed, locks the document, and deletes the review-only artifacts.
 - **Discard** (duplicate upload, wrong patient) deletes the review-only artifacts and the document's derived data.
 
-Statuses: `queued`, `processing`, `in_review`, `reviewed`, `discarded`, and `failed` with a retry.
+Implemented ingestion statuses: `rendering` → `reading` → `redacting`; failures write `failed`, and terminal review writes `reviewed` or `discarded`.
 
 ## Privacy
 
@@ -132,10 +138,11 @@ Evaluation is how stages are built, not a check added afterwards.
 
 GitHub Actions runs check, typecheck, test and build on every pull request. Evals cost tokens, so they run on the `run-evals` label or manually and post the comparison as a comment. The app is developed locally and deployed to Vercel.
 
-Local document artifacts and run-ID mappings live under
-`<os-temp>/ade-documents`; Workflow history lives in `packages/ai/.eve/.workflow-data`.
-The service supports the synthetic fixture. Deployment requires durable artifact
-and document/run storage and service OIDC.
+Document artifacts live in private Blob and document/run mappings in Postgres.
+Rendering uses temporary scratch directories removed inside the step. Workflow
+history lives in `packages/ai/.eve/.workflow-data`; its inputs include original
+upload references and file names, while OCR content remains inside steps.
+Deployment requires service OIDC and Deployment Protection.
 `pnpm workflows` uses pinned CLI 5.1.0 with the same Workflow core/local-world
 versions as eve; live inspector access requires verification. See
 [`packages/ai/README.md`](../packages/ai/README.md) for exact local commands.

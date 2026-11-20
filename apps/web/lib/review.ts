@@ -4,7 +4,7 @@ import type {
   MatchField,
   Observation,
   Redaction,
-} from './sample-records.ts'
+} from './records-types.ts'
 
 export type MatchStrength = 'strong' | 'partial' | 'none'
 
@@ -52,4 +52,5 @@ export const documentStatusLabels: Record<DocumentStatus, string> = {
   reviewed: 'Reviewed',
   discarded: 'Discarded',
   unsupported: 'Unsupported',
+  failed: 'Failed',
 }

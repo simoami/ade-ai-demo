@@ -15,12 +15,15 @@
     "eval": "node --env-file-if-exists=.env.local evals/run.ts",
     "format": "biome format --write .",
     "check": "biome check .",
+    "seed:samples": "node --env-file-if-exists=.env.local scripts/seed-samples.ts",
     "bench:render": "node scripts/bench-render.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "catalog:",
     "@hyzyla/pdfium": "^3.0.0",
+    "@repo/db": "workspace:*",
     "@repo/logger": "workspace:*",
+    "@repo/storage": "workspace:*",
     "ai": "^7.0.173",
     "eve": "catalog:",
     "reductoai": "0.20.0",
