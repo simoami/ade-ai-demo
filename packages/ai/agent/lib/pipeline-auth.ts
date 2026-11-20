@@ -1,5 +1,5 @@
 import { httpBasic, routeAuth, vercelOidc } from 'eve/channels/auth'
-import { validateEnvironment } from './environment.ts'
+import { validateEnvironment } from '#agent/lib/environment'
 
 /** Requires local Basic authentication or deployment OIDC before document access. */
 export async function authenticatePipeline(
@@ -9,7 +9,12 @@ export async function authenticatePipeline(
   const settings = validateEnvironment(env)
   const auth =
     env.VERCEL === '1'
-      ? vercelOidc()
+      ? vercelOidc({
+          currentVercelProject: {
+            projectId: settings.VERCEL_PROJECT_ID ?? '',
+            environment: env.VERCEL_TARGET_ENV ?? env.VERCEL_ENV,
+          },
+        })
       : httpBasic({
           username: 'pipeline',
           password: settings.PIPELINE_SERVICE_SECRET ?? '',

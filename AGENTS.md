@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The documents, review and patient screens read synthetic sample records from `apps/web/lib/sample-records.ts`; the review sample's redacted page images in `apps/web/public/samples/clinical-20` and its redactions and observations are generated from the `clinical-20` fixture's ground truth.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM, Datalab and Reducto OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM, Datalab and Reducto OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 `packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
 
@@ -69,8 +69,7 @@ For frontend library-selection work, consult `.agents/skills/pick-ui-library/SKI
 Use `packages/ai/.env.example` and `apps/web/.env.example` for required variables.
 The service requires `OPENAI_API_KEY` and, for OCR, `REDUCTO_API_KEY`; local service calls require the same
 `PIPELINE_SERVICE_SECRET` in both packages. Next.js validates the fixed
-`PIPELINE_SERVICE_ORIGIN`, which defaults to the deployment URL on Vercel. Startup rejects missing or blank credentials; builds
-need none. Direct OpenAI model instances live in `packages/ai/src/models.ts`.
+`PIPELINE_SERVICE_ORIGIN`, injected by the Vercel service binding at function runtime. Set it explicitly for local development. Local startup rejects missing or blank credentials; Vercel validates binding configuration on each gateway call. Builds need no credentials. Direct OpenAI model instances live in `packages/ai/src/models.ts`.
 
 `agent/channels/documents.ts` authenticates with eve HTTP Basic locally and
 Vercel OIDC on deployments before validating requests. Workflow API calls run
@@ -85,5 +84,5 @@ inspector compatibility requires verification against a running service.
 
 Artifacts and run-ID mappings are stored under the OS temp directory. The workflow supports only the
 `clinical-20` synthetic fixture. OCR is evaluated separately from the workflow. Deployment requires durable artifact/run
-metadata storage, custom-channel routing, Deployment Protection, and service
+metadata storage, Deployment Protection and service
 credentials. Keep document content out of logs and workflow history.

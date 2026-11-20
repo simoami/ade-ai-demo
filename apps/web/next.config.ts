@@ -6,4 +6,6 @@ const nextConfig: NextConfig = {
 }
 
 /** Connects the Next.js application to the eve service. */
-export default withEve(nextConfig, { eveRoot: '../../packages/ai' })
+export default process.env.VERCEL === '1'
+  ? nextConfig
+  : withEve(nextConfig, { eveRoot: '../../packages/ai' })

@@ -8,28 +8,19 @@ const origin = z.url().refine((value) => {
     !url.password &&
     !url.search &&
     !url.hash &&
-    url.pathname === '/' &&
     (url.protocol === 'https:' ||
       ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
   )
 })
 
-/** Validates the fixed service origin and required gateway credentials. */
+/** Validates the service URL base and required gateway credentials. */
 export function validateEnvironment(env: Record<string, string | undefined>) {
   const schema = z.object({
     PIPELINE_SERVICE_ORIGIN: origin,
     PIPELINE_SERVICE_SECRET:
       env.VERCEL === '1' ? z.string().optional() : z.string().trim().min(32),
   })
-  // A Vercel deployment serves the eve service itself, so it defaults to its own URL.
-  const parsed = schema.safeParse({
-    ...env,
-    PIPELINE_SERVICE_ORIGIN:
-      env.PIPELINE_SERVICE_ORIGIN ??
-      (env.VERCEL === '1' && env.VERCEL_URL
-        ? `https://${env.VERCEL_URL}`
-        : undefined),
-  })
+  const parsed = schema.safeParse(env)
 
   if (!parsed.success) {
     throw new Error(
@@ -37,5 +28,12 @@ export function validateEnvironment(env: Record<string, string | undefined>) {
     )
   }
 
-  return { ...parsed.data, vercel: env.VERCEL === '1' }
+  const base = new URL(parsed.data.PIPELINE_SERVICE_ORIGIN)
+  base.pathname = `${base.pathname.replace(/\/$/, '')}/`
+
+  return {
+    ...parsed.data,
+    PIPELINE_SERVICE_ORIGIN: base.href,
+    vercel: env.VERCEL === '1',
+  }
 }

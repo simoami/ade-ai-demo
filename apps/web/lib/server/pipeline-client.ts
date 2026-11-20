@@ -7,7 +7,7 @@ import {
 import { logger } from '@repo/logger'
 import { getVercelOidcToken } from '@vercel/oidc'
 import type { z } from 'zod'
-import { validateEnvironment } from './environment.ts'
+import { validateEnvironment } from '#lib/server/environment'
 
 const log = logger.getSubLogger({ name: 'pipeline-client' })
 
@@ -41,7 +41,7 @@ async function call<T>(
       ? `Bearer ${await getVercelOidcToken()}`
       : `Basic ${Buffer.from(`pipeline:${env.PIPELINE_SERVICE_SECRET}`).toString('base64')}`
     const response = await fetch(
-      new URL(`/pipeline/documents${path}`, env.PIPELINE_SERVICE_ORIGIN),
+      new URL(`pipeline/documents${path}`, env.PIPELINE_SERVICE_ORIGIN),
       {
         method: body === undefined ? 'GET' : 'POST',
         headers: { authorization, 'content-type': 'application/json' },

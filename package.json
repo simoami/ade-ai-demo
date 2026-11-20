@@ -21,6 +21,7 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@workflow/cli": "5.1.0",
+    "eve": "catalog:",
     "turbo": "^2.11.11"
   }
 }

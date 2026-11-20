@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { type TestContext, test } from 'node:test'
 import { PipelineError, pipeline, pipelineFailure } from './pipeline-client.ts'
 
 const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
@@ -8,6 +8,23 @@ function configure() {
   process.env.PIPELINE_SERVICE_ORIGIN = 'http://127.0.0.1:8000'
   process.env.PIPELINE_SERVICE_SECRET = 'x'.repeat(32)
   delete process.env.VERCEL
+}
+
+function mockEnvironment(
+  t: TestContext,
+  values: Record<string, string | undefined>
+) {
+  const previous = Object.fromEntries(
+    Object.keys(values).map((key) => [key, process.env[key]])
+  )
+  function apply(env: Record<string, string | undefined>) {
+    for (const [key, value] of Object.entries(env)) {
+      if (value === undefined) delete process.env[key]
+      else process.env[key] = value
+    }
+  }
+  apply(values)
+  t.after(() => apply(previous))
 }
 
 test('sends authenticated start, status and review calls to the fixed service', async (t) => {
@@ -83,4 +100,47 @@ test('maps upstream failures and malformed responses without leaking their conte
   const response = pipelineFailure(new Error('private failure'))
   assert.equal(response.status, 503)
   assert.deepEqual(await response.json(), { error: 'Service unavailable' })
+})
+
+test('forwards deployment bearer credentials and preserves the binding path', async (t) => {
+  configure()
+  const token = `e30.${Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')}.test`
+  mockEnvironment(t, {
+    VERCEL: '1',
+    VERCEL_OIDC_TOKEN: token,
+    VERCEL_OIDC_TOKEN_FILE: undefined,
+    PIPELINE_SERVICE_ORIGIN: 'https://service.example/internal',
+  })
+  t.mock.method(
+    globalThis,
+    'fetch',
+    async (url: URL, options?: RequestInit) => {
+      assert.equal(
+        url.href,
+        `https://service.example/internal/pipeline/documents/${documentId}`
+      )
+      assert.equal(
+        new Headers(options?.headers).get('authorization'),
+        `Bearer ${token}`
+      )
+      return Response.json({ documentId, runId: 'run_1', status: 'running' })
+    }
+  )
+
+  await pipeline.status(documentId)
+})
+
+test('fails closed without a deployment binding before making a request', async (t) => {
+  configure()
+  mockEnvironment(t, {
+    VERCEL: '1',
+    VERCEL_URL: 'app-abc.vercel.app',
+    PIPELINE_SERVICE_ORIGIN: undefined,
+  })
+  const request = t.mock.method(globalThis, 'fetch', async () => {
+    throw new Error('Unexpected request')
+  })
+
+  await assert.rejects(pipeline.status(documentId), /Service unavailable/)
+  assert.equal(request.mock.callCount(), 0)
 })

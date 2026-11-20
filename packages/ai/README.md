@@ -21,16 +21,23 @@ OIDC replaces the shared secret and eve requires `VERCEL_PROJECT_ID`.
 app together. With both running, `bash scripts/smoke-review.sh` exercises a review.
 
 `EVE_BASE_URL` tells `withEve` to reuse this service for protocol routes instead
-of starting its own; the document client uses `PIPELINE_SERVICE_ORIGIN`. No document
-rewrite is installed. The smoke script renders, submits a redaction decision,
+of starting its own; the document client uses `PIPELINE_SERVICE_ORIGIN`.
+On Vercel, root `vercel.ts` binds the web service to eve privately and injects
+`PIPELINE_SERVICE_ORIGIN`; the document channel has no public route. The Vercel
+project Root Directory must be the repository root. Service bindings skip
+Deployment Protection for internal calls; no automation bypass secret is needed.
+OIDC still authenticates every channel request. Binding URLs are validated when
+the gateway handles a request because bindings are unavailable during builds.
+
+The smoke script renders, submits a redaction decision,
 completes review, and checks the final status and counter without a model call.
 
 `POST /api/documents` accepts `{"fixtureId":"clinical-20"}` or `{}`. Artifacts
 and run-ID mappings are written under `<os-temp>/ade-documents/<documentId>/`.
 Local Workflow history lives in `packages/ai/.eve/.workflow-data`. Artifacts
 are not encrypted or automatically deleted; only the synthetic fixture is
-supported. Deployment requires durable artifacts and document/run metadata,
-custom-channel routing to the eve service, and Deployment Protection.
+supported. Deployment requires durable artifacts and document/run metadata
+and Deployment Protection.
 
 `pnpm --filter @repo/ai bench:render` measures rendering of the 20-page fixture
 at 144 DPI with 240-pixel WebP thumbnails, using

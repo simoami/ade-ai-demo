@@ -43,11 +43,16 @@ AI Gateway is deferred; models are called directly. Model IDs live in one regist
 
 One workflow run per document is owned by eve. Browser document requests go to
 Next.js `/api/documents` route handlers, which validate the shared contract and
-call a fixed `PIPELINE_SERVICE_ORIGIN` with a 15-second timeout. The eve channel
+call a fixed `PIPELINE_SERVICE_ORIGIN` URL base with a 15-second timeout.
+On Vercel, root `vercel.ts` composes web and eve services and injects this URL
+through a private service binding. The project Root Directory is the repository
+root. Internal binding calls skip Deployment Protection; browser requests remain
+protected. The document channel has no public route. The eve channel
 at `/pipeline/documents` authenticates with HTTP Basic locally or Vercel OIDC
 on deployments, validates requests, then calls `start`, `getRun` or `resumeHook`.
 Unknown gateway errors return 503 with "Service unavailable". `withEve` handles
-protocol routes only; document routes use no custom rewrite.
+public protocol routes; document calls use the binding. Local Next.js retains
+`eve/next` and an explicitly configured service origin.
 
 `agent/tools/ingest-document.ts` registers the workflow from
 `src/workflows/ingest-document/ingest-document.workflow.ts`. Its steps call
@@ -130,7 +135,7 @@ GitHub Actions runs check, typecheck, test and build on every pull request. Eval
 Local document artifacts and run-ID mappings live under
 `<os-temp>/ade-documents`; Workflow history lives in `packages/ai/.eve/.workflow-data`.
 The service supports the synthetic fixture. Deployment requires durable artifact
-and document/run storage, custom-channel routing to eve, and service OIDC.
+and document/run storage and service OIDC.
 `pnpm workflows` uses pinned CLI 5.1.0 with the same Workflow core/local-world
 versions as eve; live inspector access requires verification. See
 [`packages/ai/README.md`](../packages/ai/README.md) for exact local commands.

@@ -22,16 +22,17 @@
     "@opentelemetry/api-logs": "catalog:",
     "@repo/ai": "workspace:*",
     "@repo/logger": "workspace:*",
+    "@repo/storage": "workspace:*",
     "@repo/ui": "workspace:*",
     "@vercel/oidc": "catalog:",
     "@vercel/otel": "catalog:",
     "eve": "catalog:",
     "lucide-react": "catalog:",
     "next": "16.4.5",
+    "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "zod": "^4.6.7",
-    "next-themes": "catalog:"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
