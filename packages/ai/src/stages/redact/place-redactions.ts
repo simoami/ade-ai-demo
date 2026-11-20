@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import { dirname, join } from 'node:path'
+import { dirname } from 'node:path'
 import sharp from 'sharp'
 import { createWorker, OEM, PSM, type Worker } from 'tesseract.js'
 import type { Box, OcrPage } from '#stages/ocr/ocr-result'
@@ -104,11 +104,13 @@ export async function placeRedactions(
   ): Promise<Piece[] | null> {
     if (!worker) {
       const require = createRequire(import.meta.url)
-      const langPath = join(
-        dirname(require.resolve('@tesseract.js-data/eng/package.json')),
-        '4.0.0'
+      const langPath = dirname(
+        require.resolve('@tesseract.js-data/eng/4.0.0/eng.traineddata.gz')
       )
       worker = await createWorker('eng', OEM.LSTM_ONLY, {
+        workerPath: require.resolve(
+          'tesseract.js/src/worker-script/node/index.js'
+        ),
         langPath,
         cacheMethod: 'none',
         gzip: true,

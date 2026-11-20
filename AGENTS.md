@@ -75,6 +75,10 @@ The service requires `OPENAI_API_KEY` and, for OCR, `REDUCTO_API_KEY`; local ser
 Vercel OIDC on deployments before validating requests. Workflow API calls run
 in eve. `agent/tools/ingest-document.ts` registers the imported workflow.
 Default agent tools and trace emission are disabled.
+`agent/agent.ts` traces Tesseract's Node worker, local English traineddata and
+CPU-selected WASM cores through `build.externalDependencies`. Binary entries
+must resolve to absolute paths for Nitro to include them. Verify with
+`VERCEL=1 pnpm --filter @repo/ai build` and inspect the function's `node_modules`.
 
 See `packages/ai/README.md` for the separate local service and web startup
 commands. `pnpm check:agent` checks health without a model request;

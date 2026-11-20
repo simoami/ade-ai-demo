@@ -42,8 +42,15 @@ Set `DATABASE_URL`, `BLOB_READ_WRITE_TOKEN`, `REDUCTO_API_KEY`, and
 `DOCUMENT_ENCRYPTION_KEY` (base64, exactly 32 bytes) in the service environment.
 Builds need no credentials. Tests replace storage, database and OCR operations.
 
-Database status advances from `rendering` to `reading` to `redacting`, where it
-stays pending the redaction stage. Processing failures write `failed` and fail
+`agent/agent.ts` uses `build.externalDependencies` to trace Tesseract's Node
+worker, local English traineddata and CPU-selected WASM cores into the service.
+Binary trace entries resolve to absolute paths during the build. No language
+data downloads are needed. Verify Vercel output with
+`VERCEL=1 pnpm --filter @repo/ai build`; files live under
+`.vercel/output/functions/__server.func/node_modules` in this package.
+
+Database status advances from `rendering` to `reading` to `redacting` to
+`needsReview` once redacted pages are published. Processing failures write `failed` and fail
 the workflow with a content-free error. The review hook records terminal
 `reviewed` or `discarded` decisions. `redaction.update` currently increments a
 refresh counter only. Terminal review does not yet delete artifacts. Real
