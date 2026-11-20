@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import { withEve } from 'eve/vercel'
 
 const config = await withEve(
@@ -22,7 +22,8 @@ const config = await withEve(
       { src: '^(.*)$', destination: { type: 'service', service: 'web' } },
     ],
   },
-  { root: fileURLToPath(new URL('./packages/ai', import.meta.url)) }
+  // Vercel compiles this file into .vercel/, so resolve from the repository root.
+  { root: resolve('packages/ai') }
 )
 
 // eve generates service roots relative to its project; Vercel resolves them from this file.
