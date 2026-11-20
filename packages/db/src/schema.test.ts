@@ -185,3 +185,16 @@ test('stores nullable keyed document identifiers and plaintext limited sex demog
   assert.match(sql, /ALTER TABLE "documents" ADD COLUMN "sex" text;/)
   assert.doesNotMatch(sql, /NOT NULL|DROP|CREATE TABLE/)
 })
+
+test('stores a nullable redacted page version with no implicit published copy in migration 0002', () => {
+  assert.equal(documents.pageVersion.notNull, false)
+  assert.equal(documents.pageVersion.hasDefault, false)
+  const sql = readFileSync(
+    new URL('../migrations/0002_yellow_hellfire_club.sql', import.meta.url),
+    'utf8'
+  )
+  assert.equal(
+    sql.trim(),
+    'ALTER TABLE "documents" ADD COLUMN "page_version" integer;'
+  )
+})

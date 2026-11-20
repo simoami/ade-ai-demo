@@ -110,6 +110,7 @@ export const documents = pgTable(
     sex: text('sex'),
     identifierHashes: jsonb('identifier_hashes').$type<IdentifierHashes>(),
     identityMismatch: boolean('identity_mismatch').default(false).notNull(),
+    pageVersion: integer('page_version'),
     pageDimensions: jsonb('page_dimensions')
       .$type<{ width: number; height: number }[]>()
       .default([])

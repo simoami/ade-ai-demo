@@ -65,8 +65,16 @@ export type FieldMatch = 'match' | 'mismatch' | 'absent'
 
 /** Review data with safe page URLs and comparison results only. */
 export type ReviewDocument = DocumentSummary & {
-  pageImages: string[]
+  pageImages: PageImage[]
   redactions: Redaction[]
   observations: Observation[]
   patientMatches: Record<string, Record<MatchField, FieldMatch>>
+}
+
+/** A signed full-image and thumbnail pair with the page's pixel dimensions. */
+export type PageImage = {
+  src: string
+  thumbnail: string
+  width: number
+  height: number
 }

@@ -1,4 +1,12 @@
-import { del, get, head, list, put } from '@vercel/blob'
+import {
+  del,
+  get,
+  head,
+  issueSignedToken,
+  list,
+  presignUrl,
+  put,
+} from '@vercel/blob'
 import { type HandleUploadOptions, handleUpload } from '@vercel/blob/client'
 
 type PutOptions = {
@@ -7,11 +15,46 @@ type PutOptions = {
   allowOverwrite?: boolean
 }
 
-const blobClient = { put, get, head, list, del, handleUpload }
+const blobClient = {
+  put,
+  get,
+  head,
+  list,
+  del,
+  handleUpload,
+  issueSignedToken,
+  presignUrl,
+}
 
 /** Creates a private-only storage adapter; the client can be replaced in tests. */
 export function createStorage(client = blobClient) {
   return {
+    async createReadSigner({ ttlMs = 15 * 60 * 1000 } = {}) {
+      if (!Number.isSafeInteger(ttlMs) || ttlMs <= 0) {
+        throw new Error('Invalid signed URL lifetime')
+      }
+      const validUntil = Date.now() + ttlMs
+      // One token covers a request's reads; each URL's signature binds its own pathname,
+      // and the signing key stays on the server.
+      const token = await client.issueSignedToken({
+        pathname: '*',
+        operations: ['get'],
+        validUntil,
+      })
+      return async (pathname: string) => {
+        if (!pathname || pathname.includes('*')) {
+          throw new Error('Invalid signed URL pathname')
+        }
+        return (
+          await client.presignUrl(token, {
+            operation: 'get',
+            pathname,
+            validUntil,
+            access: 'private',
+          })
+        ).presignedUrl
+      }
+    },
     async put(
       pathname: string,
       body: Parameters<typeof put>[1],
@@ -49,3 +92,6 @@ export function createStorage(client = blobClient) {
 export const storage = createStorage()
 
 export type { HandleUploadBody, HandleUploadOptions } from '@vercel/blob/client'
+
+/** Issues one read-only token and returns a local signer for file URLs, valid for fifteen minutes by default. */
+export const createReadSigner = storage.createReadSigner

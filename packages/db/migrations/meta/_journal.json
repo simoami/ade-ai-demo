@@ -15,6 +15,13 @@
       "when": 1795188452581,
       "tag": "0001_tricky_ghost_rider",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795191681184,
+      "tag": "0002_yellow_hellfire_club",
+      "breakpoints": true
     }
   ]
 }

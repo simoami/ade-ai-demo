@@ -98,9 +98,9 @@ export default async function PatientPage({
           <small>Documents awaiting review</small>
         </div>
       </div>
-      <div className="grid items-start gap-[15px] lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
         <section className="rounded-lg border bg-card">
-          <div className="flex items-center justify-between px-[18px] pt-[18px] pb-3.5 [&_h2]:mb-1 [&_h2]:text-[13px] [&_h2]:font-semibold">
+          <div className="flex items-center justify-between px-4.5 pt-4.5 pb-3.5 [&_h2]:mb-1 [&_h2]:text-[13px] [&_h2]:font-semibold">
             <div>
               <h2>Documents</h2>
               <span className="text-[10px] text-muted-foreground">
@@ -112,7 +112,7 @@ export default async function PatientPage({
             {linked.map((document) => (
               <li
                 key={document.id}
-                className="relative flex min-h-[58px] items-center gap-2.5 border-t hover:bg-muted/50"
+                className="relative flex min-h-14 items-center gap-2.5 border-t hover:bg-muted/50"
               >
                 <span className="grid h-8 w-[30px] shrink-0 place-items-center rounded border bg-accent/30 text-primary/70">
                   <FileText size={16} />

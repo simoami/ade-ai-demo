@@ -63,7 +63,7 @@ async function readBlob(pathname: string, deps: Dependencies) {
   }
 }
 
-/** Downloads originals into an isolated scratch directory and persists only internal PNG renders. */
+/** Downloads originals into an isolated scratch directory and persists internal full-size renders and WebP thumbnails. */
 export async function renderDocument(
   input: IngestInput,
   overrides: Partial<Dependencies> = {}
@@ -122,6 +122,15 @@ export async function renderDocument(
         bytes,
         {
           contentType: 'image/png',
+          addRandomSuffix: false,
+          allowOverwrite: true,
+        }
+      )
+      await deps.storage.put(
+        `documents/${input.documentId}/render/${index + 1}-thumb.webp`,
+        await readFile(join(output, `${page.page}.webp`)),
+        {
+          contentType: 'image/webp',
           addRandomSuffix: false,
           allowOverwrite: true,
         }

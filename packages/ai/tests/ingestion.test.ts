@@ -167,6 +167,9 @@ test('renders ordered images, records dimensions, encrypts OCR and safely overwr
     ]
   )
   assert.deepEqual(h.updates[1]?.[1].pageDimensions, [{ width: 12, height: 8 }])
+  const thumbnail = h.blobs.get(`documents/${documentId}/render/1-thumb.webp`)
+  assert.ok(thumbnail)
+  assert.equal((await sharp(thumbnail.bytes).metadata()).format, 'webp')
   const artifact = h.blobs.get(`documents/${documentId}/ocr.json.enc`)
   assert.ok(artifact)
   assert.deepEqual(

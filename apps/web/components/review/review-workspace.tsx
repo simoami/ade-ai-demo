@@ -34,7 +34,7 @@ export function ReviewWorkspace({
   document,
   patients,
 }: {
-  document: ReviewDocument & { unredacted: boolean }
+  document: ReviewDocument
   patients: Patient[]
 }) {
   const [page, setPage] = useState(1)
@@ -132,24 +132,17 @@ export function ReviewWorkspace({
 
       <div className="grid min-h-0 flex-1 grid-cols-[87px_minmax(0,1fr)_337px] max-lg:grid-cols-[74px_minmax(0,1fr)_300px]">
         <nav
-          aria-label={
-            document.unredacted ? 'Pages · unredacted preview' : 'Pages'
-          }
+          aria-label="Pages"
           className="min-h-0 border-r bg-card/50 px-2.5 py-3 overflow-y-auto"
         >
-          {document.unredacted === true && (
-            <p className="mb-2 text-[9px] font-medium text-amber-700 dark:text-amber-400">
-              Unredacted preview
-            </p>
-          )}
-          {document.pageImages.map((src, index) => {
+          {document.pageImages.map((image, index) => {
             const number = index + 1
             const flagged = regions.some(
               (item) => item.page === number && item.state === 'needsReview'
             )
             return (
               <button
-                key={src}
+                key={image.src}
                 type="button"
                 aria-label={`Page ${number}`}
                 aria-current={number === page ? 'page' : undefined}
@@ -157,12 +150,19 @@ export function ReviewWorkspace({
                 className="relative w-[65px] rounded-md border border-transparent p-1 aria-current:border-primary aria-current:bg-accent flex flex-col items-center gap-1"
               >
                 <span
+                  style={{ aspectRatio: `${image.width}/${image.height}` }}
                   className={cn(
-                    'relative aspect-[1000/1294] w-full overflow-hidden rounded-sm bg-white ring-1 ring-border',
+                    'relative w-full overflow-hidden rounded-sm bg-white ring-1 ring-border',
                     number === page && 'ring-2 ring-primary'
                   )}
                 >
-                  <Image src={src} alt="" fill sizes="5rem" unoptimized />
+                  <Image
+                    src={image.thumbnail}
+                    alt=""
+                    fill
+                    sizes="5rem"
+                    unoptimized
+                  />
                   {flagged && (
                     <span className="absolute top-1 right-1 size-2 rounded-full bg-warning" />
                   )}
@@ -177,7 +177,6 @@ export function ReviewWorkspace({
 
         <PageViewer
           images={document.pageImages}
-          unredacted={document.unredacted}
           page={page}
           onPage={setPage}
           outlines={outlines}

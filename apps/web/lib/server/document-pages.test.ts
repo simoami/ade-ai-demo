@@ -2,58 +2,69 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { documentPages } from './document-pages.ts'
 
-const id = 'f38ac619-f99c-4b98-b4f6-0dc2f892c30c'
+const dimensions = [
+  { width: 800, height: 400 },
+  { width: 400, height: 900 },
+]
+const sign = async () => async (path: string) => `signed:${path}`
 
-test('selects ordered unredacted renders during reading and redacting', () => {
+test('signs ordered render pairs with each page proportions only during processing', async () => {
   for (const status of ['reading', 'redacting'] as const) {
-    assert.deepEqual(documentPages(id, status, 2), {
-      pageImages: [1, 2].map(
-        (page) => `/api/files/documents/${id}/render/${page}.png`
-      ),
-      unredacted: true,
-    })
+    const { pageImages } = await documentPages(
+      'id',
+      status,
+      dimensions,
+      null,
+      sign
+    )
+    assert.deepEqual(
+      pageImages,
+      dimensions.map((size, i) => ({
+        ...size,
+        src: `signed:documents/id/render/${i + 1}.png`,
+        thumbnail: `signed:documents/id/render/${i + 1}-thumb.webp`,
+      }))
+    )
   }
-})
-
-test('switches to ordered redacted pages after redaction', () => {
-  for (const status of [
-    'extracting',
-    'needsReview',
-    'reviewed',
-    'discarded',
-    'unsupported',
-  ] as const) {
-    assert.deepEqual(documentPages(id, status, 2), {
-      pageImages: [1, 2].map(
-        (page) => `/api/files/documents/${id}/pages/${page}.webp`
-      ),
-      unredacted: false,
-    })
-  }
-})
-
-test('exposes no images during rendering, after failure, or without page dimensions', () => {
-  for (const status of ['rendering', 'failed'] as const) {
-    assert.deepEqual(documentPages(id, status, 2), {
-      pageImages: [],
-      unredacted: false,
-    })
-  }
-
   for (const status of [
     'rendering',
-    'reading',
-    'redacting',
-    'extracting',
+    'failed',
     'needsReview',
     'reviewed',
     'discarded',
     'unsupported',
-    'failed',
+    'extracting',
   ] as const) {
-    assert.deepEqual(documentPages(id, status, 0), {
-      pageImages: [],
-      unredacted: false,
-    })
+    assert.deepEqual(
+      await documentPages('id', status, dimensions, null, sign),
+      { pageImages: [] }
+    )
   }
+})
+
+test('prefers published versioned pairs even during redaction and exposes no pages without dimensions', async () => {
+  const { pageImages } = await documentPages(
+    'id',
+    'redacting',
+    dimensions,
+    3,
+    sign
+  )
+  assert.equal(pageImages[0]?.src, 'signed:documents/id/pages/1-v3.webp')
+  assert.equal(
+    pageImages[0]?.thumbnail,
+    'signed:documents/id/pages/1-v3-thumb.webp'
+  )
+  assert.deepEqual(await documentPages('id', 'reading', [], null, sign), {
+    pageImages: [],
+  })
+})
+
+test('propagates signing failures', async () => {
+  await assert.rejects(
+    documentPages('id', 'reading', dimensions, null, async () => async () => {
+      throw new Error('signing failed')
+    }),
+    /signing failed/
+  )
 })

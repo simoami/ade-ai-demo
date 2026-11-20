@@ -81,6 +81,12 @@ commands. `pnpm check:agent` checks health without a model request;
 `pnpm workflows` uses CLI 5.1.0, matching eve's Workflow dependencies; live
 inspector compatibility requires verification against a running service.
 
+Page images load directly from private Blob through single-file GET-only signed
+URLs (15 minutes), with separate full images and thumbnails and real page proportions.
+`documents.page_version` selects versioned redacted pairs; null permits render pairs
+only during `reading` and `redacting`. Serialize `publishRedactedPages` per document:
+write all pairs, publish the version, then delete obsolete pages and renders.
+Migration 0002 adds the nullable version; migrate and reseed each deployment branch.
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
 Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered

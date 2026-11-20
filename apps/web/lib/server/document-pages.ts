@@ -1,27 +1,29 @@
-import { documentPageImages } from '#lib/record-mapping'
-import type { DocumentStatus } from '#lib/records-types'
+import { createReadSigner } from '@repo/storage'
+import type { DocumentStatus, PageImage } from '#lib/records-types'
 
-/** Page URLs and the privacy warning required by the review viewer. */
-export type DocumentPages = { pageImages: string[]; unredacted: boolean }
-
-/** Selects temporary renders during OCR/redaction, then burned redacted pages. */
-export function documentPages(
+/** Signs ordered page pairs, preferring published redactions over temporary renders. */
+export async function documentPages(
   id: string,
   status: DocumentStatus,
-  pages: number
-): DocumentPages {
-  if (pages > 0 && (status === 'reading' || status === 'redacting')) {
-    return {
-      pageImages: Array.from(
-        { length: pages },
-        (_, index) => `/api/files/documents/${id}/render/${index + 1}.png`
-      ),
-      unredacted: true,
-    }
+  dimensions: { width: number; height: number }[],
+  version: number | null,
+  createSigner = createReadSigner
+): Promise<{ pageImages: PageImage[] }> {
+  if (version === null && status !== 'reading' && status !== 'redacting') {
+    return { pageImages: [] }
   }
 
+  const sign = await createSigner()
   return {
-    pageImages: documentPageImages(id, status, pages),
-    unredacted: false,
+    pageImages: await Promise.all(
+      dimensions.map(async (size, index) => {
+        const base = `documents/${id}/${version === null ? `render/${index + 1}` : `pages/${index + 1}-v${version}`}`
+        const [src, thumbnail] = await Promise.all([
+          sign(`${base}.${version === null ? 'png' : 'webp'}`),
+          sign(`${base}-thumb.webp`),
+        ])
+        return { ...size, src, thumbnail }
+      })
+    ),
   }
 }

@@ -18,7 +18,7 @@ import type {
   ReviewDocument,
 } from '#lib/records-types'
 
-import { type DocumentPages, documentPages } from '#lib/server/document-pages'
+import { documentPages } from '#lib/server/document-pages'
 
 type DocumentRow = typeof documents.$inferSelect
 
@@ -106,7 +106,7 @@ export async function getPatients() {
 /** Loads a document's review artifacts and patient matches, excluding removed observations. */
 export async function getReviewDocument(
   id: string
-): Promise<(ReviewDocument & DocumentPages) | undefined> {
+): Promise<ReviewDocument | undefined> {
   await connection()
 
   const db = createDb()
@@ -132,7 +132,12 @@ export async function getReviewDocument(
   ])
   return {
     ...documentSummary(row),
-    ...documentPages(row.id, row.status, row.pageDimensions.length),
+    ...(await documentPages(
+      row.id,
+      row.status,
+      row.pageDimensions,
+      row.pageVersion
+    )),
     redactions: redactionRows.map(
       ({ id, page, category, box, points, state }) => ({
         id,

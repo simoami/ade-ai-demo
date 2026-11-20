@@ -1,16 +1,9 @@
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
-import {
-  ChevronLeft,
-  ChevronRight,
-  Lock,
-  TriangleAlert,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react'
+import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import type { Box, Redaction } from '#lib/records-types'
+import type { Box, PageImage, Redaction } from '#lib/records-types'
 
 const zoomSteps = [0.75, 1, 1.25, 1.5]
 
@@ -21,22 +14,20 @@ type Outline = {
   tone: 'review' | 'selected'
 }
 
-/** Shows page outlines and warns when processing previews contain unredacted content. */
+/** Shows page images at their original proportions with source outlines. */
 export function PageViewer({
   images,
-  unredacted,
   page,
   onPage,
   outlines,
 }: {
-  images: string[]
-  unredacted: boolean
+  images: PageImage[]
   page: number
   onPage: (page: number) => void
   outlines: Outline[]
 }) {
   const [zoom, setZoom] = useState(1)
-  const src = images[page - 1]
+  const image = images[page - 1]
 
   if (images.length === 0) {
     return (
@@ -53,24 +44,7 @@ export function PageViewer({
 
   return (
     <section className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-muted/60">
-      <div className="flex h-[42px] shrink-0 items-center justify-between border-b bg-card px-3.5 text-[10px] text-muted-foreground">
-        <span
-          role={unredacted ? 'status' : undefined}
-          className={cn(
-            'flex items-center gap-1.5',
-            unredacted &&
-              'rounded bg-amber-100 px-2 py-1 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200'
-          )}
-        >
-          {unredacted ? (
-            <TriangleAlert className="size-3.5" />
-          ) : (
-            <Lock className="size-3.5" />
-          )}
-          {unredacted
-            ? 'Unredacted preview · redaction in progress'
-            : 'Redacted copy · read only'}
-        </span>
+      <div className="flex h-[42px] shrink-0 items-center justify-end border-b bg-card px-3.5 text-[10px] text-muted-foreground">
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -124,13 +98,17 @@ export function PageViewer({
 
       <div className="flex min-h-0 flex-1 items-start justify-center overflow-auto px-5 pt-[18px] pb-[22px]">
         <div
-          className="shrink-0 relative mx-auto aspect-[1000/1294] bg-white shadow-sm ring-1 ring-border"
-          style={{ width: `${zoom * 100}%`, maxWidth: `${zoom * 430}px` }}
+          className="shrink-0 relative mx-auto bg-white shadow-sm ring-1 ring-border"
+          style={{
+            width: `${zoom * 100}%`,
+            maxWidth: `${zoom * 430}px`,
+            aspectRatio: image ? `${image.width}/${image.height}` : undefined,
+          }}
         >
-          {src !== undefined && (
+          {image !== undefined && (
             <Image
-              src={src}
-              alt={`Page ${page}, ${unredacted ? 'unredacted preview' : 'redacted'}`}
+              src={image.src}
+              alt={`Page ${page}`}
               fill
               sizes="(min-width: 1024px) 60vw, 100vw"
               unoptimized
@@ -179,9 +157,7 @@ export function PageViewer({
       <div className="flex h-[29px] shrink-0 items-center justify-between border-t bg-card/50 px-3 text-[8.5px] text-muted-foreground [&_span]:flex [&_span]:items-center [&_span]:gap-1">
         <span>
           <Lock size={13} />
-          {unredacted
-            ? 'Unredacted preview · Read only'
-            : 'Redacted document · Read only'}
+          Read only
         </span>
         <span>
           Page {page} of {images.length}

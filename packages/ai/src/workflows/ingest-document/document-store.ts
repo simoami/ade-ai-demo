@@ -2,7 +2,7 @@ import { createDb, documents, eq } from '@repo/db'
 
 type DocumentUpdate = Pick<
   typeof documents.$inferInsert,
-  'status' | 'pageDimensions' | 'runId' | 'reviewedAt'
+  'pageVersion' | 'status' | 'pageDimensions' | 'runId' | 'reviewedAt'
 >
 
 /** Reads a persisted document and its workflow association. */

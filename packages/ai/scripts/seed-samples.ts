@@ -14,11 +14,11 @@ import {
   redactions,
 } from '@repo/db'
 import { logger } from '@repo/logger'
-import { storage } from '@repo/storage'
 import sharp from 'sharp'
 import { type Expected, expectedSchema } from '#evals/fixtures/expected'
 import { hashIdentifier, readPatientHashKey } from '#identity/hash-identifier'
 import { renderPdf } from '#stages/render/render-pages'
+import { publishRedactedPages } from '#workflows/ingest-document/publish-redacted-pages'
 
 const log = logger.getSubLogger({ name: 'seed-samples' })
 const fixtureRoot = fileURLToPath(
@@ -365,6 +365,7 @@ export async function seedSamples() {
         2
       )
       const pageDimensions = []
+      const redactedPages: Buffer[] = []
 
       for (const { page } of pages) {
         const file = join(work, `${page}.png`)
@@ -394,15 +395,7 @@ export async function seedSamples() {
           .webp({ quality: 70 })
           .toBuffer({ resolveWithObject: true })
         pageDimensions.push({ width: info.width, height: info.height })
-        await storage.put(
-          `documents/${sampleId(sample.id)}/pages/${page + 1}.webp`,
-          data,
-          {
-            contentType: 'image/webp',
-            addRandomSuffix: false,
-            allowOverwrite: true,
-          }
-        )
+        redactedPages.push(data)
       }
 
       const linkedPatient = patientRows.find(
@@ -442,6 +435,8 @@ export async function seedSamples() {
         ...(masks.length ? [db.insert(redactions).values(masks)] : []),
         ...(facts.length ? [db.insert(observations).values(facts)] : []),
       ])
+      if (redactedPages.length)
+        await publishRedactedPages(row.id, redactedPages)
       log.info('Sample seeded', {
         documentId: row.id,
         pages: pages.length,

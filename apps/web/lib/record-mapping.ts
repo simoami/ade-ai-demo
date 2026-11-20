@@ -1,4 +1,4 @@
-import type { DocumentStatus, FieldMatch, MatchField } from './records-types.ts'
+import type { FieldMatch, MatchField } from './records-types.ts'
 
 type Hashes = Partial<Record<MatchField, string | null>>
 
@@ -25,27 +25,4 @@ export function patientFieldMatches(
       ]
     })
   ) as Record<MatchField, FieldMatch>
-}
-
-/** Exposes only redacted page URLs after the document has reached a safe status. */
-export function documentPageImages(
-  id: string,
-  status: DocumentStatus,
-  pages: number
-): string[] {
-  if (
-    ![
-      'extracting',
-      'needsReview',
-      'reviewed',
-      'discarded',
-      'unsupported',
-    ].includes(status)
-  )
-    return []
-
-  return Array.from(
-    { length: pages },
-    (_, index) => `/api/files/documents/${id}/pages/${index + 1}.webp`
-  )
 }

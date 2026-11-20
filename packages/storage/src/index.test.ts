@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { del, get, head, list, put } from '@vercel/blob'
+import {
+  del,
+  get,
+  head,
+  issueSignedToken,
+  list,
+  presignUrl,
+  put,
+} from '@vercel/blob'
 import { handleUpload } from '@vercel/blob/client'
 import { createStorage } from './index.ts'
 
@@ -14,7 +22,16 @@ const metadata = {
 }
 
 test('forces private writes and returns streaming reads without caching', async (t) => {
-  const client = { put, get, head, list, del, handleUpload }
+  const client = {
+    put,
+    get,
+    head,
+    list,
+    del,
+    handleUpload,
+    issueSignedToken,
+    presignUrl,
+  }
   const write = t.mock.method(client, 'put', async () => metadata)
   const stream = new ReadableStream<Uint8Array>()
   const read = t.mock.method(client, 'get', async () => ({
@@ -40,7 +57,16 @@ test('forces private writes and returns streaming reads without caching', async 
 })
 
 test('preserves missing reads and propagates provider errors', async (t) => {
-  const client = { put, get, head, list, del, handleUpload }
+  const client = {
+    put,
+    get,
+    head,
+    list,
+    del,
+    handleUpload,
+    issueSignedToken,
+    presignUrl,
+  }
   t.mock.method(client, 'get', async () => null)
   const storage = createStorage(client)
   assert.equal(await storage.get('missing'), null)
@@ -55,7 +81,16 @@ test('preserves missing reads and propagates provider errors', async (t) => {
 })
 
 test('delegates metadata, paginated prefix listing, deletion and upload tokens', async (t) => {
-  const client = { put, get, head, list, del, handleUpload }
+  const client = {
+    put,
+    get,
+    head,
+    list,
+    del,
+    handleUpload,
+    issueSignedToken,
+    presignUrl,
+  }
   const header = t.mock.method(client, 'head', async () => ({
     ...metadata,
     size: 1,
@@ -93,4 +128,57 @@ test('delegates metadata, paginated prefix listing, deletion and upload tokens',
   }
   await storage.handleUpload(options)
   assert.equal(upload.mock.calls[0]?.arguments[0], options)
+})
+
+test('signs many read URLs from one GET-only token with matching expiration', async (t) => {
+  const client = {
+    put,
+    get,
+    head,
+    list,
+    del,
+    handleUpload,
+    issueSignedToken,
+    presignUrl,
+  }
+  const token = {
+    delegationToken: 'delegation',
+    clientSigningToken: 'signing',
+    validUntil: 123,
+  }
+  const issue = t.mock.method(client, 'issueSignedToken', async () => token)
+  const sign = t.mock.method(
+    client,
+    'presignUrl',
+    async (_token: unknown, options: { pathname: string }) => ({
+      presignedUrl: `signed:${options.pathname}`,
+    })
+  )
+  const storage = createStorage(client)
+  const now = Date.now()
+  const signer = await storage.createReadSigner()
+  assert.equal(await signer('one.webp'), 'signed:one.webp')
+  assert.equal(await signer('two.webp'), 'signed:two.webp')
+  assert.equal(issue.mock.callCount(), 1)
+  const options = issue.mock.calls[0]?.arguments[0]
+  assert.ok(options?.validUntil)
+  assert.ok(options.validUntil >= now + 900000)
+  assert.ok(options.validUntil <= Date.now() + 900000)
+  assert.deepEqual(options.operations, ['get'])
+  assert.deepEqual(sign.mock.calls[0]?.arguments, [
+    token,
+    {
+      operation: 'get',
+      pathname: 'one.webp',
+      validUntil: options.validUntil,
+      access: 'private',
+    },
+  ])
+  for (const path of ['', '*', 'pages/*']) await assert.rejects(signer(path))
+  for (const ttlMs of [0, -1, NaN, Infinity])
+    await assert.rejects(storage.createReadSigner({ ttlMs }))
+  t.mock.method(client, 'issueSignedToken', async () => {
+    throw new Error('unavailable')
+  })
+  await assert.rejects(storage.createReadSigner(), /unavailable/)
 })
