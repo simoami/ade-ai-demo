@@ -18,6 +18,7 @@ import sharp from 'sharp'
 import { type Expected, expectedSchema } from '#evals/fixtures/expected'
 import { hashIdentifier, readPatientHashKey } from '#identity/hash-identifier'
 import { renderPdf } from '#stages/render/render-pages'
+import { proposePatient } from '#workflows/ingest-document/analyze-document'
 import { publishRedactedPages } from '#workflows/ingest-document/publish-redacted-pages'
 
 const log = logger.getSubLogger({ name: 'seed-samples' })
@@ -418,6 +419,10 @@ export async function seedSamples() {
         documentClass: sample.documentClass,
         identifierHashes,
         identityMismatch,
+        // Fixture headers carry no sex, so an unlinked sample proposes 'Unknown'.
+        proposedPatient: sample.patientId
+          ? null
+          : proposePatient(identifiers(expected), new Date(sample.uploadedAt)),
         pageDimensions,
         runId: null,
         consentSummary: null,

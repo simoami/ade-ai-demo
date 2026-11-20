@@ -12,6 +12,16 @@ export const reviewActionSchema = z.discriminatedUnion('type', [
     redactionId: z.uuid(),
     status: z.enum(['accepted', 'rejected']),
   }),
+  z.strictObject({
+    type: z.literal('observation.update'),
+    observationId: z.uuid(),
+    status: z.enum(['accepted', 'rejected']),
+  }),
+  z.strictObject({
+    type: z.literal('patient.link'),
+    patientId: z.string().min(1).max(64),
+  }),
+  z.strictObject({ type: z.literal('patient.create') }),
 ])
 
 /** Validated review decision accepted by the document hook. */
@@ -65,6 +75,17 @@ export const documentStatusSchema = startResultSchema.extend({
     })
     .optional(),
 })
+
+/** Why a review action cannot apply to the document's current state (answered with 409). */
+export const reviewRefusalSchema = z.enum([
+  'notReviewable',
+  'targetNotFound',
+  'redactionRejected',
+  'observationRemoved',
+  'patientNotFound',
+  'noProposedPatient',
+  'reviewIncomplete',
+])
 
 /** Validates acknowledgment of an accepted review action. */
 export const reviewResultSchema = z.strictObject({ accepted: z.literal(true) })

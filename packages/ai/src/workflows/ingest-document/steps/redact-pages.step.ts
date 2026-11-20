@@ -12,7 +12,6 @@ export async function redactPages(documentId: string, pageCount: number) {
     {
       documentId,
       ...result,
-      status: 'needsReview',
       durationMs: Math.round(performance.now() - started),
     },
     'Redaction completed'

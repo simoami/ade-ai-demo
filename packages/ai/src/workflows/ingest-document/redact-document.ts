@@ -1,31 +1,24 @@
-import { createHash } from 'node:crypto'
-import { storage } from '@repo/storage'
 import sharp from 'sharp'
 import { z } from 'zod'
-import { blockSchema, boxSchema, wordSchema } from '#stages/ocr/ocr-result'
+import { boxSchema } from '#stages/ocr/ocr-result'
 import type {
   IdentifierSpan,
   PictureFinding,
   RedactionRegion,
 } from '#stages/redact/redaction-types'
+import { documentScopedId } from './deterministic-id.ts'
 import {
-  decryptArtifact,
-  encryptArtifact,
-  encryptionKey,
-} from './artifact-encryption.ts'
+  type ArtifactDependencies,
+  artifactDefaults,
+  type ocrSchema,
+  readArtifact,
+  readEncrypted,
+  readIdentifierSpans,
+  readOcr,
+  writeEncrypted,
+} from './document-artifacts.ts'
 import { replaceRedactions, updateDocument } from './document-store.ts'
 import { publishRedactedPages } from './publish-redacted-pages.ts'
-
-const ocrSchema = z
-  .array(
-    z.object({
-      blocks: z.array(blockSchema),
-      words: z.array(wordSchema).optional(),
-      usage: z.object({ latencyMs: z.number() }),
-    })
-  )
-  .min(1)
-  .max(30)
 
 const regionSchema = z.object({
   page: z.number().int().positive(),
@@ -58,10 +51,7 @@ const checkpointSchema = z.object({
   regions: z.array(regionSchema),
 })
 
-type Dependencies = {
-  storage: Pick<typeof storage, 'get' | 'put'>
-  key: () => Buffer
-  detect: (pages: z.infer<typeof ocrSchema>) => Promise<IdentifierSpan[]>
+type Dependencies = ArtifactDependencies & {
   pictures: (page: {
     pageNumber: number
     image: Uint8Array
@@ -85,10 +75,7 @@ type Dependencies = {
 }
 
 const defaults: Dependencies = {
-  storage,
-  key: () => encryptionKey(process.env.DOCUMENT_ENCRYPTION_KEY),
-  detect: async (pages) =>
-    (await import('#stages/pii/detect-identifiers')).detectIdentifiers(pages),
+  ...artifactDefaults,
   pictures: async (page) =>
     (await import('#stages/pii/review-pictures')).reviewPictures(page),
   place: async (page, spans, findings) =>
@@ -107,38 +94,7 @@ const defaults: Dependencies = {
   update: updateDocument,
 }
 
-async function read(path: string, deps: Dependencies) {
-  const blob = await deps.storage.get(path)
-  if (!blob) return null
-
-  return Buffer.from(await new Response(blob.stream).arrayBuffer())
-}
-
-async function required(path: string, deps: Dependencies) {
-  const bytes = await read(path, deps)
-  if (!bytes) throw new Error('Missing redaction artifact')
-
-  return bytes
-}
-
-function redactionId(documentId: string, page: number, index: number) {
-  // UUID v5 uses the document UUID as namespace and page/index as its name.
-  const namespace = Buffer.from(
-    z.uuid().parse(documentId).replaceAll('-', ''),
-    'hex'
-  )
-  const bytes = createHash('sha1')
-    .update(namespace)
-    .update(`${page}:${index}`)
-    .digest()
-    .subarray(0, 16)
-  bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x50
-  bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80
-  const hex = bytes.toString('hex')
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
-}
-
-/** Burns every candidate and checkpoints encrypted pixels before replay-safe persistence and publication. */
+/** Burns every detected candidate, keeping encrypted unredacted sources for review, and checkpoints pixels before replay-safe persistence and publication. */
 export async function redactDocument(
   documentId: string,
   pageCount: number,
@@ -150,39 +106,29 @@ export async function redactDocument(
     const base = `documents/${documentId}/redaction`
     const manifest = `${base}/ready.json.enc`
     await deps.update(documentId, { status: 'redacting' })
-    const saved = await read(manifest, deps)
     let checkpoint: z.infer<typeof checkpointSchema>
-    const writeEncrypted = async (path: string, bytes: Buffer) => {
-      await deps.storage.put(path, encryptArtifact(bytes, key), {
-        contentType: 'application/octet-stream',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-      })
-    }
 
-    if (saved) {
+    if (await readArtifact(manifest, deps)) {
       checkpoint = checkpointSchema.parse(
-        JSON.parse(decryptArtifact(saved, key).toString('utf8'))
+        JSON.parse((await readEncrypted(manifest, deps, key)).toString('utf8'))
       )
     } else {
-      const pages = ocrSchema.parse(
-        JSON.parse(
-          decryptArtifact(
-            await required(`documents/${documentId}/ocr.json.enc`, deps),
-            key
-          ).toString('utf8')
-        )
-      )
+      const pages = await readOcr(documentId, deps)
       if (pages.length !== pageCount) throw new Error('OCR page count mismatch')
 
-      const spans = await deps.detect(pages)
+      const spans: IdentifierSpan[] = await readIdentifierSpans(
+        documentId,
+        deps
+      )
       const regions: RedactionRegion[] = []
       for (const [index, ocr] of pages.entries()) {
         const pageNumber = index + 1
-        const image = await required(
+        const image = await readArtifact(
           `documents/${documentId}/render/${pageNumber}.png`,
           deps
         )
+        if (!image) throw new Error('Missing page render')
+
         const { width, height } = await sharp(image).metadata()
         if (!width || !height) throw new Error('Missing page dimensions')
 
@@ -200,14 +146,28 @@ export async function redactDocument(
           throw new Error('Redaction page mismatch')
 
         regions.push(...placed)
+        // Rejecting a redaction re-burns from these sources after publication deletes renders.
+        await writeEncrypted(
+          `${base}/source/${pageNumber}.png.enc`,
+          image,
+          deps,
+          key
+        )
         await writeEncrypted(
           `${base}/${pageNumber}.png.enc`,
-          await deps.burn(image, placed)
+          await deps.burn(image, placed),
+          deps,
+          key
         )
       }
       checkpoint = { pageCount, spanCount: spans.length, regions }
       // The manifest commits the complete page set before publication may delete renders.
-      await writeEncrypted(manifest, Buffer.from(JSON.stringify(checkpoint)))
+      await writeEncrypted(
+        manifest,
+        Buffer.from(JSON.stringify(checkpoint)),
+        deps,
+        key
+      )
     }
     if (
       checkpoint.pageCount !== pageCount ||
@@ -224,18 +184,15 @@ export async function redactDocument(
         return {
           ...region,
           documentId,
-          id: redactionId(documentId, region.page, index),
+          id: documentScopedId(documentId, `${region.page}:${index}`),
         }
       })
     )
     const burned: Buffer[] = []
     for (let page = 1; page <= pageCount; page++) {
-      burned.push(
-        decryptArtifact(await required(`${base}/${page}.png.enc`, deps), key)
-      )
+      burned.push(await readEncrypted(`${base}/${page}.png.enc`, deps, key))
     }
     await deps.publish(documentId, burned)
-    await deps.update(documentId, { status: 'needsReview' })
     return {
       pageCount,
       spanCount: checkpoint.spanCount,

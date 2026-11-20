@@ -61,3 +61,33 @@ identifier characters, 5% false-positive characters, and zero wrong picture
 decisions. Runtime/schema failures also fail the suite. Current results live
 in `docs/evals.md`; the local metadata/metrics-only report is
 `evals/results/pii-latest.json`. No held-out pages are used.
+
+## Classification and demographics
+
+`pnpm eval classify` runs `classify-v1` with Luna on all 16 fixtures,
+held-out included, over ground-truth text blocks. Scorers in
+`scorers/classify.ts` report accuracy, per-class precision, recall and F1, and
+flag consent summaries that repeat any ground-truth identifier text. Any
+misclassification or leaking summary fails the suite.
+
+`pnpm eval demographics` runs `demographics-v1` with Sol on the 14 clinical
+and consent fixtures. Truth is the fixture's most frequent patient name, DOB
+and MRN spans. Scorers in `scorers/demographics.ts` compare keyed hashes under
+a per-run random key, then run `matchPatient` against two patients derived
+from clinical-01 and clinical-03 (with an altered birth date). Ceilings are
+90% accuracy per identifier field and zero wrong strong links. Both suites
+fail on runtime or schema errors; results and reasons are in `docs/evals.md`.
+Local reports hold metrics and fixture IDs only, never summaries or values.
+
+## Observation extraction
+
+`pnpm eval extract` runs `extract-v1` with Sol on clinical-01, clinical-02 and
+clinical-03 (six development pages). Input is ground-truth text blocks with
+whole ground-truth identifier spans masked, so extraction is isolated from OCR
+and identifier detection. Scorers in `scorers/extract.ts` compare
+deduplicated output with ground truth deduplicated per `duplicateGroup`
+(table over list over narrative): recall and precision on normalized name,
+value and effective date, unit accuracy among matches, and dedupe accuracy
+(exactly one survivor per group, in the preferred format). Error ceilings are
+5% missed or extra observations, 2% wrong units and 5% wrong groups; results
+and reasons are in `docs/evals.md`.

@@ -8,7 +8,7 @@ import {
   CommandList,
 } from '@repo/ui/components/command'
 import { cn } from '@repo/ui/lib/utils'
-import { Check, Minus, UsersRound, X } from 'lucide-react'
+import { Check, Minus, UserPlus, UsersRound, X } from 'lucide-react'
 import { useState } from 'react'
 import type {
   FieldMatch,
@@ -32,19 +32,23 @@ const strengthLabels: Record<MatchStrength, string> = {
   none: 'No match',
 }
 
-/** Shows the linked patient, how each document identifier compares, and a picker to relink. */
+/** Shows the linked patient, how each document identifier compares, a picker to relink, and patient creation when none matches. */
 export function PatientPanel({
   document,
   patients,
   patientId,
+  creating,
   readOnly,
-  onChange,
+  onLink,
+  onCreate,
 }: {
   document: ReviewDocument
   patients: Patient[]
   patientId: string | null
+  creating: boolean
   readOnly: boolean
-  onChange: (patientId: string) => void
+  onLink: (patientId: string) => void
+  onCreate: () => void
 }) {
   const [picking, setPicking] = useState(false)
   const patient = patients.find((candidate) => candidate.id === patientId)
@@ -77,6 +81,19 @@ export function PatientPanel({
             ))}
           </ul>
         </div>
+      ) : creating && document.proposedPatient ? (
+        <div className="flex items-center gap-2 rounded-lg border bg-card p-[13px]">
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">
+            {document.proposedPatient.initials}
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="text-sm font-medium">New patient</span>
+            <span className="text-xs text-muted-foreground">
+              {document.proposedPatient.sex} · born{' '}
+              {document.proposedPatient.birthYear ?? 'Unknown'}
+            </span>
+          </div>
+        </div>
       ) : (
         <p className="text-sm text-muted-foreground">
           No patient is linked to this document.
@@ -100,6 +117,18 @@ export function PatientPanel({
         </Button>
       )}
 
+      {!readOnly && !patientId && !creating && document.proposedPatient && (
+        <Button
+          className="w-full text-[11px]"
+          variant="outline"
+          size="lg"
+          onClick={onCreate}
+        >
+          <UserPlus data-icon="inline-start" />
+          Create patient from document
+        </Button>
+      )}
+
       <CommandDialog
         open={picking}
         onOpenChange={setPicking}
@@ -116,7 +145,7 @@ export function PatientPanel({
                 key={candidate.id}
                 value={`${candidate.id} ${candidate.initials}`}
                 onSelect={() => {
-                  onChange(candidate.id)
+                  onLink(candidate.id)
                   setPicking(false)
                 }}
               >

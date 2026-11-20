@@ -63,12 +63,17 @@ export type MatchField = 'lastName' | 'firstName' | 'birthDate' | 'mrn' | 'sex'
 /** How one document identifier compares with a patient's stored hash. */
 export type FieldMatch = 'match' | 'mismatch' | 'absent'
 
+/** Non-identifying demographics for creating a patient when none matches. */
+export type ProposedPatient = Omit<Patient, 'id'>
+
 /** Review data with safe page URLs and comparison results only. */
 export type ReviewDocument = DocumentSummary & {
   pageImages: PageImage[]
   redactions: Redaction[]
   observations: Observation[]
   patientMatches: Record<string, Record<MatchField, FieldMatch>>
+  identityMismatch: boolean
+  proposedPatient: ProposedPatient | null
 }
 
 /** A signed full-image and thumbnail pair with the page's pixel dimensions. */

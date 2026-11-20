@@ -7,8 +7,8 @@ import {
   encryptArtifact,
   encryptionKey,
 } from '#workflows/ingest-document/artifact-encryption'
+import type { updateDocument } from '#workflows/ingest-document/document-store'
 import {
-  completeDocument,
   readDocument,
   renderDocument,
 } from '#workflows/ingest-document/processing'
@@ -25,12 +25,8 @@ const input = {
 function harness() {
   const blobs = new Map<string, { bytes: Buffer; contentType: string }>()
   const writes: string[] = []
-  const updates: Parameters<
-    NonNullable<Parameters<typeof completeDocument>[2]>
-  >[] = []
-  const update = async (
-    ...args: Parameters<NonNullable<Parameters<typeof completeDocument>[2]>>
-  ) => {
+  const updates: Parameters<typeof updateDocument>[] = []
+  const update = async (...args: Parameters<typeof updateDocument>) => {
     updates.push(args)
   }
   const storage = {
@@ -177,12 +173,6 @@ test('renders ordered images, records dimensions, encrypts OCR and safely overwr
     [{ blocks: [], usage: { latencyMs: 1 } }]
   )
   assert.ok(h.writes.every((path) => !path.includes('/pages/')))
-  for (const status of ['reviewed', 'discarded'] as const)
-    await completeDocument(documentId, status, h.deps.update)
-  assert.deepEqual(
-    h.updates.slice(-2).map(([, update]) => update.status),
-    ['reviewed', 'discarded']
-  )
 })
 
 test('marks missing originals, unsupported input, missing render and OCR failures as failed without exposing causes', async () => {

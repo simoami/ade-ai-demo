@@ -185,12 +185,3 @@ export async function readDocument(
     throw new Error('Document reading failed')
   }
 }
-
-/** Persists either terminal review decision; repeated calls produce the same status. */
-export async function completeDocument(
-  documentId: string,
-  status: 'reviewed' | 'discarded',
-  update = updateDocument
-) {
-  await update(documentId, { status })
-}

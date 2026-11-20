@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReviewAction } from '@repo/ai/review-action'
 import { Button } from '@repo/ui/components/button'
 import {
   Dialog,
@@ -15,24 +16,29 @@ import { cn } from '@repo/ui/lib/utils'
 import { ArrowLeft, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
 import type { Patient, ReviewDocument } from '#lib/records-types'
+import { pendingCount, redactionIconKind, reviewMode } from '#lib/review'
 import {
-  matchStrength,
-  pendingCount,
-  redactionIconKind,
-  reviewMode,
-} from '#lib/review'
+  canDiscard,
+  canMarkReviewed,
+  type Decision,
+  isLinked,
+  isSyncing,
+  type LinkOverride,
+  type ReviewOverrides,
+  submitReview,
+  withDecisions,
+} from '#lib/review-state'
 import { PageViewer } from './page-viewer.tsx'
 import { PatientPanel } from './patient-panel.tsx'
 import { type ReviewItem, ReviewItems } from './review-items.tsx'
 
 type Tab = 'patient' | 'redactions' | 'observations'
-
-type Outcome = 'reviewed' | 'discarded'
 
 /** Review screen: page rail, page viewer, and the patient, redaction and observation panels. */
 export function ReviewWorkspace({
@@ -45,15 +51,24 @@ export function ReviewWorkspace({
   const [page, setPage] = useState(1)
   const [tab, setTab] = useState<Tab>('patient')
   const [selected, setSelected] = useState<ReviewItem | null>(null)
-  const [patientId, setPatientId] = useState(document.patientId)
-  const [redactions, setRedactions] = useState(document.redactions)
-  const [observations, setObservations] = useState(document.observations)
-  const [outcome, setOutcome] = useState<Outcome | null>(null)
+  const [overrides, setOverrides] = useState<ReviewOverrides>({
+    decisions: {},
+    link: null,
+    outcome: null,
+  })
+  const [error, setError] = useState<string | null>(null)
   const [confirmingDiscard, setConfirmingDiscard] = useState(false)
+  const router = useRouter()
 
-  const fields = patientId ? document.patientMatches[patientId] : undefined
-  const linked = fields !== undefined && matchStrength(fields) === 'strong'
+  const { link, outcome } = overrides
+  const patientId =
+    link && 'patientId' in link ? link.patientId : document.patientId
+  const redactions = withDecisions(document.redactions, overrides.decisions)
+  const observations = withDecisions(document.observations, overrides.decisions)
+  const creating = link !== null && 'create' in link
+  const linked = isLinked(document, link)
   const pending = pendingCount(redactions) + pendingCount(observations)
+  const syncing = isSyncing(document, overrides)
   const status = outcome ?? document.status
   const mode = reviewMode(status)
   const readOnly = mode !== 'review'
@@ -88,16 +103,60 @@ export function ReviewWorkspace({
     setPage(item.page)
   }
 
-  function decide(id: string, decision: 'accepted' | 'rejected') {
-    setRedactions((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, state: decision } : item
-      )
+  // Shows the change at once, then rolls back only that change if the service refuses it.
+  async function submit(
+    action: ReviewAction,
+    change: (current: ReviewOverrides) => ReviewOverrides,
+    rollback: (current: ReviewOverrides) => ReviewOverrides
+  ) {
+    setError(null)
+    setOverrides(change)
+    const failure = await submitReview(document.id, action)
+    if (failure) {
+      setOverrides(rollback)
+      setError(failure)
+      return
+    }
+    router.refresh()
+  }
+
+  function decide(id: string, decision: Decision) {
+    const previous = overrides.decisions[id]
+    const setDecision =
+      (value: Decision | undefined) => (current: ReviewOverrides) => {
+        const { [id]: _replaced, ...decisions } = current.decisions
+        return {
+          ...current,
+          decisions: value ? { ...decisions, [id]: value } : decisions,
+        }
+      }
+    const action: ReviewAction = document.redactions.some(
+      (item) => item.id === id
     )
-    setObservations((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, state: decision } : item
-      )
+      ? { type: 'redaction.update', redactionId: id, status: decision }
+      : { type: 'observation.update', observationId: id, status: decision }
+    void submit(action, setDecision(decision), setDecision(previous))
+  }
+
+  function relink(next: LinkOverride) {
+    const previous = link
+    void submit(
+      'patientId' in next
+        ? { type: 'patient.link', patientId: next.patientId }
+        : { type: 'patient.create' },
+      (current) => ({ ...current, link: next }),
+      (current) => ({ ...current, link: previous })
+    )
+  }
+
+  function finish(type: 'markReviewed' | 'discard') {
+    void submit(
+      { type },
+      (current) => ({
+        ...current,
+        outcome: type === 'discard' ? 'discarded' : 'reviewed',
+      }),
+      (current) => ({ ...current, outcome: null })
     )
   }
 
@@ -105,13 +164,15 @@ export function ReviewWorkspace({
     ? 'Link the document to a patient with a strong match.'
     : pending > 0
       ? `${pending} ${pending === 1 ? 'item needs' : 'items need'} review.`
-      : 'Ready to mark as reviewed.'
+      : syncing
+        ? 'Saving review decisions.'
+        : 'Ready to mark as reviewed.'
 
   return (
     <div className="flex h-[calc(100svh-54px)] min-h-[620px] flex-col">
       <ProcessingRefresh
         path={`/documents/${document.id}`}
-        active={mode === 'processing'}
+        active={mode === 'processing' || syncing}
       />
       <header className="flex min-h-[83px] shrink-0 items-center gap-3 border-b bg-card px-6 py-3">
         <Button
@@ -227,8 +288,10 @@ export function ReviewWorkspace({
                 document={document}
                 patients={patients}
                 patientId={patientId}
+                creating={creating}
                 readOnly={readOnly}
-                onChange={setPatientId}
+                onLink={(id) => relink({ patientId: id })}
+                onCreate={() => relink({ create: true })}
               />
             )}
             {tab === 'redactions' && (
@@ -259,27 +322,36 @@ export function ReviewWorkspace({
         <div className="flex items-center gap-2 [&_div]:flex [&_div]:flex-col [&_div]:gap-1 [&_strong]:text-[9px] [&_div>span]:text-[8px] [&_div>span]:text-muted-foreground">
           <span className="grid size-[29px] place-items-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
             {patients.find((patient) => patient.id === patientId)?.initials ??
+              (creating ? document.proposedPatient?.initials : undefined) ??
               '?'}
           </span>
           <div>
             <span>Reviewing for</span>
-            <strong>{patientId ?? 'No patient linked'}</strong>
+            <strong>
+              {patientId ?? (creating ? 'New patient' : 'No patient linked')}
+            </strong>
           </div>
         </div>
-        <p className="ml-auto text-[9px] text-muted-foreground" role="status">
-          {status === 'failed'
-            ? 'Processing failed. This document cannot be reviewed.'
-            : status === 'reviewed'
-              ? 'Reviewed. The document is read-only.'
-              : status === 'discarded'
-                ? 'Discarded. This document contributes no data.'
-                : status === 'unsupported'
-                  ? `Unsupported document class: ${document.documentClass ?? 'Pending classification'} documents are not extracted.`
-                  : mode === 'processing'
-                    ? 'Processing. Review becomes available after extraction.'
-                    : blocker}
-        </p>
-        {!readOnly && (
+        {error ? (
+          <p className="ml-auto text-[9px] text-destructive" role="alert">
+            {error}
+          </p>
+        ) : (
+          <p className="ml-auto text-[9px] text-muted-foreground" role="status">
+            {status === 'failed'
+              ? 'Processing failed. This document cannot be reviewed.'
+              : status === 'reviewed'
+                ? 'Reviewed. The document is read-only.'
+                : status === 'discarded'
+                  ? 'Discarded. This document contributes no data.'
+                  : status === 'unsupported'
+                    ? `Unsupported document class: ${document.documentClass ?? 'Pending classification'} documents are not extracted.`
+                    : mode === 'processing'
+                      ? 'Processing. Review becomes available after extraction.'
+                      : blocker}
+          </p>
+        )}
+        {canDiscard(status) && (
           <div className="flex gap-2 [&_button]:h-[33px] [&_button]:text-[11px]">
             <Button
               variant="outline"
@@ -289,14 +361,16 @@ export function ReviewWorkspace({
             >
               Discard document
             </Button>
-            <Button
-              size="lg"
-              disabled={!linked || pending > 0}
-              onClick={() => setOutcome('reviewed')}
-            >
-              <Check data-icon="inline-start" />
-              Mark as reviewed
-            </Button>
+            {!readOnly && (
+              <Button
+                size="lg"
+                disabled={!canMarkReviewed(document, overrides)}
+                onClick={() => finish('markReviewed')}
+              >
+                <Check data-icon="inline-start" />
+                Mark as reviewed
+              </Button>
+            )}
           </div>
         )}
       </footer>
@@ -317,7 +391,7 @@ export function ReviewWorkspace({
             <Button
               variant="destructive"
               onClick={() => {
-                setOutcome('discarded')
+                finish('discard')
                 setConfirmingDiscard(false)
               }}
             >

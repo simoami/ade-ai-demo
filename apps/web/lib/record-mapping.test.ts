@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { patientFieldMatches } from './record-mapping.ts'
+import { observationState, patientFieldMatches } from './record-mapping.ts'
 
 test('compares each identifier independently and treats missing values on either side as absent', () => {
   assert.deepEqual(
@@ -23,5 +23,14 @@ test('compares each identifier independently and treats missing values on either
   assert.equal(
     patientFieldMatches({ sex: 'Female' }, { sex: 'Female' }).sex,
     'match'
+  )
+})
+
+test('shows unchecked extractions as extracted and only flagged observations as needing review', () => {
+  assert.deepEqual(
+    (
+      ['unchecked', 'flagged', 'confirmed', 'corrected', 'rejected'] as const
+    ).map(observationState),
+    ['extracted', 'needsReview', 'accepted', 'accepted', 'rejected']
   )
 })

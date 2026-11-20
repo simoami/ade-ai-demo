@@ -74,6 +74,10 @@ test('treats any other matching identifier as partial and none as no match', () 
   assert.equal(matchStrength({ ...none, lastName: 'mismatch' }), 'none')
 })
 
+test('does not treat a matching sex alone as a partial match', () => {
+  assert.equal(matchStrength({ ...none, sex: 'match' }), 'none')
+})
+
 test('counts only items that still need review', () => {
   const box = { x: 0, y: 0, width: 0.1, height: 0.1 }
   const items: Redaction[] = [

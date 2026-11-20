@@ -2,8 +2,14 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import sharp from 'sharp'
 import type { OcrPage } from '#stages/ocr/ocr-result'
-import type { RedactionRegion } from '#stages/redact/redaction-types'
-import { encryptArtifact } from '#workflows/ingest-document/artifact-encryption'
+import type {
+  IdentifierSpan,
+  RedactionRegion,
+} from '#stages/redact/redaction-types'
+import {
+  decryptArtifact,
+  encryptArtifact,
+} from '#workflows/ingest-document/artifact-encryption'
 import { redactDocument } from '#workflows/ingest-document/redact-document'
 
 const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
@@ -46,10 +52,24 @@ async function harness() {
     ],
     usage: { latencyMs: 1 },
   }))
+  const spans: IdentifierSpan[] = [
+    {
+      page: 1,
+      blockId: 'text',
+      start: 0,
+      end: 9,
+      category: 'name',
+      confidence: 0.6,
+    },
+  ]
   const blobs = new Map<string, Buffer>([
     [
       `documents/${documentId}/ocr.json.enc`,
       encryptArtifact(Buffer.from(JSON.stringify(pages)), key),
+    ],
+    [
+      `documents/${documentId}/identifiers.json.enc`,
+      encryptArtifact(Buffer.from(JSON.stringify(spans)), key),
     ],
     [`documents/${documentId}/render/1.png`, image],
     [`documents/${documentId}/render/2.png`, image],
@@ -93,20 +113,6 @@ async function harness() {
     update: async (_id, values) => {
       events.push(`status:${values.status}`)
     },
-    detect: async (ocr) => {
-      assert.deepEqual(ocr, pages)
-      events.push('detect')
-      return [
-        {
-          page: 1,
-          blockId: 'text',
-          start: 0,
-          end: 9,
-          category: 'name',
-          confidence: 0.6,
-        },
-      ]
-    },
     pictures: async ({ pageNumber }) => {
       events.push(`pictures:${pageNumber}`)
       return []
@@ -136,10 +142,10 @@ async function harness() {
       return 1
     },
   }
-  return { deps, blobs, events, replacements }
+  return { deps, blobs, events, replacements, image }
 }
 
-test('detects all pages, reviews only figures, replaces rows and publishes burned pixels before needsReview', async () => {
+test('places stored spans on all pages, reviews only figures, keeps encrypted sources, replaces rows and publishes burned pixels', async () => {
   const h = await harness()
   assert.deepEqual(await redactDocument(documentId, 2, h.deps), {
     pageCount: 2,
@@ -149,7 +155,6 @@ test('detects all pages, reviews only figures, replaces rows and publishes burne
   })
   assert.deepEqual(h.events, [
     'status:redacting',
-    'detect',
     'place:1',
     'burn:1',
     'pictures:2',
@@ -157,8 +162,14 @@ test('detects all pages, reviews only figures, replaces rows and publishes burne
     'burn:0',
     'replace',
     'publish',
-    'status:needsReview',
   ])
+  for (const page of [1, 2]) {
+    const source = h.blobs.get(
+      `documents/${documentId}/redaction/source/${page}.png.enc`
+    )
+    assert.ok(source)
+    assert.deepEqual(decryptArtifact(source, key), h.image)
+  }
   const row = h.replacements[0]?.[0]
   assert.match(
     row?.id ?? '',
@@ -184,13 +195,12 @@ test('retries from encrypted burned pages after publication deleted renders and 
   assert.equal(h.events.at(-1), 'status:failed')
   await redactDocument(documentId, 2, h.deps)
   assert.deepEqual(h.replacements[0], h.replacements[1])
-  assert.equal(h.events.filter((event) => event === 'detect').length, 1)
-  assert.equal(h.events.at(-1), 'status:needsReview')
+  assert.equal(h.events.filter((event) => event === 'place:1').length, 1)
+  assert.equal(h.events.at(-1), 'publish')
 })
 
 test('marks failed and hides stage errors without publishing or persisting incomplete work', async () => {
   for (const stage of [
-    'detect',
     'pictures',
     'place',
     'burn',
@@ -206,18 +216,20 @@ test('marks failed and hides stage errors without publishing or persisting incom
     })
     assert.equal(h.events.at(-1), 'status:failed')
     assert.ok(!h.events.includes('publish'))
-    assert.ok(!h.events.includes('status:needsReview'))
   }
 })
 
-test('rejects missing, unauthenticated and malformed OCR artifacts before detection', async () => {
-  for (const bytes of [
-    null,
-    Buffer.from('invalid'),
-    encryptArtifact(Buffer.from('{}'), key),
-  ]) {
+test('rejects missing, unauthenticated and malformed OCR or identifier artifacts before placement', async () => {
+  for (const [artifact, bytes] of [
+    'ocr.json.enc',
+    'identifiers.json.enc',
+  ].flatMap((artifact) =>
+    [null, Buffer.from('invalid'), encryptArtifact(Buffer.from('{}'), key)].map(
+      (bytes) => [artifact, bytes] as const
+    )
+  )) {
     const h = await harness()
-    const path = `documents/${documentId}/ocr.json.enc`
+    const path = `documents/${documentId}/${artifact}`
     if (bytes) h.blobs.set(path, bytes)
     else h.blobs.delete(path)
     await assert.rejects(redactDocument(documentId, 2, h.deps), {

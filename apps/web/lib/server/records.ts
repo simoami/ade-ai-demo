@@ -13,7 +13,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { connection } from 'next/server'
 import { cache } from 'react'
 import { isTerminalDocument, recordTags } from '#lib/cache-policy'
-import { patientFieldMatches } from '#lib/record-mapping'
+import { observationState, patientFieldMatches } from '#lib/record-mapping'
 import type {
   DocumentSummary,
   Observation,
@@ -63,12 +63,7 @@ function observationSummary(row: ObservationRow): Observation {
     unit: row.unit ?? '',
     date: row.effectiveDate ?? '',
     box: source.box,
-    state:
-      row.reviewStatus === 'rejected'
-        ? 'rejected'
-        : row.reviewStatus === 'flagged' || row.reviewStatus === 'unchecked'
-          ? 'needsReview'
-          : 'accepted',
+    state: observationState(row.reviewStatus),
   }
 }
 
@@ -135,6 +130,8 @@ export async function getReviewDocument(
       row.pageVersion
     )),
     pageUrlsSignedAt: Date.now(),
+    identityMismatch: row.identityMismatch,
+    proposedPatient: row.proposedPatient,
     redactions: redactionRows.map(
       ({ id, page, category, box, points, state }) => ({
         id,

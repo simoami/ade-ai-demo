@@ -2,13 +2,14 @@ import {
   deleteDocumentsResultSchema,
   documentStatusSchema,
   type ReviewAction,
+  reviewRefusalSchema,
   reviewResultSchema,
   type startDocumentSchema,
   startResultSchema,
 } from '@repo/ai/review-action'
 import { logger } from '@repo/logger'
 import { getVercelOidcToken } from '@vercel/oidc'
-import type { z } from 'zod'
+import { z } from 'zod'
 import { validateEnvironment } from '#lib/server/environment'
 
 const log = logger.getSubLogger({ name: 'pipeline-client' })
@@ -20,13 +21,20 @@ const failures = {
   503: 'Service unavailable',
 } as const
 
-/** Carries a safe pipeline HTTP status and public error message. */
+const refusalBodySchema = z.object({ refusal: reviewRefusalSchema })
+
+/** Carries a safe pipeline HTTP status, public message and, for refused review actions, the refusal code. */
 export class PipelineError extends Error {
   readonly status: keyof typeof failures
+  readonly refusal: z.infer<typeof reviewRefusalSchema> | undefined
 
-  constructor(status: keyof typeof failures = 503) {
-    super(failures[status])
+  constructor(
+    status: keyof typeof failures = 503,
+    refusal?: z.infer<typeof reviewRefusalSchema>
+  ) {
+    super(refusal ? 'Review action refused' : failures[status])
     this.status = status
+    this.refusal = refusal
   }
 }
 
@@ -57,13 +65,20 @@ async function call<T>(
 
     if (!response.ok) {
       status = response.status
+      // Refusal codes are a fixed enum, so they can pass to the browser without content.
+      const refusal =
+        response.status === 409
+          ? refusalBodySchema.safeParse(await response.json().catch(() => null))
+              .data?.refusal
+          : undefined
 
       throw new PipelineError(
         response.status === 400 ||
           response.status === 404 ||
           response.status === 409
           ? response.status
-          : 503
+          : 503,
+        refusal
       )
     }
 
@@ -103,7 +118,7 @@ export const pipeline = {
 export function pipelineFailure(error: unknown): Response {
   const failure = error instanceof PipelineError ? error : new PipelineError()
   return Response.json(
-    { error: failure.message },
+    { error: failure.message, refusal: failure.refusal },
     { status: failure.status, headers: { 'cache-control': 'no-store' } }
   )
 }

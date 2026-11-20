@@ -22,6 +22,13 @@ export type IdentifierHashes = Partial<
   Record<'lastName' | 'firstName' | 'birthDate' | 'mrn', string>
 >
 
+/** Non-identifying demographics for creating a patient; birth year is null at age 90 or over. */
+export type ProposedPatient = {
+  initials: string
+  birthYear: number | null
+  sex: 'Female' | 'Male' | 'Unknown'
+}
+
 /** One source region, using a one-based page number and the OCR block ID. */
 export type SourceRegion = { page: number; blockId: string; box: Box }
 
@@ -77,7 +84,9 @@ export const observationReviewStatus = pgEnum('observation_review_status', [
 export const reviewAction = pgEnum('review_action', [
   'redaction.update',
   'observation.resolve',
+  'observation.update',
   'patient.link',
+  'patient.create',
   'discard',
   'markReviewed',
 ])
@@ -110,6 +119,7 @@ export const documents = pgTable(
     sex: text('sex'),
     identifierHashes: jsonb('identifier_hashes').$type<IdentifierHashes>(),
     identityMismatch: boolean('identity_mismatch').default(false).notNull(),
+    proposedPatient: jsonb('proposed_patient').$type<ProposedPatient>(),
     pageVersion: integer('page_version'),
     pageDimensions: jsonb('page_dimensions')
       .$type<{ width: number; height: number }[]>()

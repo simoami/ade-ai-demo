@@ -5,25 +5,36 @@ stores its workflow run ID. Originals are private Blob paths under `uploads/`.
 The render step uses an isolated temporary directory, uploads deterministic
 `render/<page>.png` artifacts and records dimensions with status `reading`.
 The OCR step uses Reducto r-1 and writes AES-256-GCM encrypted `ocr.json.enc`,
-then sets `redacting`. A single durable redaction step loads OCR, detects identifier
-spans, reviews figures, places redactions and burns every candidate. It checkpoints
-encrypted burned PNGs and a manifest under `redaction/` before replacing redaction
-rows atomically, publishing page pairs and setting `needsReview`. UUID v5 row IDs
-use the document UUID and page/index. A retry reuses the checkpoint after render
-deletion; publication can increment the page version again. Keeping detection and
-geometry inside the step prevents content entering workflow history; the checkpoint
-avoids repeating model calls once preparation succeeds.
+then sets `redacting`. Classification, patient matching and identifier detection
+then run as parallel durable steps. Classification stores the class and consent
+summary. Matching hashes identifiers inside its step with `PATIENT_HASH_KEY`,
+links strong or partial matches (partial sets `identity_mismatch`) and stores a
+non-identifying `proposed_patient`. Detection stores encrypted spans in
+`identifiers.json.enc` and reuses them on retry.
 
-The workflow waits on `document:<UUID>:review`. `redaction.update` increments
-a durable refresh counter; `markReviewed` and `discard` write `reviewed` and
-`discarded`. Artifact deletion is not implemented. Processing errors record
-`failed`; durable step errors exclude provider messages and document content.
+The redaction step places redactions from those spans, reviews figures and burns
+every candidate. It checkpoints encrypted burned PNGs, encrypted unredacted
+review sources under `redaction/source/` and a manifest before replacing
+redaction rows atomically and publishing page pairs. A retry reuses the
+checkpoint after render deletion; publication can increment the page version
+again. The class step then extracts clinical documents from identifier-masked
+OCR (`extracting`, then `needsReview`), sends consent documents to `needsReview`
+and others to `unsupported`. Observation rows use UUID v5 IDs from the document,
+page, block, name and date, are `flagged` below 0.7 confidence and list
+redactions covering at least 30% of their source box.
+
+The workflow waits on `document:<UUID>:review` and applies each action with
+`applyReviewAction` (`review-actions.ts`). Refused actions leave the loop
+waiting; `markReviewed` and `discard` end the run with the count of applied
+actions. Processing errors record `failed`; durable step errors exclude
+provider messages and document content.
 
 Status reads return the Workflow lifecycle state (`pending`, `running`,
 `completed`, `failed`, `cancelled`); completed runs include the terminal status
-and refresh count. Review returns 404 for unknown documents and 409 when the
+and applied action count (`refreshCount`). Review returns 404 for unknown documents and 409 when the
 hook is unavailable. Acknowledgment means delivery, not completed processing.
 
 Workflow input contains upload references and the file name. Step outputs and
-logs contain IDs, counts, durations and statuses; OCR stays inside steps.
+logs contain IDs, counts, classes, match strengths, durations and statuses;
+OCR, identifiers and their hashes stay inside steps.
 Publication creates servable `pages/<page>-v<version>.webp` pairs.

@@ -1,4 +1,4 @@
-import type { FieldMatch, MatchField } from './records-types.ts'
+import type { FieldMatch, MatchField, Observation } from './records-types.ts'
 
 type Hashes = Partial<Record<MatchField, string | null>>
 
@@ -25,4 +25,21 @@ export function patientFieldMatches(
       ]
     })
   ) as Record<MatchField, FieldMatch>
+}
+
+/** Maps stored observation review statuses to review states; unchecked extractions need no decision. */
+export function observationState(
+  reviewStatus: 'confirmed' | 'corrected' | 'rejected' | 'flagged' | 'unchecked'
+): Observation['state'] {
+  switch (reviewStatus) {
+    case 'unchecked':
+      return 'extracted'
+    case 'flagged':
+      return 'needsReview'
+    case 'rejected':
+      return 'rejected'
+    case 'confirmed':
+    case 'corrected':
+      return 'accepted'
+  }
 }

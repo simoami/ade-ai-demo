@@ -8,7 +8,7 @@ import {
 /** Registers the document ingestion workflow as an agent tool. */
 export default defineWorkflowTool({
   description:
-    'Render and transcribe uploaded documents, then wait for review decisions.',
+    'Render, transcribe, classify, link, redact and extract uploaded documents, then apply review decisions.',
   inputSchema: startDocumentSchema.extend({ documentId: documentIdSchema }),
   execute: ingestDocument,
 })

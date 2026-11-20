@@ -36,7 +36,8 @@ export function redactionIconKind(category: string) {
   }
 }
 
-/** Applies the patient link rule: MRN, or last name, first name and date of birth, is a strong match. */
+/** Applies the patient link rule: MRN, or last name, first name and date of birth, is a strong match.
+ * Sex is not an identifier. Kept identical to the linking rule in packages/ai `stages/demographics/match-patient.ts`. */
 export function matchStrength(
   fields: Record<MatchField, FieldMatch>
 ): MatchStrength {
@@ -47,7 +48,9 @@ export function matchStrength(
   )
     return 'strong'
 
-  return Object.values(fields).includes('match') ? 'partial' : 'none'
+  return [lastName, firstName, birthDate, mrn].includes('match')
+    ? 'partial'
+    : 'none'
 }
 
 /** Counts the redactions and observations a reviewer still has to accept or reject. */

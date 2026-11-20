@@ -34,3 +34,37 @@ test('keeps caches intact for invalid review actions and service failures', asyn
   assert.equal((await POST(request({ type: 'discard' }), context)).status, 409)
   assert.equal(invalidation.mock.callCount(), 0)
 })
+
+test('forwards observation, patient link and patient creation decisions unchanged', async (t) => {
+  t.mock.method(recordCache, 'invalidate', () => {})
+  const review = t.mock.method(pipeline, 'review', async () => ({
+    accepted: true as const,
+  }))
+  const actions = [
+    {
+      type: 'observation.update',
+      observationId: '0b0c3d2e-8f5a-5b1c-9d2e-3f4a5b6c7d8e',
+      status: 'rejected',
+    },
+    { type: 'patient.link', patientId: 'PT-2210' },
+    { type: 'patient.create' },
+  ]
+  for (const action of actions)
+    assert.equal((await POST(request(action), context)).status, 202)
+  assert.deepEqual(
+    review.mock.calls.map((call) => call.arguments),
+    actions.map((action) => [id, action])
+  )
+})
+
+test('rejects patient creation carrying document content', async (t) => {
+  const review = t.mock.method(pipeline, 'review', async () => ({
+    accepted: true as const,
+  }))
+  assert.equal(
+    (await POST(request({ type: 'patient.create', name: 'Jane' }), context))
+      .status,
+    400
+  )
+  assert.equal(review.mock.callCount(), 0)
+})

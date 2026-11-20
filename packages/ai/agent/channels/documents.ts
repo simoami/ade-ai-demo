@@ -15,6 +15,7 @@ import {
   reviewToken,
   startDocumentSchema,
 } from '#workflows/ingest-document/review-action'
+import { checkReviewAction } from '#workflows/ingest-document/review-actions'
 
 const log = logger.getSubLogger({ name: 'documents' })
 
@@ -135,16 +136,25 @@ export default defineChannel({
         const document = await findDocument(id.data)
         if (!document)
           return Response.json({ error: 'Document not found' }, { status: 404 })
-        if (
-          !document.runId ||
-          document.status === 'reviewed' ||
-          document.status === 'discarded' ||
-          document.status === 'failed'
-        )
+        if (!document.runId)
           return Response.json(
             { error: 'Review hook is unavailable' },
             { status: 409 }
           )
+
+        // The workflow re-validates when applying; this refuses early so the browser can roll back.
+        const refusal = await checkReviewAction(id.data, action.data)
+        if (refusal) {
+          log.info(
+            { documentId: id.data, actionType: action.data.type, refusal },
+            'Review action refused'
+          )
+
+          return Response.json(
+            { error: 'Review action refused', refusal },
+            { status: 409 }
+          )
+        }
 
         const runStatus = await getRun(document.runId).status
         if (runStatus !== 'running')

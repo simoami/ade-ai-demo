@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The screens read Postgres through `apps/web/lib/server/records.ts`. `pnpm --filter @repo/ai seed:samples` loads six synthetic fixtures (redacted pages to Blob, rows to Postgres); run it, and `pnpm --filter @repo/db db:migrate`, for each Neon branch a deployment uses.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render`, `src/stages/ocr` (LLM, Datalab and Reducto OCR providers), `src/stages/pii` and `src/stages/redact`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render`, `src/stages/ocr` (LLM, Datalab and Reducto OCR providers), `src/stages/pii`, `src/stages/redact`, `src/stages/classify`, `src/stages/demographics` and `src/stages/extract`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 `packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
 
@@ -56,7 +56,7 @@ Hold every change to production standards.
 - Separate top-level declarations, and unrelated blocks inside a function, with a blank line. Keep tightly related lines together.
 - Give exported functions, classes and workflow, step and stage entries a JSDoc header of one to three lines saying what it is or guarantees. Skip `@param`/`@returns`. Add inline comments only where they explain a non-obvious why.
 - Import across directories with Node subpath imports (`#...`, declared in each package's `imports`), never `../` paths or tsconfig `paths`.
-- Log through `@repo/logger`, never `console`. Create sub-loggers at module scope (`const log = logger.getSubLogger({ name })`) and call `log.info(...)` in functions. Name sub-loggers after their file or function, using dots for nesting (`ingest-document.refresh`). Workflow step files are bundled into the sandboxed workflow driver, so a step creates its sub-logger on the first line of its `'use step'` body, not at module scope. Log milestones with IDs, counts, durations and statuses only.
+- Log through `@repo/logger`, never `console`. Create sub-loggers at module scope (`const log = logger.getSubLogger({ name })`) and call `log.info(...)` in functions. Name sub-loggers after their file or function, using dots for nesting (`ingest-document.review`). Workflow step files are bundled into the sandboxed workflow driver, so a step creates its sub-logger on the first line of its `'use step'` body, not at module scope. Log milestones with IDs, counts, durations and statuses only.
 - Keep docs short, factual, and current. No marketing tone, emoji, or filler. Update this file when commands or layout change.
 - Before finishing, run the relevant `build`, `typecheck`, and `lint` scripts and report their real output.
 
@@ -90,15 +90,19 @@ URLs (15 minutes), with separate full images and thumbnails and real page propor
 `documents.page_version` selects versioned redacted pairs; null permits render pairs
 only during `reading` and `redacting`. Serialize `publishRedactedPages` per document:
 write all pairs, publish the version, then delete obsolete pages and renders.
-Migration 0002 adds the nullable version; migrate and reseed each deployment branch.
+Migration 0002 adds the nullable version and 0003 adds `documents.proposed_patient`
+and the `observation.update` and `patient.create` review actions; migrate and reseed each deployment branch.
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
 Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered
-PNG/JPEG images, runs rendering, Reducto OCR, identifier detection, picture review and redaction,
-then publishes burned pages and sets `needsReview`. The redaction step checkpoints
-encrypted burned pages and a manifest before publication so retries can finish
-after render deletion. It replaces redaction rows atomically using UUID v5 IDs. Rendering scratch directories are
-removed inside the step. Terminal review writes status. The workspace Admin dialog offers synthetic
+PNG/JPEG images and runs rendering and Reducto OCR, then classification, demographics
+(hashed with `PATIENT_HASH_KEY` inside the step) and identifier detection as parallel steps,
+then picture review and redaction. Clinical documents are extracted (`extracting`, then
+`needsReview`), consent documents go to `needsReview` and others to `unsupported`.
+The redaction step checkpoints encrypted burned pages, encrypted unredacted review
+sources and a manifest before publication so retries can finish after render deletion.
+Redaction and observation rows are replaced atomically using UUID v5 IDs. Rendering scratch directories are
+removed inside the step. The review loop applies each action through `applyReviewAction`. The workspace Admin dialog offers synthetic
 PDF downloads and an authenticated reset that cancels runs, removes document
 Blobs and deletes document rows while preserving patients. Per-document
 artifact cleanup is not implemented. Deployment requires Deployment Protection and service

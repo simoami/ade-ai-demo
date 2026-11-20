@@ -106,6 +106,98 @@ not scored. Ground-truth figures bypass OCR picture omissions; these results do
 not measure end-to-end redaction. The local report contains metrics and
 fixture IDs only at `packages/ai/evals/results/pii-latest.json`.
 
+## Document classification
+
+`classify-v1`, `gpt-6-luna`, `synthetic-v3`: all 16 fixtures (12 development,
+4 held-out), one call per document over ground-truth OCR text blocks.
+Measured 2026-11-20 at `9de3cf2` plus the step 4 changes; all 16 cases
+completed. [Experiment](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/classify-classify-v1-1795199257786).
+
+| Class                                  | Documents | Recall           | Precision     | Ceiling |
+| -------------------------------------- | --------- | ---------------- | ------------- | ------- |
+| clinical                               | 11        | 100%             | 100%          | —       |
+| consent                                | 3         | 100%             | 100%          | —       |
+| other                                  | 2         | 100%             | 100%          | —       |
+| **Accuracy**                           | **16**    | **16/16 (100%)** | macro F1 1.00 | 100%    |
+| Consent summaries naming an identifier | 3         | 0                | —             | 0       |
+
+The class decides whether observations are extracted, so every document must
+be classified correctly; with 16 documents any error is a regression. Consent
+summaries are stored after review ends, so a summary containing any
+ground-truth identifier text (names, MRN, DOB, facility, provider, contact
+details; case-insensitive) fails the suite. Confidence is 0.99 or more except
+consent-03 (0.91), the guardian-countersigned form. The set is small and
+templated, so it does not discriminate between prompts. The local report holds
+classes, confidences and leak flags only, never summaries, at
+`packages/ai/evals/results/classify-latest.json`.
+
+## Demographics and patient matching
+
+`demographics-v1`, `gpt-6.1-sol`, `synthetic-v3`: the 14 clinical and consent
+fixtures (11 development, 3 held-out), one call per document over
+ground-truth OCR text blocks. Measured 2026-11-20 at `9de3cf2` plus the step 4
+changes; all 14 cases completed. [Experiment](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/demographics-demographics-v1-1795199269535).
+
+| Field or metric         | Result       | Ceiling |
+| ----------------------- | ------------ | ------- |
+| Last name               | 14/14 (100%) | >= 90%  |
+| First name              | 14/14 (100%) | >= 90%  |
+| Date of birth           | 14/14 (100%) | >= 90%  |
+| MRN                     | 14/14 (100%) | >= 90%  |
+| Match strength and link | 14/14 (100%) | —       |
+| Wrong automatic links   | 0            | 0       |
+
+Truth is the most frequent ground-truth `name` span (first token given name,
+last token family name), the single `dob` span and the single `id` span.
+Fields are compared as keyed hashes under a per-run random key, so values are
+normalized exactly as linking normalizes them. Matching runs the production
+rule against two patients built from fixtures: Bex from clinical-01, and Cora
+from clinical-03 with a different birth date. Expected links are 8 strong to
+Bex (MRN, or name and DOB), 1 strong to Cora (MRN), 3 partial to Cora (name
+only) and 2 partial to Bex (Aven's documents share the corpus-wide birth
+date). The set has no `none` case; unit tests cover it. A strong link attaches
+a document to a patient without review, so any wrong strong link fails the
+suite; a missed field only weakens the link and allows one miss in ten.
+Consent-03 also names a guardian, who is correctly ignored. Fixtures do not
+state sex, so sex is not scored (every output was `Unknown`). The local
+report holds field correctness, match outcomes and sex only at
+`packages/ai/evals/results/demographics-latest.json`.
+
+## Observation extraction
+
+`extract-v1`, `gpt-6.1-sol`, `synthetic-v3`: clinical-01, clinical-02 and
+clinical-03 (six development pages, 74 stated observations in 59 duplicate
+groups), using ground-truth OCR text blocks with every ground-truth identifier
+span replaced by `[REDACTED]`. One model call per page, then within-document
+deduplication. Measured 2026-11-20 at `9de3cf2` plus the extraction changes;
+all three cases completed in 21 s wall time.
+[Experiment](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/extract-extract-v1-1795199141162).
+
+| Metric             | Result       | Ceiling |
+| ------------------ | ------------ | ------- |
+| Observation recall | 59/59 (100%) | >= 95%  |
+| Precision          | 59/59 (100%) | >= 95%  |
+| Unit accuracy      | 59/59 (100%) | >= 98%  |
+| Dedupe accuracy    | 59/59 (100%) | >= 95%  |
+
+Truth is deduplicated per `duplicateGroup`: the first observation in the
+preferred source format (table, then list, then narrative). Output matches
+truth one-to-one on case- and whitespace-normalized name and value plus the
+exact effective date. Unit accuracy counts matched observations whose
+normalized unit agrees. A group is deduplicated correctly when exactly one
+output observation has its name and date and that observation has the
+preferred source format.
+
+The subset saturates every metric, so it does not yet discriminate between
+prompts: the templated corpus repeats the same names, units and phrasing.
+Reference ranges, flags, adverse-event details, `dateSource`, block IDs and
+confidence are not scored. Clinical-20 is excluded for cost; held-out
+fixtures are not used. Ceilings are fixed tolerances: missing or invented
+observations reach the reviewer, so recall and precision allow about one miss
+in twenty; a wrong unit misstates a value, so units allow one in fifty.
+Runtime/schema failures fail the suite. The local report holds metrics only at
+`packages/ai/evals/results/extract-latest.json`.
+
 ## Metrics and thresholds
 
 | Stage | Metric                    | Gate or score | Threshold                | Why                                                                                      |

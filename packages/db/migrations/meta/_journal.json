@@ -22,6 +22,13 @@
       "when": 1795191681184,
       "tag": "0002_yellow_hellfire_club",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795199005315,
+      "tag": "0003_panoramic_black_panther",
+      "breakpoints": true
     }
   ]
 }
