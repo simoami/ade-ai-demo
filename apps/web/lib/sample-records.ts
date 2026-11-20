@@ -1,4 +1,9 @@
-import { observations, redactions } from './sample-clinical-20.ts'
+import { sampleData as clinical } from '#lib/sample-clinical-20'
+import { sampleData as consent } from '#lib/sample-consent-01'
+import { sampleData as intake } from '#lib/sample-intake-01'
+import { sampleData as invoice } from '#lib/sample-invoice-01'
+import { sampleData as radiology } from '#lib/sample-radiology-01'
+import { sampleData as referral } from '#lib/sample-referral-01'
 
 /** A normalized page region: fractions of page width and height. */
 export type Box = { x: number; y: number; width: number; height: number }
@@ -35,7 +40,10 @@ export type Redaction = {
   id: string
   page: number
   category: string
+  /** Bounding box of `points`, for scrolling and hit areas. */
   box: Box
+  /** The redacted region's corners, normalized; tilted with the scan. */
+  points: [number, number][]
   state: 'applied' | 'needsReview' | 'accepted' | 'rejected'
 }
 
@@ -66,7 +74,7 @@ export type ReviewDocument = DocumentSummary & {
 export const patients: Patient[] = [
   { id: 'PT-1042', initials: 'BS', sex: 'Female', birthYear: 1978 },
   { id: 'PT-2210', initials: 'AT', sex: 'Male', birthYear: 1978 },
-  { id: 'PT-3317', initials: 'CF', sex: 'Female', birthYear: 1981 },
+  { id: 'PT-3317', initials: 'CF', sex: 'Female', birthYear: 1978 },
 ]
 
 export const documents: DocumentSummary[] = [
@@ -85,7 +93,7 @@ export const documents: DocumentSummary[] = [
     documentClass: 'clinical',
     patientId: null,
     pages: 1,
-    status: 'redacting',
+    status: 'needsReview',
     uploadedAt: '2026-11-19T14:20:00Z',
   },
   {
@@ -94,7 +102,7 @@ export const documents: DocumentSummary[] = [
     documentClass: 'clinical',
     patientId: null,
     pages: 2,
-    status: 'reading',
+    status: 'extracting',
     uploadedAt: '2026-11-19T14:21:00Z',
   },
   {
@@ -126,42 +134,31 @@ export const documents: DocumentSummary[] = [
   },
 ]
 
-const reviewDocuments: Record<string, ReviewDocument> = {
-  'clinical-20': {
-    ...(documents[0] as DocumentSummary),
-    pageImages: Array.from(
-      { length: 20 },
-      (_, index) => `/samples/clinical-20/${index + 1}.webp`
-    ),
-    redactions,
-    observations,
-    patientMatches: {
-      'PT-1042': {
-        lastName: 'match',
-        firstName: 'match',
-        birthDate: 'match',
-        mrn: 'match',
-        sex: 'absent',
-      },
-      'PT-2210': {
-        lastName: 'mismatch',
-        firstName: 'mismatch',
-        birthDate: 'match',
-        mrn: 'mismatch',
-        sex: 'absent',
-      },
-      'PT-3317': {
-        lastName: 'mismatch',
-        firstName: 'mismatch',
-        birthDate: 'mismatch',
-        mrn: 'mismatch',
-        sex: 'absent',
-      },
-    },
-  },
+const sampleData: Record<
+  string,
+  Pick<
+    ReviewDocument,
+    'pageImages' | 'redactions' | 'observations' | 'patientMatches'
+  >
+> = {
+  'clinical-20': clinical,
+  'intake-01': intake,
+  'referral-01': referral,
+  'consent-01': consent,
+  'radiology-01': radiology,
+  'invoice-01': invoice,
 }
 
-/** Returns a document ready for review, if the sample set has one. */
+const reviewDocuments: Record<string, ReviewDocument> = Object.fromEntries(
+  documents.map((document) => {
+    const data = sampleData[document.id]
+    if (!data) throw new Error(`Missing review data for ${document.id}`)
+
+    return [document.id, { ...document, ...data }]
+  })
+)
+
+/** Returns review data for a sample document, including its processing state. */
 export function findReviewDocument(id: string): ReviewDocument | undefined {
   return reviewDocuments[id]
 }

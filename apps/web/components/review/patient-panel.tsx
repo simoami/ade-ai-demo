@@ -53,9 +53,9 @@ export function PatientPanel({
   return (
     <div className="flex flex-col gap-4">
       {patient && fields ? (
-        <div className="rounded-md border">
-          <div className="flex items-center gap-3 border-b p-3">
-            <span className="grid size-9 place-items-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
+        <div className="rounded-lg border bg-card p-[13px]">
+          <div className="flex items-center gap-2">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">
               {patient.initials}
             </span>
             <div className="flex min-w-0 flex-1 flex-col">
@@ -66,10 +66,12 @@ export function PatientPanel({
             </div>
             <StrengthBadge strength={matchStrength(fields)} />
           </div>
-          <ul className="flex flex-col gap-2 p-3">
+          <ul className="mt-4 flex flex-col gap-3 border-t pt-3.5 [&_li>span]:text-[10px] [&_svg]:size-3">
             {(Object.keys(fieldLabels) as MatchField[]).map((field) => (
               <li key={field} className="flex items-center justify-between">
-                <span className="text-sm">{fieldLabels[field]}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {fieldLabels[field]}
+                </span>
                 <FieldResult result={fields[field]} />
               </li>
             ))}
@@ -81,13 +83,18 @@ export function PatientPanel({
         </p>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="rounded-md bg-accent/40 p-2.5 text-[9px] leading-relaxed text-muted-foreground">
         Identifiers read from the document are compared with each patient's
         stored hashes. Names and full dates of birth are not stored.
       </p>
 
       {!readOnly && (
-        <Button variant="outline" size="lg" onClick={() => setPicking(true)}>
+        <Button
+          className="w-full text-[11px]"
+          variant="outline"
+          size="lg"
+          onClick={() => setPicking(true)}
+        >
           <UsersRound data-icon="inline-start" />
           Change patient
         </Button>
@@ -136,10 +143,8 @@ function StrengthBadge({ strength }: { strength: MatchStrength }) {
     <Badge
       variant="secondary"
       className={cn(
-        strength === 'strong' &&
-          'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200',
-        strength === 'partial' &&
-          'bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
+        strength === 'strong' && 'bg-success-muted text-success',
+        strength === 'partial' && 'bg-warning-muted text-warning'
       )}
     >
       {strengthLabels[strength]}
@@ -150,7 +155,7 @@ function StrengthBadge({ strength }: { strength: MatchStrength }) {
 function FieldResult({ result }: { result: FieldMatch }) {
   if (result === 'match')
     return (
-      <span className="flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
+      <span className="flex items-center gap-1 text-xs text-success">
         <Check className="size-4" /> Matches
       </span>
     )

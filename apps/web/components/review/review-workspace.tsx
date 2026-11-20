@@ -18,7 +18,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
-import { matchStrength, pendingCount } from '#lib/review'
+import { matchStrength, pendingCount, reviewMode } from '#lib/review'
 import type { Patient, ReviewDocument } from '#lib/sample-records'
 import { PageViewer } from './page-viewer.tsx'
 import { PatientPanel } from './patient-panel.tsx'
@@ -48,7 +48,9 @@ export function ReviewWorkspace({
   const fields = patientId ? document.patientMatches[patientId] : undefined
   const linked = fields !== undefined && matchStrength(fields) === 'strong'
   const pending = pendingCount(redactions) + pendingCount(observations)
-  const readOnly = outcome !== null
+  const status = outcome ?? document.status
+  const mode = reviewMode(status)
+  const readOnly = mode !== 'review'
 
   const redactionItems: ReviewItem[] = redactions.map((redaction) => ({
     ...redaction,
@@ -66,10 +68,12 @@ export function ReviewWorkspace({
   const outlines = regions
     .filter((item) => item.page === page)
     .filter((item) => item.state === 'needsReview' || item.id === selected?.id)
-    .map(({ id, box }) => ({
-      id,
-      box,
-      tone: id === selected?.id ? ('selected' as const) : ('review' as const),
+    .map((item) => ({
+      id: item.id,
+      box: item.box,
+      points: 'points' in item ? item.points : undefined,
+      tone:
+        item.id === selected?.id ? ('selected' as const) : ('review' as const),
     }))
 
   function select(item: ReviewItem) {
@@ -97,33 +101,37 @@ export function ReviewWorkspace({
       : 'Ready to mark as reviewed.'
 
   return (
-    <div className="flex h-svh flex-col">
-      <header className="flex shrink-0 items-center gap-3 border-b px-4 py-3">
+    <div className="flex h-[calc(100svh-54px)] min-h-[620px] flex-col">
+      <header className="flex min-h-[83px] shrink-0 items-center gap-3 border-b bg-card px-6 py-3">
         <Button
           variant="outline"
           size="icon-lg"
+          className="size-8 shrink-0 rounded-md border bg-card p-0 text-muted-foreground"
           aria-label="Back to documents"
           nativeButton={false}
           render={<Link href="/documents" />}
         >
           <ArrowLeft />
         </Button>
-        <div className="flex min-w-0 flex-col">
-          <h1 className="flex items-center gap-2 text-base font-semibold">
+        <div className="min-w-0 [&_h1]:mt-1 [&_h1]:mb-1 [&_h1]:text-[15px] [&_h1]:font-semibold">
+          <div className="text-[9px] font-bold tracking-[.12em] text-muted-foreground">
+            DOCUMENT REVIEW · {document.id}
+          </div>
+          <h1 className="flex items-center gap-2">
             {document.fileName}
             <StatusBadge status={outcome ?? document.status} />
           </h1>
-          <span className="text-xs text-muted-foreground capitalize">
+          <span className="text-[9.5px] text-muted-foreground capitalize">
             {document.documentClass} · {document.pages} pages · uploaded{' '}
             {formatDate(document.uploadedAt)}
           </span>
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[6.5rem_minmax(0,1fr)_24rem]">
+      <div className="grid min-h-0 flex-1 grid-cols-[87px_minmax(0,1fr)_337px] max-lg:grid-cols-[74px_minmax(0,1fr)_300px]">
         <nav
           aria-label="Pages"
-          className="flex min-h-0 flex-col gap-3 overflow-y-auto border-r p-3"
+          className="min-h-0 border-r bg-card/50 px-2.5 py-3 overflow-y-auto"
         >
           {document.pageImages.map((src, index) => {
             const number = index + 1
@@ -137,7 +145,7 @@ export function ReviewWorkspace({
                 aria-label={`Page ${number}`}
                 aria-current={number === page ? 'page' : undefined}
                 onClick={() => setPage(number)}
-                className="group flex flex-col items-center gap-1"
+                className="relative w-[65px] rounded-md border border-transparent p-1 aria-current:border-primary aria-current:bg-accent flex flex-col items-center gap-1"
               >
                 <span
                   className={cn(
@@ -147,11 +155,11 @@ export function ReviewWorkspace({
                 >
                   <Image src={src} alt="" fill sizes="5rem" />
                   {flagged && (
-                    <span className="absolute top-1 right-1 size-2 rounded-full bg-amber-500" />
+                    <span className="absolute top-1 right-1 size-2 rounded-full bg-warning" />
                   )}
                 </span>
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {number}
+                <span className="text-[8px] text-muted-foreground">
+                  Page {number}
                 </span>
               </button>
             )
@@ -165,28 +173,37 @@ export function ReviewWorkspace({
           outlines={outlines}
         />
 
-        <aside className="flex min-h-0 flex-col border-l">
+        <aside className="flex min-h-0 flex-col border-l bg-card">
           <Tabs
             value={tab}
             onValueChange={(value) => setTab(value as Tab)}
-            className="shrink-0 border-b px-3 pt-2 pb-1"
+            className="h-[43px] shrink-0 border-b px-3 [&_[data-slot=tabs-list]]:h-full"
           >
             <TabsList variant="line" className="w-full">
-              <TabsTrigger value="patient">
-                Patient
+              <TabsTrigger
+                className="px-1 text-[9px] data-active:text-primary"
+                value="patient"
+              >
+                Patient match
                 {!linked && <Dot />}
               </TabsTrigger>
-              <TabsTrigger value="redactions">
+              <TabsTrigger
+                className="px-1 text-[9px] data-active:text-primary"
+                value="redactions"
+              >
                 Redactions
                 {pendingCount(redactions) > 0 && <Dot />}
               </TabsTrigger>
-              <TabsTrigger value="observations">
+              <TabsTrigger
+                className="px-1 text-[9px] data-active:text-primary"
+                value="observations"
+              >
                 Observations
                 {pendingCount(observations) > 0 && <Dot />}
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <div className="min-h-0 flex-1 overflow-auto px-[15px] py-4">
             {tab === 'patient' && (
               <PatientPanel
                 document={document}
@@ -220,16 +237,30 @@ export function ReviewWorkspace({
         </aside>
       </div>
 
-      <footer className="flex shrink-0 items-center justify-between gap-4 border-t px-4 py-3">
-        <p className="text-sm text-muted-foreground" role="status">
-          {outcome === 'reviewed'
-            ? 'Marked as reviewed. The document is now read-only.'
-            : outcome === 'discarded'
+      <footer className="flex h-[62px] shrink-0 items-center justify-between gap-3 border-t bg-card px-[22px]">
+        <div className="flex items-center gap-2 [&_div]:flex [&_div]:flex-col [&_div]:gap-1 [&_strong]:text-[9px] [&_div>span]:text-[8px] [&_div>span]:text-muted-foreground">
+          <span className="grid size-[29px] place-items-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
+            {patients.find((patient) => patient.id === patientId)?.initials ??
+              '?'}
+          </span>
+          <div>
+            <span>Reviewing for</span>
+            <strong>{patientId ?? 'No patient linked'}</strong>
+          </div>
+        </div>
+        <p className="ml-auto text-[9px] text-muted-foreground" role="status">
+          {status === 'reviewed'
+            ? 'Reviewed. The document is read-only.'
+            : status === 'discarded'
               ? 'Discarded. This document contributes no data.'
-              : blocker}
+              : status === 'unsupported'
+                ? `Unsupported document class: ${document.documentClass} documents are not extracted.`
+                : mode === 'processing'
+                  ? 'Processing. Review becomes available after extraction.'
+                  : blocker}
         </p>
         {!readOnly && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 [&_button]:h-[33px] [&_button]:text-[11px]">
             <Button
               variant="outline"
               size="lg"
@@ -280,5 +311,5 @@ export function ReviewWorkspace({
 }
 
 function Dot() {
-  return <span className="size-1.5 rounded-full bg-amber-500" />
+  return <span className="size-1.5 rounded-full bg-warning" />
 }

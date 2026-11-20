@@ -36,9 +36,23 @@ test('treats any other matching identifier as partial and none as no match', () 
 test('counts only items that still need review', () => {
   const box = { x: 0, y: 0, width: 0.1, height: 0.1 }
   const items: Redaction[] = [
-    { id: 'r1', page: 1, category: 'Name', box, state: 'needsReview' },
-    { id: 'r2', page: 1, category: 'Phone', box, state: 'accepted' },
-    { id: 'r3', page: 1, category: 'Phone', box, state: 'applied' },
+    {
+      id: 'r1',
+      page: 1,
+      category: 'Name',
+      box,
+      points: [],
+      state: 'needsReview',
+    },
+    {
+      id: 'r2',
+      page: 1,
+      category: 'Phone',
+      box,
+      points: [],
+      state: 'accepted',
+    },
+    { id: 'r3', page: 1, category: 'Phone', box, points: [], state: 'applied' },
   ]
   assert.equal(pendingCount(items), 1)
 })

@@ -31,11 +31,16 @@ export function ObservationTrend({
   const last = points.at(-1)
 
   return (
-    <figure className="flex flex-col gap-2 rounded-lg border bg-card p-4">
-      <figcaption className="flex items-baseline justify-between">
-        <span className="text-sm font-medium">{name}</span>
+    <figure className="rounded-lg border bg-card p-4">
+      <figcaption className="mb-3 flex items-start justify-between [&_h2]:mt-1.5 [&_h2]:text-[13px]">
+        <div>
+          <div className="text-[9px] font-bold tracking-[.12em] text-muted-foreground">
+            LAB TREND
+          </div>
+          <h2>{name}</h2>
+        </div>
         {last && (
-          <span className="text-xs text-muted-foreground">
+          <span className="flex items-baseline gap-2 text-[10px] text-muted-foreground">
             Latest{' '}
             <span className="font-medium text-foreground">{last.value}</span>{' '}
             {unit}

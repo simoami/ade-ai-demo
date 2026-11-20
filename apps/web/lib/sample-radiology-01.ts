@@ -1,0 +1,165 @@
+import type { ReviewDocument } from '#lib/sample-records'
+
+// Generated from the radiology-01 synthetic fixture's ground truth.
+export const sampleData: Pick<
+  ReviewDocument,
+  'pageImages' | 'redactions' | 'observations' | 'patientMatches'
+> = {
+  pageImages: ['/samples/radiology-01/1.webp'],
+  redactions: [
+    {
+      id: 'r1',
+      page: 1,
+      category: 'Facility',
+      box: { x: 0.1815, y: 0.0229, width: 0.1691, height: 0.0205 },
+      points: [
+        [0.1824, 0.0229],
+        [0.3507, 0.0292],
+        [0.3498, 0.0434],
+        [0.1815, 0.0371],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r2',
+      page: 1,
+      category: 'Name',
+      box: { x: 0.0891, y: 0.0343, width: 0.1112, height: 0.0183 },
+      points: [
+        [0.09, 0.0343],
+        [0.2004, 0.0384],
+        [0.1995, 0.0526],
+        [0.0891, 0.0484],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r3',
+      page: 1,
+      category: 'Record number',
+      box: { x: 0.2413, y: 0.04, width: 0.0852, height: 0.0173 },
+      points: [
+        [0.2422, 0.04],
+        [0.3266, 0.0431],
+        [0.3257, 0.0573],
+        [0.2413, 0.0541],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r4',
+      page: 1,
+      category: 'Date of birth',
+      box: { x: 0.4082, y: 0.0462, width: 0.0424, height: 0.0157 },
+      points: [
+        [0.4091, 0.0462],
+        [0.4507, 0.0478],
+        [0.4498, 0.0619],
+        [0.4082, 0.0604],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r5',
+      page: 1,
+      category: 'Provider',
+      box: { x: 0.1711, y: 0.1571, width: 0.1348, height: 0.0208 },
+      points: [
+        [0.1721, 0.1571],
+        [0.3059, 0.1621],
+        [0.3049, 0.1779],
+        [0.1711, 0.1729],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r6',
+      page: 1,
+      category: 'Name',
+      box: { x: 0.0923, y: 0.2031, width: 0.1281, height: 0.0144 },
+      points: [
+        [0.0929, 0.2031],
+        [0.2204, 0.2078],
+        [0.2198, 0.2174],
+        [0.0923, 0.2127],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r7',
+      page: 1,
+      category: 'Record number',
+      box: { x: 0.0915, y: 0.2156, width: 0.0812, height: 0.0119 },
+      points: [
+        [0.0921, 0.2156],
+        [0.1728, 0.2186],
+        [0.1722, 0.2275],
+        [0.0915, 0.2245],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r8',
+      page: 1,
+      category: 'Date of birth',
+      box: { x: 0.1297, y: 0.2289, width: 0.0395, height: 0.0103 },
+      points: [
+        [0.1302, 0.2289],
+        [0.1691, 0.2304],
+        [0.1686, 0.2392],
+        [0.1297, 0.2378],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r9',
+      page: 1,
+      category: 'Name',
+      box: { x: 0.0331, y: 0.9314, width: 0.0835, height: 0.0141 },
+      points: [
+        [0.0338, 0.9314],
+        [0.1166, 0.9345],
+        [0.1159, 0.9456],
+        [0.0331, 0.9425],
+      ],
+      state: 'accepted',
+    },
+    {
+      id: 'r10',
+      page: 1,
+      category: 'Record number',
+      box: { x: 0.1464, y: 0.9357, width: 0.0668, height: 0.0135 },
+      points: [
+        [0.1471, 0.9357],
+        [0.2132, 0.9382],
+        [0.2125, 0.9492],
+        [0.1464, 0.9467],
+      ],
+      state: 'accepted',
+    },
+  ],
+  observations: [],
+  patientMatches: {
+    'PT-1042': {
+      firstName: 'mismatch',
+      lastName: 'mismatch',
+      birthDate: 'match',
+      mrn: 'mismatch',
+      sex: 'absent',
+    },
+    'PT-2210': {
+      firstName: 'match',
+      lastName: 'match',
+      birthDate: 'match',
+      mrn: 'match',
+      sex: 'absent',
+    },
+    'PT-3317': {
+      firstName: 'mismatch',
+      lastName: 'mismatch',
+      birthDate: 'match',
+      mrn: 'mismatch',
+      sex: 'absent',
+    },
+  },
+}

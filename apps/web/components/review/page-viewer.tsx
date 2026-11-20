@@ -3,11 +3,16 @@ import { cn } from '@repo/ui/lib/utils'
 import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import type { Box } from '#lib/sample-records'
+import type { Box, Redaction } from '#lib/sample-records'
 
 const zoomSteps = [0.75, 1, 1.25, 1.5]
 
-type Outline = { id: string; box: Box; tone: 'review' | 'selected' }
+type Outline = {
+  id: string
+  box: Box
+  points?: Redaction['points']
+  tone: 'review' | 'selected'
+}
 
 /** Shows one redacted page with outlines for flagged and selected regions. */
 export function PageViewer({
@@ -24,9 +29,22 @@ export function PageViewer({
   const [zoom, setZoom] = useState(1)
   const src = images[page - 1]
 
+  if (images.length === 0) {
+    return (
+      <section
+        className="flex min-h-0 flex-col items-center justify-center gap-3 bg-muted/60 p-6 text-muted-foreground"
+        aria-label="Document viewer"
+      >
+        <p className="text-xs" role="status">
+          Pages appear once redaction finishes
+        </p>
+      </section>
+    )
+  }
+
   return (
-    <section className="flex min-h-0 min-w-0 flex-col bg-muted/60">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b bg-background px-3 text-xs text-muted-foreground">
+    <section className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-muted/60">
+      <div className="flex h-[42px] shrink-0 items-center justify-between border-b bg-card px-3.5 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Lock className="size-3.5" />
           Redacted copy · read only
@@ -82,10 +100,10 @@ export function PageViewer({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto p-6">
+      <div className="flex min-h-0 flex-1 items-start justify-center overflow-auto px-5 pt-[18px] pb-[22px]">
         <div
-          className="relative mx-auto aspect-[1000/1294] bg-white shadow-sm ring-1 ring-border"
-          style={{ width: `${zoom * 100}%`, maxWidth: `${zoom * 52}rem` }}
+          className="shrink-0 relative mx-auto aspect-[1000/1294] bg-white shadow-sm ring-1 ring-border"
+          style={{ width: `${zoom * 100}%`, maxWidth: `${zoom * 430}px` }}
         >
           {src !== undefined && (
             <Image
@@ -96,22 +114,53 @@ export function PageViewer({
               priority
             />
           )}
-          {outlines.map(({ id, box, tone }) => (
-            <span
-              key={id}
-              className={cn(
-                'pointer-events-none absolute rounded-[2px] ring-2 ring-offset-1',
-                tone === 'selected' ? 'ring-primary' : 'ring-amber-500'
-              )}
-              style={{
-                left: `${box.x * 100}%`,
-                top: `${box.y * 100}%`,
-                width: `${box.width * 100}%`,
-                height: `${box.height * 100}%`,
-              }}
-            />
-          ))}
+          <svg
+            viewBox="0 0 1 1"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 size-full"
+          >
+            {outlines.map(({ id, box, points, tone }) => {
+              const attributes = {
+                fill: 'none',
+                stroke: 'currentColor',
+                strokeWidth: 2,
+                strokeDasharray: '5 5',
+                vectorEffect: 'non-scaling-stroke' as const,
+                className: cn(
+                  'animate-marching-ants motion-reduce:animate-none',
+                  tone === 'selected' ? 'text-primary' : 'text-warning'
+                ),
+              }
+
+              return points ? (
+                <polygon
+                  key={id}
+                  points={points.map(([x, y]) => `${x},${y}`).join(' ')}
+                  {...attributes}
+                />
+              ) : (
+                <rect
+                  key={id}
+                  x={box.x}
+                  y={box.y}
+                  width={box.width}
+                  height={box.height}
+                  {...attributes}
+                />
+              )
+            })}
+          </svg>
         </div>
+      </div>
+      <div className="flex h-[29px] shrink-0 items-center justify-between border-t bg-card/50 px-3 text-[8.5px] text-muted-foreground [&_span]:flex [&_span]:items-center [&_span]:gap-1">
+        <span>
+          <Lock size={13} />
+          Redacted document · Read only
+        </span>
+        <span>
+          Page {page} of {images.length}
+        </span>
       </div>
     </section>
   )

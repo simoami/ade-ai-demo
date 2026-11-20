@@ -29,7 +29,7 @@ export function UploadZone() {
     <label
       htmlFor={inputId}
       className={cn(
-        'flex cursor-pointer flex-wrap items-center gap-4 rounded-lg border border-dashed bg-card p-4 transition-colors hover:bg-muted/40 has-focus-visible:ring-2 has-focus-visible:ring-ring',
+        'relative flex min-h-[90px] items-center gap-3.5 rounded-lg border border-dashed border-primary/30 bg-accent/20 px-[18px] py-4 cursor-pointer flex-wrap has-focus-visible:ring-2 has-focus-visible:ring-ring',
         dragging && 'border-primary bg-accent'
       )}
       onDragOver={(event) => {
@@ -43,11 +43,11 @@ export function UploadZone() {
         select(event.dataTransfer.files)
       }}
     >
-      <span className="grid size-10 place-items-center rounded-md bg-accent text-accent-foreground">
+      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-primary">
         <CloudUpload className="size-5" />
       </span>
-      <div className="flex min-w-48 flex-1 flex-col gap-0.5">
-        <span className="text-sm font-medium">Drop a document here</span>
+      <div className="flex flex-col gap-1 [&>strong]:text-xs [&>span]:text-[10px] [&>span]:text-muted-foreground min-w-48 flex-1">
+        <strong>Drop files to start a review</strong>
         <span className="text-xs text-muted-foreground">
           One PDF, or up to 30 PNG or JPEG images that become its pages in
           order. 20 MB in total.
@@ -72,7 +72,12 @@ export function UploadZone() {
         className="sr-only"
         onChange={(event) => select(event.target.files)}
       />
-      <span className={buttonVariants({ variant: 'outline' })}>
+      <span
+        className={cn(
+          buttonVariants({ variant: 'outline' }),
+          'h-[35px] text-[11px]'
+        )}
+      >
         Choose files
       </span>
     </label>

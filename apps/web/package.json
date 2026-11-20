@@ -30,7 +30,8 @@
     "next": "16.4.5",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "next-themes": "catalog:"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
