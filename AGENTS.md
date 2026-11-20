@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there and app routes in `apps/web/app`.
+`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The documents, review and patient screens read synthetic sample records from `apps/web/lib/sample-records.ts`; the review sample's redacted page images in `apps/web/public/samples/clinical-20` and its redactions and observations are generated from the `clinical-20` fixture's ground truth.
 
 `packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM, Datalab and Reducto OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 

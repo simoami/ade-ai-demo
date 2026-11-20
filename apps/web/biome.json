@@ -18,6 +18,9 @@
       },
       "nursery": {
         "useReactCompiler": "error"
+      },
+      "performance": {
+        "noJsxPropsBind": "off"
       }
     }
   }

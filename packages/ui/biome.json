@@ -6,5 +6,21 @@
     "domains": {
       "react": "all"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/components/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useKeyWithClickEvents": "off",
+            "useSemanticElements": "off"
+          },
+          "performance": { "noJsxPropsBind": "off" },
+          "style": { "useComponentExportOnlyModules": "off" },
+          "suspicious": { "noLeakedRender": "off" }
+        }
+      }
+    }
+  ]
 }

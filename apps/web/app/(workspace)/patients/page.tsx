@@ -1,0 +1,41 @@
+import Link from 'next/link'
+import { documents, patients } from '#lib/sample-records'
+
+/** Patient list: stored demographics and linked document counts. */
+export default function PatientsPage() {
+  return (
+    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight">Patients</h1>
+        <p className="text-sm text-muted-foreground">
+          Patients are stored as identifier hashes with initials, sex and birth
+          year.
+        </p>
+      </header>
+      <ul className="flex flex-col divide-y rounded-lg border bg-card">
+        {patients.map((patient) => (
+          <li key={patient.id}>
+            <Link
+              href={`/patients/${patient.id}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50"
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
+                {patient.initials}
+              </span>
+              <span className="flex-1 text-sm font-medium">{patient.id}</span>
+              <span className="text-sm text-muted-foreground">
+                {patient.sex} · born {patient.birthYear} ·{' '}
+                {
+                  documents.filter(
+                    (document) => document.patientId === patient.id
+                  ).length
+                }{' '}
+                documents
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
+  )
+}

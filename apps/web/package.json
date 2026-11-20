@@ -15,7 +15,7 @@
     "format": "biome format --write .",
     "check:agent": "node scripts/check-agent.mjs",
     "check": "biome check .",
-    "test": "node --experimental-strip-types --test lib/server/*.test.ts"
+    "test": "node --experimental-strip-types --test lib/*.test.ts lib/server/*.test.ts"
   },
   "dependencies": {
     "@opentelemetry/api": "catalog:",
@@ -26,6 +26,7 @@
     "@vercel/oidc": "catalog:",
     "@vercel/otel": "catalog:",
     "eve": "catalog:",
+    "lucide-react": "catalog:",
     "next": "16.4.5",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -41,6 +42,7 @@
     "typescript": "catalog:"
   },
   "imports": {
+    "#components/*": "./components/*.tsx",
     "#lib/*": "./lib/*.ts"
   }
 }
