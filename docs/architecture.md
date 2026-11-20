@@ -5,7 +5,7 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 ## Principles
 
 1. **Evals drive the work.** Every model-backed stage gets a dataset and scorers before its prompt is written. See [Evaluation](#evaluation).
-2. **Fail closed on privacy.** Third parties other than the OCR model never see unconfirmed identifiers. Redactions are burned into pixels, not overlaid.
+2. **Fail closed on privacy.** Third parties other than the OCR model never see unconfirmed identifiers. The protected viewer temporarily shows unredacted renders only while status is `reading` or `redacting`, with a warning and no caching. After redaction, it shows burned redacted pixels only.
 3. **Everything cites its source.** Observations, redactions and note chunks carry page, block ID and box, so the UI can outline them and reviewers can verify them.
 4. **Deterministic pipeline, agents only where judgment helps.** The pipeline is a durable workflow. The two agents (observation review and chart Q&A) use narrow tools.
 5. **Replay-safe writes.** Deterministic IDs and upserts, so a retried step never duplicates data.
@@ -63,8 +63,10 @@ It encrypts OCR JSON with AES-256-GCM (12-byte IV, 16-byte tag, ciphertext) usin
 `DOCUMENT_ENCRYPTION_KEY`, then leaves status at `redacting`. It waits on the
 review hook, increments a refresh counter for redaction decisions, and writes
 terminal status on `markReviewed` or `discard`. Per-document artifact cleanup
-and real-upload redaction are not implemented. Only redacted `pages/<page>.webp` can be served;
-this workflow produces internal `render/<page>.png` and `ocr.json.enc` only.
+and real-upload redaction are not implemented. The protected file route serves `render/<page>.png` only while Postgres status is
+`reading` or `redacting`, with `Cache-Control: private, no-store`. Other statuses
+return 404 for renders. Redacted `pages/<page>.webp` remain servable; encrypted
+OCR is never served.
 Milestone logs use `@repo/logger` and carry metadata only. Render, OCR, refresh and
 terminal review logs run in durable steps, outside workflow replay; request
 failures include only fixed paths, statuses and error types.
@@ -77,12 +79,12 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 ```
 
 1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: one PDF, or up to 30 PNG or JPEG images that become the pages of one document in the order selected; 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
-2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. Sharp produces thumbnails. Runs in a normal step.
+2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. The protected viewer uses these unredacted renders as page images and thumbnails during `reading` and `redacting`, with an explicit warning. Runs in a normal step.
 3. **OCR.** An `OcrProvider` returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page), figure blocks for pictures and signatures, and word boxes where the provider has them. Providers are compared in [`docs/evals.md`](evals.md). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
 5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
 6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review.
-7. **Redact.** High-confidence redactions are burned into page images and thumbnails and removed from `ocr.redacted.json`. Low-confidence candidates are masked in text only, so embeddings and enrichment never see them, while the reviewer can still read the page.
+7. **Redact.** The redaction stage is pending. Its completion replaces previews with burned `pages/<page>.webp` images and deletes `render/*`. High-confidence redactions are burned into page images and thumbnails and removed from `ocr.redacted.json`. Low-confidence candidates are masked in text only, so embeddings and enrichment never see them, while the reviewer can still read the page.
 8. **Observations.** Structured extraction over tables, lists and narrative, then within-document deduplication that is date-aware and prefers table over list over narrative. The review agent checks each batch against the source with `viewSourceRegion` and `readBlocks`, and returns a verdict per observation:
    - `confirmed`: accepted.
    - `corrected`: applied automatically, badged, revertible.

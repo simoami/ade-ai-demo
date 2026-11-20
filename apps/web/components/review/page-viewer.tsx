@@ -1,6 +1,13 @@
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
-import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Lock,
+  TriangleAlert,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import type { Box, Redaction } from '#lib/records-types'
@@ -14,14 +21,16 @@ type Outline = {
   tone: 'review' | 'selected'
 }
 
-/** Shows one redacted page with outlines for flagged and selected regions. */
+/** Shows page outlines and warns when processing previews contain unredacted content. */
 export function PageViewer({
   images,
+  unredacted,
   page,
   onPage,
   outlines,
 }: {
   images: string[]
+  unredacted: boolean
   page: number
   onPage: (page: number) => void
   outlines: Outline[]
@@ -36,7 +45,7 @@ export function PageViewer({
         aria-label="Document viewer"
       >
         <p className="text-xs" role="status">
-          No redacted pages available
+          No pages available
         </p>
       </section>
     )
@@ -45,9 +54,22 @@ export function PageViewer({
   return (
     <section className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-muted/60">
       <div className="flex h-[42px] shrink-0 items-center justify-between border-b bg-card px-3.5 text-[10px] text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <Lock className="size-3.5" />
-          Redacted copy · read only
+        <span
+          role={unredacted ? 'status' : undefined}
+          className={cn(
+            'flex items-center gap-1.5',
+            unredacted &&
+              'rounded bg-amber-100 px-2 py-1 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200'
+          )}
+        >
+          {unredacted ? (
+            <TriangleAlert className="size-3.5" />
+          ) : (
+            <Lock className="size-3.5" />
+          )}
+          {unredacted
+            ? 'Unredacted preview · redaction in progress'
+            : 'Redacted copy · read only'}
         </span>
         <div className="flex items-center gap-1">
           <Button
@@ -108,7 +130,7 @@ export function PageViewer({
           {src !== undefined && (
             <Image
               src={src}
-              alt={`Page ${page}, redacted`}
+              alt={`Page ${page}, ${unredacted ? 'unredacted preview' : 'redacted'}`}
               fill
               sizes="(min-width: 1024px) 60vw, 100vw"
               unoptimized
@@ -157,7 +179,9 @@ export function PageViewer({
       <div className="flex h-[29px] shrink-0 items-center justify-between border-t bg-card/50 px-3 text-[8.5px] text-muted-foreground [&_span]:flex [&_span]:items-center [&_span]:gap-1">
         <span>
           <Lock size={13} />
-          Redacted document · Read only
+          {unredacted
+            ? 'Unredacted preview · Read only'
+            : 'Redacted document · Read only'}
         </span>
         <span>
           Page {page} of {images.length}

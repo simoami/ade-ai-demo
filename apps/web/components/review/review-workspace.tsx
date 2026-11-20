@@ -29,12 +29,12 @@ type Tab = 'patient' | 'redactions' | 'observations'
 
 type Outcome = 'reviewed' | 'discarded'
 
-/** Review screen: page rail, redacted page viewer, and the patient, redaction and observation panels. */
+/** Review screen: page rail, page viewer, and the patient, redaction and observation panels. */
 export function ReviewWorkspace({
   document,
   patients,
 }: {
-  document: ReviewDocument
+  document: ReviewDocument & { unredacted: boolean }
   patients: Patient[]
 }) {
   const [page, setPage] = useState(1)
@@ -132,9 +132,16 @@ export function ReviewWorkspace({
 
       <div className="grid min-h-0 flex-1 grid-cols-[87px_minmax(0,1fr)_337px] max-lg:grid-cols-[74px_minmax(0,1fr)_300px]">
         <nav
-          aria-label="Pages"
+          aria-label={
+            document.unredacted ? 'Pages · unredacted preview' : 'Pages'
+          }
           className="min-h-0 border-r bg-card/50 px-2.5 py-3 overflow-y-auto"
         >
+          {document.unredacted === true && (
+            <p className="mb-2 text-[9px] font-medium text-amber-700 dark:text-amber-400">
+              Unredacted preview
+            </p>
+          )}
           {document.pageImages.map((src, index) => {
             const number = index + 1
             const flagged = regions.some(
@@ -170,6 +177,7 @@ export function ReviewWorkspace({
 
         <PageViewer
           images={document.pageImages}
+          unredacted={document.unredacted}
           page={page}
           onPage={setPage}
           outlines={outlines}

@@ -4,6 +4,10 @@ Redaction removes direct identifiers (names, medical record and other ID numbers
 
 Pictures are judged by what they identify, not by whether they show a face. A patient photo, a face placed with the patient's name or date of birth, is redacted. Other faces (clinician portraits, staff badges) are kept, and a face whose owner is unclear becomes a redaction that needs review. Logos, medical images and clinical photos without a face are kept, but any identifier printed inside them, such as a name or MRN burned into an X-ray, is redacted like page text. Every signature is redacted, whoever signed, because it renders a name; the fact and date of signing are kept.
 
+## Processing preview
+
+While a document is processing, the protected viewer shows private PNG renders only while Postgres status is `reading` or `redacting`, labels them “Unredacted preview · redaction in progress”, and disables caching. After redaction it shows only burned redacted pages; the pending redaction stage will delete the renders after writing those pages. OCR artifacts remain internal.
+
 ## Considered options
 
 - Full Safe Harbor with date shifting: rejected; it adds a per-patient offset subsystem and makes source documents disagree with the extracted data.

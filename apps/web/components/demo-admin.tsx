@@ -15,16 +15,21 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@repo/ui/components/tooltip'
-import { Download, Settings } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useId, useState, useSyncExternalStore } from 'react'
-import { sampleDocuments } from '#lib/sample-documents'
 import { dismissWelcome, shouldShowWelcome } from '#lib/welcome'
 
 const subscribe = () => () => {}
 
 /** Workspace demo controls and a browser-only welcome preference. */
-export function DemoAdmin() {
+export function DemoAdmin({
+  samplesId,
+  onBrowseSamples,
+}: {
+  samplesId: string
+  onBrowseSamples: () => void
+}) {
   const router = useRouter()
   const [adminOpen, setAdminOpen] = useState(false)
   const [welcomeClosed, setWelcomeClosed] = useState(false)
@@ -34,8 +39,6 @@ export function DemoAdmin() {
     () => false
   )
   const welcomeOpen = welcomeEnabled && !welcomeClosed
-  const samplesId = useId()
-  const samplesTitleId = useId()
   const deleteTitleId = useId()
   const [showAgain, setShowAgain] = useState(true)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -94,58 +97,9 @@ export function DemoAdmin() {
         <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Admin</DialogTitle>
-            <DialogDescription>
-              Download synthetic samples or reset the demo workspace.
-            </DialogDescription>
+            <DialogDescription>Reset the demo workspace.</DialogDescription>
           </DialogHeader>
-          <section
-            id={samplesId}
-            aria-labelledby={samplesTitleId}
-            className="space-y-3"
-          >
-            <h2 id={samplesTitleId} className="font-semibold">
-              Sample documents
-            </h2>
-            <p className="text-muted-foreground">
-              All samples contain synthetic information. Download a PDF, then
-              upload it to try the pipeline.
-            </p>
-            <ul className="divide-y rounded-lg border px-3">
-              {sampleDocuments.map((sample) => (
-                <li key={sample.id} className="flex items-center gap-3 py-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium">
-                      {sample.name}{' '}
-                      <span className="font-normal text-muted-foreground">
-                        · {sample.pages} {sample.pages === 1 ? 'page' : 'pages'}
-                      </span>
-                    </p>
-                    <p className="text-muted-foreground">
-                      {sample.description}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    nativeButton={false}
-                    render={
-                      <a
-                        href={`/sample-documents/${sample.id}.pdf`}
-                        download={sample.downloadName}
-                        aria-label={`Download ${sample.name}`}
-                      />
-                    }
-                  >
-                    <Download />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section
-            className="space-y-3 border-t pt-4"
-            aria-labelledby={deleteTitleId}
-          >
+          <section className="space-y-3" aria-labelledby={deleteTitleId}>
             <h2 id={deleteTitleId} className="font-semibold">
               Delete all documents
             </h2>
@@ -220,9 +174,10 @@ export function DemoAdmin() {
           <a
             href={`#${samplesId}`}
             className="w-fit text-primary underline underline-offset-4"
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault()
               closeWelcome()
-              setAdminOpen(true)
+              onBrowseSamples()
             }}
           >
             Browse sample documents

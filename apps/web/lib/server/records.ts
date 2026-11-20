@@ -10,13 +10,15 @@ import {
   sql,
 } from '@repo/db'
 import { connection } from 'next/server'
-import { documentPageImages, patientFieldMatches } from '#lib/record-mapping'
+import { patientFieldMatches } from '#lib/record-mapping'
 import type {
   DocumentSummary,
   Observation,
   Patient,
   ReviewDocument,
 } from '#lib/records-types'
+
+import { type DocumentPages, documentPages } from '#lib/server/document-pages'
 
 type DocumentRow = typeof documents.$inferSelect
 
@@ -104,7 +106,7 @@ export async function getPatients() {
 /** Loads a document's review artifacts and patient matches, excluding removed observations. */
 export async function getReviewDocument(
   id: string
-): Promise<ReviewDocument | undefined> {
+): Promise<(ReviewDocument & DocumentPages) | undefined> {
   await connection()
 
   const db = createDb()
@@ -130,11 +132,7 @@ export async function getReviewDocument(
   ])
   return {
     ...documentSummary(row),
-    pageImages: documentPageImages(
-      row.id,
-      row.status,
-      row.pageDimensions.length
-    ),
+    ...documentPages(row.id, row.status, row.pageDimensions.length),
     redactions: redactionRows.map(
       ({ id, page, category, box, points, state }) => ({
         id,
