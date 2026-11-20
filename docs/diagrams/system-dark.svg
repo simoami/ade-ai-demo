@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1120" width="1920" height="1120" role="img" aria-labelledby="title desc">
+<title id="title">System diagram: ingestion of clinical documents on Vercel</title>
+<desc id="desc">A reviewer browser reaches one Vercel project through Deployment Protection (Vercel Authentication or a shareable link). In region iad1 the Next.js 16 web service serves a Partial Prerendering shell, Suspense streaming, tagged use cache entries and route handlers for /api/documents and /api/uploads. It calls the eve service over a private binding with OIDC. eve runs one durable Vercel Workflow per document: Render, Read, then Classify, Demographics and Detect identifiers in parallel, Redact, Extract observations and a review loop. eve writes to private Vercel Blob and Neon Postgres with pgvector, and calls Reducto r-1 and OpenAI through the AI SDK. The browser uploads to Blob with a client upload token and loads page images through signed URLs valid for 15 minutes. Web reads Neon. The Vercel Build System deploys both services from vercel.ts.</desc>
+<defs>
+<pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#1c1c1c" stroke-width="1"/></pattern>
+<marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" fill="#ededed"/></marker>
+<style>.panel{fill:#111111}.frame{stroke:#333333;stroke-width:1.25}.divider{stroke:#2e2e2e;stroke-width:1.25}.node{fill:#0a0a0a;stroke:#3d3d3d;stroke-width:1.25}.dot{fill:#3d3d3d}.chip{fill:#1a1a1a;stroke:#3d3d3d;stroke-width:1}.edge{fill:none;stroke:#ededed;stroke-width:1.5}.pill{fill:#0a0a0a;stroke:#ededed;stroke-width:1.25}.pill.teal{fill:#0b2420;stroke:#3cd5c2}.badge{fill:#ededed;stroke:#0a0a0a;stroke-width:3}text{fill:#ededed}.label{font:400 17px ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif}.sub{font:400 12.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;fill:#a1a1a1}.section{font:600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;letter-spacing:.06em}.note{font:400 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;fill:#a1a1a1}.chiptext{font:400 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;fill:#a1a1a1}.pilltext{font:400 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}.teal-text{fill:#3cd5c2}</style></defs>
+<rect width="1920" height="1120" fill="#0a0a0a"/>
+<rect x="330" y="56" width="1150" height="170" fill="#111111"/>
+<rect x="330" y="56" width="1150" height="170" fill="url(#hatch)"/>
+<rect x="330" y="56" width="1150" height="764" rx="4" fill="none" class="frame"/>
+<line x1="330" y1="226" x2="1480" y2="226" class="divider"/>
+<g transform="translate(360 80) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
+<text x="386" y="94" class="section" text-anchor="start">DEPLOYMENT PROTECTION</text>
+<rect x="360" y="104" width="530" height="72" rx="6" class="node"/>
+<text x="625.0" y="145.5" class="label" text-anchor="middle">Vercel Authentication</text>
+<rect x="920" y="104" width="530" height="72" rx="6" class="node"/>
+<text x="1185.0" y="145.5" class="label" text-anchor="middle">Shareable link</text>
+<g transform="translate(360 256) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m2 12 8.58 3.91a2 2 0 0 0 1.66 0L21 12"/><path d="m2 17 8.58 3.91a2 2 0 0 0 1.66 0L21 17"/></g>
+<text x="386" y="270" class="section" text-anchor="start">VERCEL PROJECT · IAD1</text>
+<rect x="360" y="294" width="1090" height="160" rx="4" class="panel"/>
+<rect x="360" y="294" width="1090" height="160" rx="4" fill="url(#hatch)" class="frame"/>
+<g transform="translate(384 314) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></g>
+<text x="410" y="328" class="section" text-anchor="start">WEB · NEXT.JS 16</text>
+<rect x="384" y="348" width="262" height="84" rx="6" class="node"/>
+<text x="515.0" y="383.5" class="label" text-anchor="middle">Static shell</text>
+<text x="515.0" y="410.5" class="sub" text-anchor="middle">(Partial Prerendering)</text>
+<rect x="666" y="348" width="220" height="84" rx="6" class="node"/>
+<text x="776.0" y="395.5" class="label" text-anchor="middle">Suspense streaming</text>
+<rect x="906" y="348" width="220" height="84" rx="6" class="node"/>
+<text x="1016.0" y="395.5" class="label" text-anchor="middle">"use cache" + tags</text>
+<rect x="1146" y="348" width="280" height="84" rx="6" class="node"/>
+<text x="1286.0" y="383.5" class="label" text-anchor="middle">Route handlers</text>
+<text x="1286.0" y="410.5" class="sub" text-anchor="middle">/api/documents, /api/uploads</text>
+<path d="M625 176V294" class="edge" marker-end="url(#head)"/>
+<circle cx="625" cy="226" r="17" class="badge"/>
+<g transform="translate(616 217) scale(0.7500)" fill="none" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
+<path d="M1185 176V294" class="edge" marker-end="url(#head)"/>
+<circle cx="1185" cy="226" r="17" class="badge"/>
+<g transform="translate(1176 217) scale(0.7500)" fill="none" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
+<rect x="40" y="84" width="230" height="120" rx="6" class="node"/>
+<circle cx="58" cy="100" r="3.5" class="dot"/>
+<circle cx="69" cy="100" r="3.5" class="dot"/>
+<circle cx="80" cy="100" r="3.5" class="dot"/>
+<text x="155.0" y="138.0" class="label" text-anchor="middle">Reviewer</text>
+<text x="155.0" y="161.0" class="label" text-anchor="middle">browser</text>
+<path d="M270 144H330" class="edge" marker-end="url(#head)"/>
+<rect x="360" y="534" width="1090" height="266" rx="4" class="panel"/>
+<rect x="360" y="534" width="1090" height="266" rx="4" fill="url(#hatch)" class="frame"/>
+<g transform="translate(384 554) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></g>
+<text x="410" y="568" class="section" text-anchor="start">EVE SERVICE · VERCEL WORKFLOW</text>
+<text x="1426" y="568" class="note" text-anchor="end">one durable run per document</text>
+<rect x="384" y="648" width="140" height="84" rx="6" class="node"/>
+<text x="454.0" y="683.5" class="label" text-anchor="middle">Render</text>
+<text x="454.0" y="710.5" class="sub" text-anchor="middle">pdfium, Sharp</text>
+<rect x="555.2" y="648" width="118" height="84" rx="6" class="node"/>
+<text x="614.2" y="683.5" class="label" text-anchor="middle">Read</text>
+<text x="614.2" y="710.5" class="sub" text-anchor="middle">OCR</text>
+<rect x="704.4000000000001" y="598.0" width="170" height="52" rx="6" class="node"/>
+<text x="789.4000000000001" y="629.5" class="label" text-anchor="middle">Classify</text>
+<rect x="704.4000000000001" y="664.0" width="170" height="52" rx="6" class="node"/>
+<text x="789.4000000000001" y="695.5" class="label" text-anchor="middle">Demographics</text>
+<rect x="704.4000000000001" y="730.0" width="170" height="52" rx="6" class="node"/>
+<text x="789.4000000000001" y="761.5" class="label" text-anchor="middle">Detect identifiers</text>
+<rect x="905.6000000000001" y="630" width="168" height="120" rx="6" class="node"/>
+<text x="989.6000000000001" y="674.5" class="label" text-anchor="middle">Redact</text>
+<text x="989.6000000000001" y="701.5" class="sub" text-anchor="middle">Tesseract,</text>
+<text x="989.6000000000001" y="719.5" class="sub" text-anchor="middle">burn, publish</text>
+<rect x="1104.8000000000002" y="642" width="150" height="96" rx="6" class="node"/>
+<text x="1179.8000000000002" y="684.0" class="label" text-anchor="middle">Extract</text>
+<text x="1179.8000000000002" y="707.0" class="label" text-anchor="middle">observations</text>
+<rect x="1286.0000000000002" y="648" width="140" height="84" rx="6" class="node"/>
+<text x="1356.0000000000002" y="695.5" class="label" text-anchor="middle">Review loop</text>
+<path d="M524 690H555.2" class="edge" marker-end="url(#head)"/>
+<path d="M673.2 690H704.4000000000001" class="edge" marker-end="url(#head)"/>
+<path d="M688.8000000000001 690V634.0Q688.8000000000001 624.0 698.8000000000001 624.0H704.4000000000001" class="edge" marker-end="url(#head)"/>
+<path d="M874.4000000000001 624.0H880.0000000000001Q890.0000000000001 624.0 890.0000000000001 634.0V690" class="edge"/>
+<path d="M688.8000000000001 690V746.0Q688.8000000000001 756.0 698.8000000000001 756.0H704.4000000000001" class="edge" marker-end="url(#head)"/>
+<path d="M874.4000000000001 756.0H880.0000000000001Q890.0000000000001 756.0 890.0000000000001 746.0V690" class="edge"/>
+<path d="M874.4000000000001 690H905.6000000000001" class="edge" marker-end="url(#head)"/>
+<path d="M1073.6000000000001 690H1104.8000000000002" class="edge" marker-end="url(#head)"/>
+<path d="M1254.8000000000002 690H1286.0000000000002" class="edge" marker-end="url(#head)"/>
+<path d="M1286 432V534" class="edge" marker-end="url(#head)"/>
+<rect x="1184.8" y="480" width="202.4" height="28" rx="14" class="pill teal"/>
+<g transform="translate(1196.8 487) scale(0.5833)" fill="none" stroke="#3cd5c2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g>
+<text x="1216.8" y="498.5" class="pilltext teal-text" text-anchor="start">private binding + OIDC</text>
+<rect x="1560" y="534" width="300" height="266" rx="4" class="panel"/>
+<rect x="1560" y="534" width="300" height="266" rx="4" fill="url(#hatch)" class="frame"/>
+<g transform="translate(1584 554) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></g>
+<text x="1610" y="568" class="section" text-anchor="start">MODELS &amp; OCR</text>
+<rect x="1584" y="592" width="252" height="76" rx="6" class="node"/>
+<text x="1710.0" y="635.5" class="label" text-anchor="middle">Reducto r-1</text>
+<rect x="1584" y="688" width="252" height="76" rx="6" class="node"/>
+<text x="1710.0" y="731.5" class="label" text-anchor="middle">OpenAI via AI SDK</text>
+<path d="M1450 600H1560" class="edge" marker-end="url(#head)"/>
+<rect x="1680" y="84" width="200" height="120" rx="6" class="node"/>
+<text x="1780.0" y="138.0" class="label" text-anchor="middle">Vercel</text>
+<text x="1780.0" y="161.0" class="label" text-anchor="middle">Build System</text>
+<path d="M1780 204V260Q1780 270 1770 270H1480" class="edge" marker-end="url(#head)"/>
+<rect x="1503.6" y="256" width="252.8" height="28" rx="14" class="pill"/>
+<g transform="translate(1515.6 263) scale(0.5833)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/></g>
+<text x="1535.6" y="274.5" class="pilltext" text-anchor="start">vercel.ts: web + eve services</text>
+<rect x="330" y="860" width="1530" height="204" rx="4" class="panel"/>
+<rect x="330" y="860" width="1530" height="204" rx="4" fill="url(#hatch)" class="frame"/>
+<g transform="translate(354 880) scale(0.6667)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g>
+<text x="380" y="894" class="section" text-anchor="start">STORAGE</text>
+<rect x="380" y="912" width="640" height="124" rx="6" class="node"/>
+<text x="700.0" y="979.5" class="label" text-anchor="middle">Vercel Blob (private)</text>
+<rect x="475.0" y="990" width="82.8" height="24" rx="12" class="chip"/>
+<text x="516.4" y="1006.5" class="chiptext" text-anchor="middle">originals</text>
+<rect x="567.8" y="990" width="68.4" height="24" rx="12" class="chip"/>
+<text x="602.0" y="1006.5" class="chiptext" text-anchor="middle">renders</text>
+<rect x="646.1999999999999" y="990" width="111.60000000000001" height="24" rx="12" class="chip"/>
+<text x="701.9999999999999" y="1006.5" class="chiptext" text-anchor="middle">encrypted OCR</text>
+<rect x="767.8" y="990" width="162.0" height="24" rx="12" class="chip"/>
+<text x="848.8" y="1006.5" class="chiptext" text-anchor="middle">versioned page pairs</text>
+<rect x="1520" y="912" width="316" height="124" rx="6" class="node"/>
+<text x="1678.0" y="967.5" class="label" text-anchor="middle">Neon Postgres + pgvector</text>
+<text x="1678.0" y="994.5" class="sub" text-anchor="middle">Vercel Marketplace</text>
+<path d="M560 800V912" class="edge" marker-end="url(#head)"/>
+<path d="M1450 400H1886Q1896 400 1896 410V964Q1896 974 1886 974H1836" class="edge" marker-end="url(#head)"/>
+<rect x="1610.0" y="386" width="80.0" height="28" rx="14" class="pill"/>
+<g transform="translate(1622.0 393) scale(0.5833)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></g>
+<text x="1642.0" y="404.5" class="pilltext" text-anchor="start">reads</text>
+<path d="M130 204V940Q130 950 140 950H380" class="edge" marker-end="url(#head)"/>
+<rect x="145.6" y="936" width="180.8" height="28" rx="14" class="pill"/>
+<g transform="translate(157.6 943) scale(0.5833)" fill="none" stroke="#ededed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></g>
+<text x="177.6" y="954.5" class="pilltext" text-anchor="start">client upload token</text>
+<path d="M380 1004H70Q60 1004 60 994V204" class="edge" marker-end="url(#head)"/>
+<rect x="109.6" y="990" width="180.8" height="28" rx="14" class="pill teal"/>
+<g transform="translate(121.6 997) scale(0.5833)" fill="none" stroke="#3cd5c2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></g>
+<text x="141.6" y="1008.5" class="pilltext teal-text" text-anchor="start">signed URL · 15 min</text>
+<path d="M1400 800V830Q1400 840 1410 840H1668Q1678 840 1678 850V912" class="edge" marker-end="url(#head)"/>
+</svg>
