@@ -43,7 +43,7 @@ Use concise imperative subjects with Conventional Commit prefixes such as `feat:
 
 ## Engineering standards
 
-This code is a portfolio piece that will be read as production code. Every change must hold up to a senior reviewer.
+Hold every change to production standards.
 
 - Write the least code that fully solves the task. No speculative abstractions, unused exports, placeholder files, or "future-proofing".
 - Prefer the platform and the chosen stack (Next.js, AI SDK, eve, Vercel primitives) over hand-rolled equivalents.
