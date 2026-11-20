@@ -17,3 +17,14 @@ export async function POST(request: Request) {
     return pipelineFailure(error)
   }
 }
+
+/** Forwards an authenticated demo reset to the document service. */
+export async function DELETE() {
+  try {
+    return Response.json(await pipeline.deleteDocuments(), {
+      headers: { 'cache-control': 'no-store' },
+    })
+  } catch (error) {
+    return pipelineFailure(error)
+  }
+}

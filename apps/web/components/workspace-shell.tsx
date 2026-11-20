@@ -4,6 +4,7 @@ import { Activity, Home } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppNav } from '#components/app-nav'
+import { DemoAdmin } from '#components/demo-admin'
 import { ThemeToggle } from '#components/theme-toggle'
 import type { DocumentSummary } from '#lib/records-types'
 
@@ -65,7 +66,10 @@ export function WorkspaceShell({
               </>
             )}
           </nav>
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <DemoAdmin />
+            <ThemeToggle />
+          </div>
         </header>
         {children}
       </div>

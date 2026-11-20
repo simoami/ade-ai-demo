@@ -147,3 +147,25 @@ test('fails closed without a deployment binding before making a request', async 
   await assert.rejects(pipeline.status(documentId), /Service unavailable/)
   assert.equal(request.mock.callCount(), 0)
 })
+
+test('sends authenticated DELETE and rejects an invalid document count', async (t) => {
+  configure()
+  let valid = true
+  t.mock.method(
+    globalThis,
+    'fetch',
+    async (url: URL, options?: RequestInit) => {
+      assert.equal(url.href, 'http://127.0.0.1:8000/pipeline/documents')
+      assert.equal(options?.method, 'DELETE')
+      assert.equal(options?.body, undefined)
+      assert.match(
+        new Headers(options?.headers).get('authorization') ?? '',
+        /^Basic /
+      )
+      return Response.json({ deleted: valid ? 3 : -1 })
+    }
+  )
+  assert.deepEqual(await pipeline.deleteDocuments(), { deleted: 3 })
+  valid = false
+  await assert.rejects(pipeline.deleteDocuments(), /Service unavailable/)
+})

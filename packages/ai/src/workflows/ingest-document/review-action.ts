@@ -68,3 +68,8 @@ export const documentStatusSchema = startResultSchema.extend({
 
 /** Validates acknowledgment of an accepted review action. */
 export const reviewResultSchema = z.strictObject({ accepted: z.literal(true) })
+
+/** Validates the number of documents removed by a demo reset. */
+export const deleteDocumentsResultSchema = z.strictObject({
+  deleted: z.number().int().nonnegative(),
+})

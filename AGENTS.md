@@ -86,6 +86,8 @@ Originals and internal renders live in private Blob; encrypted OCR uses
 Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered
 PNG/JPEG images, runs rendering and Reducto OCR, then stays at `redacting`
 until the redaction stage is implemented. Rendering scratch directories are
-removed inside the step. Terminal review writes status; artifact cleanup is
-not implemented. Deployment requires Deployment Protection and service
+removed inside the step. Terminal review writes status. The workspace Admin dialog offers synthetic
+PDF downloads and an authenticated reset that cancels runs, removes document
+Blobs and deletes document rows while preserving patients. Per-document
+artifact cleanup is not implemented. Deployment requires Deployment Protection and service
 credentials. Keep document content out of logs and OCR out of workflow history.

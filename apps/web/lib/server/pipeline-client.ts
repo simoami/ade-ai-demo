@@ -1,4 +1,5 @@
 import {
+  deleteDocumentsResultSchema,
   documentStatusSchema,
   type ReviewAction,
   reviewResultSchema,
@@ -32,7 +33,8 @@ export class PipelineError extends Error {
 async function call<T>(
   path: string,
   schema: z.ZodType<T>,
-  body?: unknown
+  body?: unknown,
+  method = body === undefined ? 'GET' : 'POST'
 ): Promise<T> {
   let status = 503
 
@@ -44,7 +46,7 @@ async function call<T>(
     const response = await fetch(
       new URL(`pipeline/documents${path}`, env.PIPELINE_SERVICE_ORIGIN),
       {
-        method: body === undefined ? 'GET' : 'POST',
+        method,
         headers: { authorization, 'content-type': 'application/json' },
         body: body === undefined ? undefined : JSON.stringify(body),
         cache: 'no-store',
@@ -83,6 +85,8 @@ async function call<T>(
 
 /** Authenticated document service client with validated responses. */
 export const pipeline = {
+  deleteDocuments: () =>
+    call('', deleteDocumentsResultSchema, undefined, 'DELETE'),
   start: (input: z.infer<typeof startDocumentSchema>) =>
     call('', startResultSchema, input),
   status: (documentId: string) =>

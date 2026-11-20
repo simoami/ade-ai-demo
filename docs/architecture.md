@@ -62,8 +62,8 @@ Blob originals, renders PNG pages, records dimensions, and runs Reducto r-1 OCR.
 It encrypts OCR JSON with AES-256-GCM (12-byte IV, 16-byte tag, ciphertext) using
 `DOCUMENT_ENCRYPTION_KEY`, then leaves status at `redacting`. It waits on the
 review hook, increments a refresh counter for redaction decisions, and writes
-terminal status on `markReviewed` or `discard`. Artifact cleanup and real-upload
-redaction are not implemented. Only redacted `pages/<page>.webp` can be served;
+terminal status on `markReviewed` or `discard`. Per-document artifact cleanup
+and real-upload redaction are not implemented. Only redacted `pages/<page>.webp` can be served;
 this workflow produces internal `render/<page>.png` and `ocr.json.enc` only.
 Milestone logs use `@repo/logger` and carry metadata only. Render, OCR, refresh and
 terminal review logs run in durable steps, outside workflow replay; request
@@ -91,6 +91,20 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
    - `unchecked`: the agent failed; blocks review completion.
 9. **Note index.** Doctor-note sections (joined across pages) are chunked, embedded from redacted text, and stored with their source regions.
 10. **Enrichment.** Comprehend Medical extracts entities, assertions and codes from redacted chunk text.
+
+## Demo administration
+
+The workspace header opens an Admin dialog with four synthetic scanned PDF
+samples. A browser-only welcome popup links to those downloads; opting out
+stores `ade.welcome.dismissed=1` in localStorage.
+
+`DELETE /api/documents` calls authenticated `DELETE /pipeline/documents` in eve.
+The service attempts to cancel active runs, paginates private Blob deletion under
+`documents/` and `uploads/`, then deletes review events, redactions, observations,
+note chunks (cascading clinical entities), document chat sessions and documents
+in one Neon HTTP batch transaction. Patients and their chat sessions remain.
+Blob cleanup failures stop before database deletion; a retry can finish partial
+cleanup. The returned count is the number of document rows deleted.
 
 ## Review
 
