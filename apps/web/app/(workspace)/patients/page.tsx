@@ -1,19 +1,14 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
+import { PatientsSkeleton } from '#components/record-skeletons'
 import { getPatients } from '#lib/server/records'
 
 /** Patient list: stored demographics and linked document counts. */
-export default async function PatientsPage() {
+async function PatientRows() {
   const patients = await getPatients()
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Patients</h1>
-        <p className="text-sm text-muted-foreground">
-          Patients are stored as identifier hashes with initials, sex and birth
-          year.
-        </p>
-      </header>
+    <>
       {patients.length === 0 && (
         <p className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
           No patients yet. Patients appear once documents have been linked.
@@ -38,6 +33,24 @@ export default async function PatientsPage() {
           </li>
         ))}
       </ul>
+    </>
+  )
+}
+
+/** Prerenders the patient heading and streams current patient rows. */
+export default function PatientsPage() {
+  return (
+    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight">Patients</h1>
+        <p className="text-sm text-muted-foreground">
+          Patients are stored as identifier hashes with initials, sex and birth
+          year.
+        </p>
+      </header>
+      <Suspense fallback={<PatientsSkeleton />}>
+        <PatientRows />
+      </Suspense>
     </main>
   )
 }

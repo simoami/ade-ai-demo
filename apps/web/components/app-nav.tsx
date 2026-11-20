@@ -5,15 +5,13 @@ import { Inbox, UsersRound } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import type { DocumentSummary } from '#lib/records-types'
-
 const links = [
   { href: '/documents', label: 'Documents', icon: Inbox },
   { href: '/patients', label: 'Patients', icon: UsersRound },
 ]
 
 /** Workspace navigation with the current section and pending review count. */
-export function AppNav({ documents }: { documents: DocumentSummary[] }) {
+export function AppNav({ reviewCount }: { reviewCount: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
@@ -32,11 +30,7 @@ export function AppNav({ documents }: { documents: DocumentSummary[] }) {
           {label}
           {href === '/documents' && (
             <span className="ml-auto text-[11px] font-semibold text-primary">
-              {
-                documents.filter(
-                  (document) => document.status === 'needsReview'
-                ).length
-              }
+              {reviewCount}
             </span>
           )}
         </Link>

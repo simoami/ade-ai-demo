@@ -1,5 +1,6 @@
 import { startDocumentSchema } from '@repo/ai/review-action'
 import { pipeline, pipelineFailure } from '#lib/server/pipeline-client'
+import { recordCache } from '#lib/server/record-cache'
 
 /** Starts processing after validating the uploaded document request. */
 export async function POST(request: Request) {
@@ -9,7 +10,9 @@ export async function POST(request: Request) {
   if (!parsed.success)
     return Response.json({ error: 'Invalid document request' }, { status: 400 })
   try {
-    return Response.json(await pipeline.start(parsed.data), {
+    const result = await pipeline.start(parsed.data)
+    recordCache.invalidate(result.documentId)
+    return Response.json(result, {
       status: 202,
       headers: { 'cache-control': 'no-store' },
     })
@@ -18,10 +21,12 @@ export async function POST(request: Request) {
   }
 }
 
-/** Forwards an authenticated demo reset to the document service. */
+/** Forwards an authenticated workspace reset to the document service. */
 export async function DELETE() {
   try {
-    return Response.json(await pipeline.deleteDocuments(), {
+    const result = await pipeline.deleteDocuments()
+    recordCache.invalidate()
+    return Response.json(result, {
       headers: { 'cache-control': 'no-store' },
     })
   } catch (error) {

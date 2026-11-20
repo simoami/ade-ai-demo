@@ -5,7 +5,7 @@ import '@repo/ui/globals.css'
 /** Document metadata for the application shell. */
 export const metadata: Metadata = {
   title: 'Clinical records',
-  description: 'Clinical records pipeline demo',
+  description: 'Clinical records pipeline',
 }
 
 /** Provides shared styles and the application document shell. */

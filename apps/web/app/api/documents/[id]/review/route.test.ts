@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict'
+import { test } from 'node:test'
+import { PipelineError, pipeline } from '#lib/server/pipeline-client'
+import { recordCache } from '#lib/server/record-cache'
+import { POST } from './route.ts'
+
+const id = '981c8ddb-6a4c-5e2a-b667-cf98e800e72c'
+const context = { params: Promise.resolve({ id }) }
+
+function request(body: unknown) {
+  return new Request(`http://localhost/api/documents/${id}/review`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+test('expires terminal artifacts and patient profiles after accepted review actions', async (t) => {
+  const invalidation = t.mock.method(recordCache, 'invalidate', () => {})
+  t.mock.method(pipeline, 'review', async () => ({ accepted: true as const }))
+  assert.equal(
+    (await POST(request({ type: 'markReviewed' }), context)).status,
+    202
+  )
+  assert.deepEqual(invalidation.mock.calls[0]?.arguments, [id])
+})
+
+test('keeps caches intact for invalid review actions and service failures', async (t) => {
+  const invalidation = t.mock.method(recordCache, 'invalidate', () => {})
+  const review = t.mock.method(pipeline, 'review', async () => {
+    throw new PipelineError(409)
+  })
+  assert.equal((await POST(request({ type: 'invalid' }), context)).status, 400)
+  assert.equal(review.mock.callCount(), 0)
+  assert.equal((await POST(request({ type: 'discard' }), context)).status, 409)
+  assert.equal(invalidation.mock.callCount(), 0)
+})

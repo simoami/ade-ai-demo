@@ -1,7 +1,9 @@
 import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import { ObservationTrend } from '#components/observation-trend'
+import { PatientSkeleton } from '#components/record-skeletons'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
 import { getPatientRecord } from '#lib/server/records'
@@ -9,9 +11,7 @@ import { getPatientRecord } from '#lib/server/records'
 const trendedLabs = ['Glucose', 'Sodium']
 
 /** Patient profile: stored demographics, linked documents and lab trends. */
-export default async function PatientPage({
-  params,
-}: PageProps<'/patients/[id]'>) {
+async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
   const record = await getPatientRecord((await params).id)
   if (!record) notFound()
 
@@ -114,7 +114,7 @@ export default async function PatientPage({
                 key={document.id}
                 className="relative flex min-h-14 items-center gap-2.5 border-t hover:bg-muted/50"
               >
-                <span className="grid h-8 w-[30px] shrink-0 place-items-center rounded border bg-accent/30 text-primary/70">
+                <span className="grid h-8 w-7.5 shrink-0 place-items-center rounded border bg-accent/30 text-primary/70">
                   <FileText size={16} />
                 </span>
                 <div className="min-w-0 flex-1 [&_strong]:block [&_strong]:text-[10px] [&_strong]:font-semibold [&_span]:mt-1 [&_span]:block [&_span]:text-[9px] [&_span]:text-muted-foreground">
@@ -149,5 +149,14 @@ export default async function PatientPage({
         </section>
       </div>
     </main>
+  )
+}
+
+/** Streams the patient profile inside the shared workspace shell. */
+export default function PatientPage(props: PageProps<'/patients/[id]'>) {
+  return (
+    <Suspense fallback={<PatientSkeleton />}>
+      <PatientRecord {...props} />
+    </Suspense>
   )
 }

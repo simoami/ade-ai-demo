@@ -9,7 +9,10 @@ import {
   redactions,
   sql,
 } from '@repo/db'
+import { cacheLife, cacheTag } from 'next/cache'
 import { connection } from 'next/server'
+import { cache } from 'react'
+import { isTerminalDocument, recordTags } from '#lib/cache-policy'
 import { patientFieldMatches } from '#lib/record-mapping'
 import type {
   DocumentSummary,
@@ -70,7 +73,7 @@ function observationSummary(row: ObservationRow): Observation {
 }
 
 /** Lists documents with their linked patient's limited demographics, newest first. */
-export async function getDocuments() {
+export const getDocuments = cache(async () => {
   await connection()
 
   const rows = await createDb()
@@ -82,7 +85,7 @@ export async function getDocuments() {
     ...documentSummary(document),
     patient: patient ? patientSummary(patient) : null,
   }))
-}
+})
 
 /** Lists patients with document counts without exposing identifier hashes. */
 export async function getPatients() {
@@ -106,7 +109,7 @@ export async function getPatients() {
 /** Loads a document's review artifacts and patient matches, excluding removed observations. */
 export async function getReviewDocument(
   id: string
-): Promise<ReviewDocument | undefined> {
+): Promise<(ReviewDocument & { pageUrlsSignedAt: number }) | undefined> {
   await connection()
 
   const db = createDb()
@@ -117,17 +120,10 @@ export async function getReviewDocument(
     .limit(1)
   if (!row) return undefined
 
-  const [redactionRows, observationRows, patientRows] = await Promise.all([
-    db
-      .select()
-      .from(redactions)
-      .where(eq(redactions.documentId, id))
-      .orderBy(asc(redactions.page), asc(redactions.id)),
-    db
-      .select()
-      .from(observations)
-      .where(eq(observations.documentId, id))
-      .orderBy(asc(observations.effectiveDate), asc(observations.id)),
+  const [{ redactionRows, observationRows }, patientRows] = await Promise.all([
+    isTerminalDocument(row.status)
+      ? terminalArtifacts(row)
+      : readArtifacts(row.id),
     db.select().from(patients).orderBy(asc(patients.id)),
   ])
   return {
@@ -138,6 +134,7 @@ export async function getReviewDocument(
       row.pageDimensions,
       row.pageVersion
     )),
+    pageUrlsSignedAt: Date.now(),
     redactions: redactionRows.map(
       ({ id, page, category, box, points, state }) => ({
         id,
@@ -181,19 +178,28 @@ export async function getPatientRecord(id: string) {
     .limit(1)
   if (!patient) return undefined
 
-  const [linked, facts] = await Promise.all([
-    db
-      .select()
-      .from(documents)
-      .where(eq(documents.patientId, id))
-      .orderBy(desc(documents.createdAt)),
-    db
-      .select({ observation: observations })
-      .from(observations)
-      .innerJoin(documents, eq(observations.documentId, documents.id))
-      .where(eq(documents.patientId, id))
-      .orderBy(asc(observations.effectiveDate), asc(observations.id)),
-  ])
+  const linked = await db
+    .select()
+    .from(documents)
+    .where(eq(documents.patientId, id))
+    .orderBy(desc(documents.createdAt))
+
+  // Live membership detects asynchronous pipeline writes before selecting a cache entry.
+  if (linked.every((document) => isTerminalDocument(document.status))) {
+    return terminalPatientRecord(patient, linked)
+  }
+
+  return patientRecord(patient, linked)
+}
+
+async function patientRecord(patient: PatientRow, linked: DocumentRow[]) {
+  const facts = await createDb()
+    .select({ observation: observations })
+    .from(observations)
+    .innerJoin(documents, eq(observations.documentId, documents.id))
+    .where(eq(documents.patientId, patient.id))
+    .orderBy(asc(observations.effectiveDate), asc(observations.id))
+
   return {
     patient: patientSummary(patient),
     documents: linked.map(documentSummary),
@@ -205,4 +211,43 @@ export async function getPatientRecord(id: string) {
       )
       .map(({ observation }) => observationSummary(observation)),
   }
+}
+
+async function readArtifacts(id: string) {
+  const db = createDb()
+  const [redactionRows, observationRows] = await Promise.all([
+    db
+      .select()
+      .from(redactions)
+      .where(eq(redactions.documentId, id))
+      .orderBy(asc(redactions.page), asc(redactions.id)),
+    db
+      .select()
+      .from(observations)
+      .where(eq(observations.documentId, id))
+      .orderBy(asc(observations.effectiveDate), asc(observations.id)),
+  ])
+  return { redactionRows, observationRows }
+}
+
+async function terminalArtifacts(row: DocumentRow) {
+  'use cache'
+  cacheLife('max')
+  cacheTag(recordTags.documents, recordTags.document(row.id))
+  if (row.patientId) cacheTag(recordTags.patient(row.patientId))
+  return readArtifacts(row.id)
+}
+
+async function terminalPatientRecord(
+  patient: PatientRow,
+  linked: DocumentRow[]
+) {
+  'use cache'
+  cacheLife('max')
+  cacheTag(
+    recordTags.patients,
+    recordTags.patient(patient.id),
+    recordTags.documents
+  )
+  return patientRecord(patient, linked)
 }

@@ -103,7 +103,10 @@ export function ReviewWorkspace({
 
   return (
     <div className="flex h-[calc(100svh-54px)] min-h-[620px] flex-col">
-      <ProcessingRefresh active={mode === 'processing'} />
+      <ProcessingRefresh
+        path={`/documents/${document.id}`}
+        active={mode === 'processing'}
+      />
       <header className="flex min-h-[83px] shrink-0 items-center gap-3 border-b bg-card px-6 py-3">
         <Button
           variant="outline"

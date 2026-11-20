@@ -22,14 +22,8 @@ import { dismissWelcome, shouldShowWelcome } from '#lib/welcome'
 
 const subscribe = () => () => {}
 
-/** Workspace demo controls and a browser-only welcome preference. */
-export function DemoAdmin({
-  samplesId,
-  onBrowseSamples,
-}: {
-  samplesId: string
-  onBrowseSamples: () => void
-}) {
+/** Workspace administration controls and a browser-only welcome preference. */
+export function DemoAdmin({ samplesId }: { samplesId: string }) {
   const router = useRouter()
   const [adminOpen, setAdminOpen] = useState(false)
   const [welcomeClosed, setWelcomeClosed] = useState(false)
@@ -97,7 +91,7 @@ export function DemoAdmin({
         <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Admin</DialogTitle>
-            <DialogDescription>Reset the demo workspace.</DialogDescription>
+            <DialogDescription>Reset the workspace.</DialogDescription>
           </DialogHeader>
           <section className="space-y-3" aria-labelledby={deleteTitleId}>
             <h2 id={deleteTitleId} className="font-semibold">
@@ -177,7 +171,17 @@ export function DemoAdmin({
             onClick={(event) => {
               event.preventDefault()
               closeWelcome()
-              onBrowseSamples()
+              const card = document.getElementById(samplesId)
+              if (!card) return
+
+              card.scrollIntoView({ block: 'nearest' })
+              card.animate(
+                [
+                  { boxShadow: '0 0 0 3px var(--primary)' },
+                  { boxShadow: '0 0 0 3px transparent' },
+                ],
+                { duration: 1500, easing: 'ease-out' }
+              )
             }}
           >
             Browse sample documents

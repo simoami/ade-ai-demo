@@ -39,6 +39,25 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 
 AI Gateway is deferred; models are called directly. Model IDs live in one registry in `packages/ai`: `gpt-6.1-sol` for OCR, PII, extraction and agents, `gpt-6-luna` for classification and consent summaries, `text-embedding-3-small` for notes.
 
+## Web rendering and cache boundaries
+
+Next.js Cache Components and Partial Prefetching prerender the workspace shell,
+sample card, document heading and upload zone. Suspense streams live counts,
+document rows, review artifacts and patient profiles into matching skeletons.
+The shell, statistics, document rows and patient trends render on the server;
+client leaves own navigation state, filters, uploads and review interactions.
+
+Document lists and patient counts stay live because eve writes asynchronously.
+Terminal document artifacts and patient profiles with only terminal linked
+documents use tagged `use cache` entries with `cacheLife('max')`. A live read
+of document status, patient demographics and membership selects the entry;
+processing, review and failed records bypass it. Upload, review and reset
+handlers expire document and patient tags with `revalidateTag(..., { expire: 0 })`.
+Signed Blob URLs are created per request outside caches. The browser retains
+full-image and thumbnail URLs by Blob pathname for ten minutes, then accepts
+fresh signatures on the next refresh. New page versions replace them immediately.
+Only the visible documents list or a processing document's own review route polls.
+
 ## Pipeline
 
 One workflow run per document is owned by eve. Browser document requests go to

@@ -1,5 +1,6 @@
 import { documentIdSchema, reviewActionSchema } from '@repo/ai/review-action'
 import { pipeline, pipelineFailure } from '#lib/server/pipeline-client'
+import { recordCache } from '#lib/server/record-cache'
 
 /** Submits a validated document review decision to the service. */
 export async function POST(
@@ -13,7 +14,9 @@ export async function POST(
   if (!id.success || !action.success)
     return Response.json({ error: 'Invalid review action' }, { status: 400 })
   try {
-    return Response.json(await pipeline.review(id.data, action.data), {
+    const result = await pipeline.review(id.data, action.data)
+    recordCache.invalidate(id.data)
+    return Response.json(result, {
       status: 202,
       headers: { 'cache-control': 'no-store' },
     })
