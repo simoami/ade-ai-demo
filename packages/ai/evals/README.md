@@ -42,3 +42,22 @@ against a baseline experiment in Braintrust; the completion log prints the
 experiment URL. `EVAL_FIXTURE`, `EVAL_VARIANT` and `EVAL_DPI` (144 or 216)
 support focused runs; ceilings then apply to the selected pages only.
 See [threshold rationale](../../../docs/evals.md) before changing a ceiling.
+
+## Identifier detection and picture decisions
+
+`pnpm eval pii` runs `pii-v1` with Sol on ten clean development pages from
+`synthetic-v3`, using ground-truth text and figure blocks to isolate detection
+from OCR. The selected fixtures cover names, DOB, IDs, address, phone, provider and
+facility names, patient and non-patient faces, an unclear face, signatures,
+a logo and an X-ray. The corpus has no email or SSN ground truth; those
+categories have no measured recall.
+Full-DOB fixture spans are projected to month/day for ADR 0002; birth years
+and clinical dates count as false positives if predicted. Figures use their
+separate ground-truth boxes as OCR figure blocks. Picture decisions are scored
+by page/block identity; identifiers inside pictures are validated but their
+box accuracy is not scored. Text recall/precision count unique characters per
+category, so duplicate spans earn no credit. Hard error ceilings are 1% missed
+identifier characters, 5% false-positive characters, and zero wrong picture
+decisions. Runtime/schema failures also fail the suite. Current results live
+in `docs/evals.md`; the local metadata/metrics-only report is
+`evals/results/pii-latest.json`. No held-out pages are used.

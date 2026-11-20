@@ -18,6 +18,7 @@ import {
 import { Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useId, useState, useSyncExternalStore } from 'react'
+import { PipelineStages } from '#components/pipeline-stages'
 import { dismissWelcome, shouldShowWelcome } from '#lib/welcome'
 
 const subscribe = () => () => {}
@@ -157,46 +158,49 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
           if (!open) closeWelcome()
         }}
       >
-        <DialogContent>
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Try the document pipeline</DialogTitle>
-            <DialogDescription>
-              Download a sample document and upload it to see the extraction
-              pipeline in action.
-            </DialogDescription>
           </DialogHeader>
-          <a
-            href={`#${samplesId}`}
-            className="w-fit text-primary underline underline-offset-4"
-            onClick={(event) => {
-              event.preventDefault()
-              closeWelcome()
-              const card = document.getElementById(samplesId)
-              if (!card) return
+          <PipelineStages />
+          <DialogDescription>
+            Download a{' '}
+            <a
+              href={`#${samplesId}`}
+              className="rounded-sm text-primary underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-popover"
+              onClick={(event) => {
+                event.preventDefault()
+                closeWelcome()
+                const card = document.getElementById(samplesId)
+                if (!card) return
 
-              card.scrollIntoView({ block: 'nearest' })
-              card.animate(
-                [
-                  { boxShadow: '0 0 0 3px var(--primary)' },
-                  { boxShadow: '0 0 0 3px transparent' },
-                ],
-                { duration: 1500, easing: 'ease-out' }
-              )
-            }}
-          >
-            Browse sample documents
-          </a>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={showAgain}
-              onChange={(event) => setShowAgain(event.target.checked)}
-              className="size-4 accent-primary"
-            />
-            Show this again
-          </label>
+                card.scrollIntoView({ block: 'nearest' })
+                card.animate(
+                  [
+                    { boxShadow: '0 0 0 3px var(--primary)' },
+                    { boxShadow: '0 0 0 3px transparent' },
+                  ],
+                  { duration: 1500, easing: 'ease-out' }
+                )
+              }}
+            >
+              sample document
+            </a>{' '}
+            and upload it to see the extraction pipeline in action.
+          </DialogDescription>
           <DialogFooter>
-            <Button onClick={closeWelcome}>Dismiss</Button>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={showAgain}
+                onChange={(event) => setShowAgain(event.target.checked)}
+                className="size-4 accent-primary"
+              />
+              Show this again
+            </label>
+            <Button className="ms-auto" onClick={closeWelcome}>
+              Dismiss
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

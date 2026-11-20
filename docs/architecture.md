@@ -75,14 +75,21 @@ public protocol routes; document calls use the binding. Local Next.js retains
 
 `agent/tools/ingest-document.ts` registers the workflow from
 `src/workflows/ingest-document/ingest-document.workflow.ts`. Its steps call
-ordinary functions under `src/stages/render` and `src/stages/ocr`. The channel
+ordinary functions under `src/stages/render`, `src/stages/ocr`,
+`src/stages/pii` and `src/stages/redact`. The channel
 creates a Postgres document and persists its run ID. The workflow reads private
 Blob originals, renders PNG pages, records dimensions, and runs Reducto r-1 OCR.
 It encrypts OCR JSON with AES-256-GCM (12-byte IV, 16-byte tag, ciphertext) using
-`DOCUMENT_ENCRYPTION_KEY`, then leaves status at `redacting`. It waits on the
+`DOCUMENT_ENCRYPTION_KEY`, then sets status to `redacting`. One durable redaction
+step detects identifiers across the document, reviews figure blocks, places
+redactions and burns every candidate, including those needing review. Before
+publication, it checkpoints encrypted burned PNGs and a validated manifest under
+`redaction/`; retries reuse them even after renders are deleted. It atomically
+replaces document redaction rows with UUID v5 IDs derived from document, page
+and index, publishes burned pairs, then sets `needsReview`. It waits on the
 review hook, increments a refresh counter for redaction decisions, and writes
 terminal status on `markReviewed` or `discard`. Per-document artifact cleanup
-and real-upload redaction are not implemented. The web server signs full-image and thumbnail URLs for the browser to load directly
+is not implemented. The web server signs full-image and thumbnail URLs for the browser to load directly
 from private Blob. Before publication, renders are exposed only during `reading`
 or `redacting`. Published pages take precedence in every status; encrypted OCR
 is never served. URLs expire after 15 minutes; reopening the review issues fresh URLs.
@@ -90,9 +97,9 @@ is never served. URLs expire after 15 minutes; reopening the review issues fresh
 `publishRedactedPages(documentId, pages)` calls per document: write all
 `pages/<page>-v<version>.webp` and `pages/<page>-v<version>-thumb.webp` pairs,
 publish the incremented database version, then delete obsolete pages and renders.
-Cleanup failures propagate for retry. Only the synthetic seed publishes pages today
-(version 1 on first seed; subsequent seeds increment it).
-Milestone logs use `@repo/logger` and carry metadata only. Render, OCR, refresh and
+Cleanup failures propagate for retry. Both ingestion and synthetic seeding publish
+pages; each publication increments the version, including a retried publication.
+Milestone logs use `@repo/logger` and carry metadata only. Render, OCR, redaction, refresh and
 terminal review logs run in durable steps, outside workflow replay; request
 failures include only fixed paths, statuses and error types.
 Only the contract is exported to Next.js. The clinical processing design is:
@@ -109,7 +116,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
 5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
 6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review.
-7. **Redact.** The redaction stage is pending. Its completion replaces previews with burned versioned page/thumbnail pairs and deletes `render/*`. High-confidence redactions are burned into page images and thumbnails and removed from `ocr.redacted.json`. Low-confidence candidates are masked in text only, so embeddings and enrichment never see them, while the reviewer can still read the page.
+7. **Redact.** All placed candidates are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` in the database. Processing goes directly to `needsReview`; classification, patient linking, extraction and `ocr.redacted.json` are pending.
 8. **Observations.** Structured extraction over tables, lists and narrative, then within-document deduplication that is date-aware and prefers table over list over narrative. The review agent checks each batch against the source with `viewSourceRegion` and `readBlocks`, and returns a verdict per observation:
    - `confirmed`: accepted.
    - `corrected`: applied automatically, badged, revertible.
@@ -142,7 +149,7 @@ After processing, the run waits on a single review hook in a loop. The UI resume
 - **Mark as reviewed** is enabled when nothing blocks it: no flagged or unchecked observations, no redactions needing review, no identity mismatch. It creates the patient if needed, locks the document, and deletes the review-only artifacts.
 - **Discard** (duplicate upload, wrong patient) deletes the review-only artifacts and the document's derived data.
 
-Implemented ingestion statuses: `rendering` → `reading` → `redacting`; failures write `failed`, and terminal review writes `reviewed` or `discarded`.
+Implemented ingestion statuses: `rendering` → `reading` → `redacting` → `needsReview`; failures write `failed`, and terminal review writes `reviewed` or `discarded`.
 
 ## Privacy
 

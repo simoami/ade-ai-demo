@@ -1,0 +1,228 @@
+import assert from 'node:assert/strict'
+import { test } from 'node:test'
+import sharp from 'sharp'
+import type { OcrPage } from '#stages/ocr/ocr-result'
+import type { RedactionRegion } from '#stages/redact/redaction-types'
+import { encryptArtifact } from '#workflows/ingest-document/artifact-encryption'
+import { redactDocument } from '#workflows/ingest-document/redact-document'
+
+const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const key = Buffer.alloc(32, 7)
+const region: RedactionRegion = {
+  page: 1,
+  blockId: 'text',
+  box: { x: 0, y: 0, width: 0.5, height: 0.5 },
+  points: [
+    [0, 0],
+    [0.5, 0],
+    [0.5, 0.5],
+    [0, 0.5],
+  ],
+  category: 'name',
+  state: 'needsReview',
+  source: 'text',
+}
+
+async function harness() {
+  const image = await sharp({
+    create: { width: 10, height: 10, channels: 3, background: 'white' },
+  })
+    .png()
+    .toBuffer()
+  const burned = await sharp({
+    create: { width: 10, height: 10, channels: 3, background: 'black' },
+  })
+    .png()
+    .toBuffer()
+  const pages: OcrPage[] = [false, true].map((figure) => ({
+    blocks: [
+      {
+        id: figure ? 'figure' : 'text',
+        kind: figure ? 'figure' : 'paragraph',
+        text: 'Synthetic name',
+        box: region.box,
+        continues: null,
+      },
+    ],
+    usage: { latencyMs: 1 },
+  }))
+  const blobs = new Map<string, Buffer>([
+    [
+      `documents/${documentId}/ocr.json.enc`,
+      encryptArtifact(Buffer.from(JSON.stringify(pages)), key),
+    ],
+    [`documents/${documentId}/render/1.png`, image],
+    [`documents/${documentId}/render/2.png`, image],
+  ])
+  const events: string[] = []
+  const replacements: Parameters<
+    NonNullable<NonNullable<Parameters<typeof redactDocument>[2]>['replace']>
+  >[1][] = []
+  const deps: NonNullable<Parameters<typeof redactDocument>[2]> = {
+    storage: {
+      get: async (path) => {
+        const bytes = blobs.get(path)
+        return bytes
+          ? {
+              stream: new ReadableStream({
+                start(controller) {
+                  controller.enqueue(bytes)
+                  controller.close()
+                },
+              }),
+              contentType: 'application/octet-stream',
+            }
+          : null
+      },
+      put: async (path, body, options) => {
+        assert.ok(Buffer.isBuffer(body))
+        assert.equal(options.allowOverwrite, true)
+        assert.equal(options.addRandomSuffix, false)
+        blobs.set(path, body)
+        return {
+          url: '',
+          downloadUrl: '',
+          pathname: path,
+          contentType: options.contentType ?? '',
+          contentDisposition: '',
+          etag: '',
+        }
+      },
+    },
+    key: () => key,
+    update: async (_id, values) => {
+      events.push(`status:${values.status}`)
+    },
+    detect: async (ocr) => {
+      assert.deepEqual(ocr, pages)
+      events.push('detect')
+      return [
+        {
+          page: 1,
+          blockId: 'text',
+          start: 0,
+          end: 9,
+          category: 'name',
+          confidence: 0.6,
+        },
+      ]
+    },
+    pictures: async ({ pageNumber }) => {
+      events.push(`pictures:${pageNumber}`)
+      return []
+    },
+    place: async ({ pageNumber, width, height }, spans) => {
+      assert.equal(width, 10)
+      assert.equal(height, 10)
+      assert.equal(spans.length, pageNumber === 1 ? 1 : 0)
+      events.push(`place:${pageNumber}`)
+      return pageNumber === 1 ? [region] : []
+    },
+    burn: async (_image, regions) => {
+      events.push(`burn:${regions.length}`)
+      return burned
+    },
+    replace: async (_id, rows) => {
+      replacements.push(rows)
+      events.push('replace')
+    },
+    publish: async (_id, images) => {
+      assert.deepEqual(images, [burned, burned])
+      assert.equal(replacements.at(-1)?.length, 1)
+      assert.ok(blobs.has(`documents/${documentId}/redaction/ready.json.enc`))
+      events.push('publish')
+      blobs.delete(`documents/${documentId}/render/1.png`)
+      blobs.delete(`documents/${documentId}/render/2.png`)
+      return 1
+    },
+  }
+  return { deps, blobs, events, replacements }
+}
+
+test('detects all pages, reviews only figures, replaces rows and publishes burned pixels before needsReview', async () => {
+  const h = await harness()
+  assert.deepEqual(await redactDocument(documentId, 2, h.deps), {
+    pageCount: 2,
+    spanCount: 1,
+    appliedCount: 0,
+    needsReviewCount: 1,
+  })
+  assert.deepEqual(h.events, [
+    'status:redacting',
+    'detect',
+    'place:1',
+    'burn:1',
+    'pictures:2',
+    'place:2',
+    'burn:0',
+    'replace',
+    'publish',
+    'status:needsReview',
+  ])
+  const row = h.replacements[0]?.[0]
+  assert.match(
+    row?.id ?? '',
+    /^[a-f0-9]{8}-[a-f0-9]{4}-5[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/
+  )
+  const { source: _source, ...expected } = region
+  assert.deepEqual(row, { ...expected, id: row?.id, documentId })
+})
+
+test('retries from encrypted burned pages after publication deleted renders and replaces identical rows', async () => {
+  const h = await harness()
+  let attempts = 0
+  const publish = h.deps.publish
+  assert.ok(publish)
+  h.deps.publish = async (...args) => {
+    const version = await publish(...args)
+    if (++attempts === 1) throw new Error('private cleanup failure')
+    return version
+  }
+  await assert.rejects(redactDocument(documentId, 2, h.deps), {
+    message: 'Document redaction failed',
+  })
+  assert.equal(h.events.at(-1), 'status:failed')
+  await redactDocument(documentId, 2, h.deps)
+  assert.deepEqual(h.replacements[0], h.replacements[1])
+  assert.equal(h.events.filter((event) => event === 'detect').length, 1)
+  assert.equal(h.events.at(-1), 'status:needsReview')
+})
+
+test('marks failed and hides stage errors without publishing or persisting incomplete work', async () => {
+  for (const stage of [
+    'detect',
+    'pictures',
+    'place',
+    'burn',
+    'replace',
+    'publish',
+  ] as const) {
+    const h = await harness()
+    h.deps[stage] = async () => {
+      throw new Error('synthetic private provider response')
+    }
+    await assert.rejects(redactDocument(documentId, 2, h.deps), {
+      message: 'Document redaction failed',
+    })
+    assert.equal(h.events.at(-1), 'status:failed')
+    assert.ok(!h.events.includes('publish'))
+    assert.ok(!h.events.includes('status:needsReview'))
+  }
+})
+
+test('rejects missing, unauthenticated and malformed OCR artifacts before detection', async () => {
+  for (const bytes of [
+    null,
+    Buffer.from('invalid'),
+    encryptArtifact(Buffer.from('{}'), key),
+  ]) {
+    const h = await harness()
+    const path = `documents/${documentId}/ocr.json.enc`
+    if (bytes) h.blobs.set(path, bytes)
+    else h.blobs.delete(path)
+    await assert.rejects(redactDocument(documentId, 2, h.deps), {
+      message: 'Document redaction failed',
+    })
+    assert.deepEqual(h.events, ['status:redacting', 'status:failed'])
+  }
+})

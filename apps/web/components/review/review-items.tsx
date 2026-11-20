@@ -1,16 +1,34 @@
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
-import { Check, X } from 'lucide-react'
+import {
+  Check,
+  Image,
+  ScanFace,
+  Signature,
+  Type,
+  UserSquare,
+  X,
+} from 'lucide-react'
+import type { redactionIconKind } from '#lib/review'
 
 export type ReviewItem = {
   id: string
   page: number
   label: string
   detail: string
+  redactionIcon?: ReturnType<typeof redactionIconKind>
   state: 'applied' | 'extracted' | 'needsReview' | 'accepted' | 'rejected'
 }
 
 type Decision = 'accepted' | 'rejected'
+
+const redactionIcons = {
+  text: Type,
+  patientPhoto: UserSquare,
+  face: ScanFace,
+  signature: Signature,
+  picture: Image,
+}
 
 /** Lists flagged items across the document, then the current page's items. */
 export function ReviewItems({
@@ -69,7 +87,7 @@ export function ReviewItems({
         </ItemGroup>
       )}
 
-      <ItemGroup title={`Page ${page} · ${onPage.length}`}>
+      <ItemGroup title={`Page ${page} · Total ${onPage.length}`}>
         {onPage.length === 0 ? (
           <p className="py-2 text-xs text-muted-foreground">
             Nothing else on this page.
@@ -130,6 +148,8 @@ function Row({
   onSelect: (item: ReviewItem) => void
   children?: React.ReactNode
 }) {
+  const Icon = item.redactionIcon && redactionIcons[item.redactionIcon]
+
   return (
     <li
       className={cn(
@@ -139,12 +159,22 @@ function Row({
     >
       <button
         type="button"
-        className="flex min-w-0 flex-1 flex-col items-start text-left"
+        className="flex min-w-0 flex-1 items-center gap-2 text-left"
         onClick={() => onSelect(item)}
       >
-        <span className="truncate text-sm font-medium">{item.label}</span>
-        <span className="truncate text-xs text-muted-foreground">
-          {item.detail}
+        {Icon ? (
+          <Icon
+            aria-hidden="true"
+            className="size-4 shrink-0 text-muted-foreground"
+          />
+        ) : null}
+        <span className="flex min-w-0 flex-col items-start">
+          <span className="max-w-full truncate text-sm font-medium">
+            {item.label}
+          </span>
+          <span className="max-w-full truncate text-xs text-muted-foreground">
+            {item.detail}
+          </span>
         </span>
       </button>
       {children}

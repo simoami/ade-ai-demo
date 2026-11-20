@@ -4,7 +4,7 @@
 
 `apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The screens read Postgres through `apps/web/lib/server/records.ts`. `pnpm --filter @repo/ai seed:samples` loads six synthetic fixtures (redacted pages to Blob, rows to Postgres); run it, and `pnpm --filter @repo/db db:migrate`, for each Neon branch a deployment uses.
 
-`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render` and `src/stages/ocr` (LLM, Datalab and Reducto OCR providers). Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
+`packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render`, `src/stages/ocr` (LLM, Datalab and Reducto OCR providers), `src/stages/pii` and `src/stages/redact`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
 `packages/logger` (`@repo/logger`) provides the shared tslog root and named sub-loggers, with nested sensitive-key masking. Output is pretty in development and JSON when `VERCEL=1` or `NODE_ENV=production`. Workflow milestones log inside durable steps.
 
@@ -90,8 +90,10 @@ Migration 0002 adds the nullable version; migrate and reseed each deployment bra
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
 Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered
-PNG/JPEG images, runs rendering and Reducto OCR, then stays at `redacting`
-until the redaction stage is implemented. Rendering scratch directories are
+PNG/JPEG images, runs rendering, Reducto OCR, identifier detection, picture review and redaction,
+then publishes burned pages and sets `needsReview`. The redaction step checkpoints
+encrypted burned pages and a manifest before publication so retries can finish
+after render deletion. It replaces redaction rows atomically using UUID v5 IDs. Rendering scratch directories are
 removed inside the step. Terminal review writes status. The workspace Admin dialog offers synthetic
 PDF downloads and an authenticated reset that cancels runs, removes document
 Blobs and deletes document rows while preserving patients. Per-document

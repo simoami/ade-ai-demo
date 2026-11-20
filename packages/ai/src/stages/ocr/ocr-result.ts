@@ -31,6 +31,9 @@ export const wordSchema = z.object({
   text: z.string(),
   box: boxSchema,
   confidence: z.number().min(0).max(1).optional(),
+  blockId: z.string().optional(),
+  start: z.number().int().nonnegative().optional(),
+  end: z.number().int().positive().optional(),
 })
 
 export type Box = z.infer<typeof boxSchema>

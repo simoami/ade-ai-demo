@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { Redaction } from './records-types.ts'
-import { matchStrength, pendingCount } from './review.ts'
+import { matchStrength, pendingCount, redactionIconKind } from './review.ts'
 
 const none = {
   lastName: 'absent',
@@ -10,6 +10,47 @@ const none = {
   mrn: 'absent',
   sex: 'absent',
 } as const
+
+test('uses text icons for raw and seeded identifier categories', () => {
+  for (const category of [
+    'name',
+    'dob',
+    'id',
+    'address',
+    'phone',
+    'email',
+    'ssn',
+    'facility',
+    'provider',
+    'Name',
+    'Date of birth',
+    'Record number',
+    'Address',
+    'Phone',
+    'Email',
+    'Social security number',
+    'Facility',
+    'Provider',
+  ]) {
+    assert.equal(redactionIconKind(category), 'text', category)
+  }
+})
+
+test('distinguishes picture kinds and falls back to an image for unknown categories', () => {
+  for (const category of ['patientPhoto', 'Patient photo']) {
+    assert.equal(redactionIconKind(category), 'patientPhoto')
+  }
+
+  for (const category of ['face', 'Unidentified face']) {
+    assert.equal(redactionIconKind(category), 'face')
+  }
+
+  assert.equal(redactionIconKind('Signature'), 'signature')
+  assert.equal(redactionIconKind('signature'), 'signature')
+  assert.equal(redactionIconKind('other'), 'picture')
+  assert.equal(redactionIconKind('medicalImage'), 'picture')
+  assert.equal(redactionIconKind(''), 'picture')
+})
 
 test('links on an MRN match alone or on full name and date of birth', () => {
   assert.equal(matchStrength({ ...none, mrn: 'match' }), 'strong')

@@ -20,7 +20,12 @@ import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
 import type { Patient, ReviewDocument } from '#lib/records-types'
-import { matchStrength, pendingCount, reviewMode } from '#lib/review'
+import {
+  matchStrength,
+  pendingCount,
+  redactionIconKind,
+  reviewMode,
+} from '#lib/review'
 import { PageViewer } from './page-viewer.tsx'
 import { PatientPanel } from './patient-panel.tsx'
 import { type ReviewItem, ReviewItems } from './review-items.tsx'
@@ -57,6 +62,7 @@ export function ReviewWorkspace({
     ...redaction,
     label: redaction.category,
     detail: `Page ${redaction.page}`,
+    redactionIcon: redactionIconKind(redaction.category),
   }))
   const observationItems: ReviewItem[] = observations.map((observation) => ({
     ...observation,

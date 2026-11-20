@@ -26,6 +26,8 @@ const parsed = {
               word_citations: [
                 { text: 'Test', char_start: 15, char_end: 19, bbox: box },
                 { text: 'Flag', char_start: 28, char_end: 32, bbox: null },
+                { text: 'not-in-block', bbox: box },
+                { text: 'Glucose', bbox: box },
               ],
             },
           },
@@ -66,6 +68,19 @@ test('maps Reducto blocks and located word citations, leaving figure description
     ]
   )
   assert.deepEqual(page.words, [
-    { text: 'Test', box: { x: 0.1, y: 0.2, width: 0.3, height: 0.05 } },
+    {
+      text: 'Test',
+      blockId: 'p2-b1',
+      start: 0,
+      end: 4,
+      box: { x: 0.1, y: 0.2, width: 0.3, height: 0.05 },
+    },
+    {
+      text: 'Glucose',
+      blockId: 'p2-b1',
+      start: 11,
+      end: 18,
+      box: { x: 0.1, y: 0.2, width: 0.3, height: 0.05 },
+    },
   ])
 })

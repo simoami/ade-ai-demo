@@ -4,10 +4,11 @@ import { type ReviewAction, reviewToken } from './review-action'
 import { complete } from './steps/complete.step'
 import { fail } from './steps/fail.step'
 import { readPages } from './steps/read-pages.step'
+import { redactPages } from './steps/redact-pages.step'
 import { refresh } from './steps/refresh.step'
 import { renderPages } from './steps/render-pages.step'
 
-/** Renders and transcribes uploaded originals, then waits for review decisions until review or discard. */
+/** Renders, transcribes and redacts uploaded originals, then waits for review decisions until review or discard. */
 export async function ingestDocument(input: IngestInput) {
   'use workflow'
 
@@ -15,6 +16,7 @@ export async function ingestDocument(input: IngestInput) {
   try {
     const { pageCount } = await renderPages(input)
     await readPages(documentId, pageCount)
+    await redactPages(documentId, pageCount)
 
     using hook = createHook<ReviewAction>({ token: reviewToken(documentId) })
     if (await hook.getConflict()) {

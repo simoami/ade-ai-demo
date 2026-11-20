@@ -59,25 +59,6 @@ export function reductoOcr(
       throw new Error('Reducto returned a deferred result')
 
     const parsed = response.result.chunks.flatMap((chunk) => chunk.blocks)
-    const words: Word[] = parsed.flatMap((block) =>
-      (citationsSchema.parse(block.extra ?? {}).word_citations ?? []).flatMap(
-        ({ text, bbox }) =>
-          bbox
-            ? [
-                {
-                  text,
-                  box: {
-                    x: bbox.left,
-                    y: bbox.top,
-                    width: bbox.width,
-                    height: bbox.height,
-                  },
-                },
-              ]
-            : []
-      )
-    )
-
     const blocks = parsed.map((block, index): Block => {
       const kind = blockKinds[block.type] ?? 'other'
       return {
@@ -93,6 +74,40 @@ export function reductoOcr(
         },
         continues: null,
       }
+    })
+
+    const words: Word[] = parsed.flatMap((block, index) => {
+      const mapped = blocks[index]
+      if (!mapped || mapped.kind === 'figure') return []
+
+      let cursor = 0
+      return (
+        citationsSchema.parse(block.extra ?? {}).word_citations ?? []
+      ).flatMap(({ text, bbox }) => {
+        if (!text) return []
+
+        const start = mapped.text.indexOf(text, cursor)
+        if (start < 0) return []
+
+        const end = start + text.length
+        cursor = end
+        return bbox
+          ? [
+              {
+                text,
+                blockId: mapped.id,
+                start,
+                end,
+                box: {
+                  x: bbox.left,
+                  y: bbox.top,
+                  width: bbox.width,
+                  height: bbox.height,
+                },
+              },
+            ]
+          : []
+      })
     })
 
     return {

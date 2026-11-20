@@ -74,6 +74,38 @@ missed signatures and icons are covered by the picture pass, and Tesseract
 supplies character boxes for redaction, so neither depends on the OCR vendor.
 The provider is re-evaluated as fixtures and real-world failures are added.
 
+## Identifier detection and picture decisions
+
+`pii-v1`, `gpt-6.1-sol`, `synthetic-v3`: ten clean development pages, using
+ground-truth OCR text and figure boxes. DOB truth is projected to month/day;
+birth years and encounter dates are retained. The total counts characters
+hidden at the correct page, block and offset regardless of category; category
+rows also require the category. All eight cases completed without
+runtime/schema failures. [Experiment](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/pii-pii-v1-1795193806105).
+
+| Category or metric  | Character recall | Character precision | Picture accuracy |
+| ------------------- | ---------------- | ------------------- | ---------------- |
+| name                | 100.00%          | 97.33%              | —                |
+| dob                 | 100.00%          | 100.00%             | —                |
+| id                  | 100.00%          | 100.00%             | —                |
+| address             | 100.00%          | 100.00%             | —                |
+| phone               | 100.00%          | 100.00%             | —                |
+| email               | unmeasured       | unmeasured          | —                |
+| ssn                 | unmeasured       | unmeasured          | —                |
+| facility            | 100.00%          | 93.42%              | —                |
+| provider            | 90.84%           | 100.00%             | —                |
+| **All identifiers** | **100.00%**      | **98.51%**          | —                |
+| Picture decisions   | —                | —                   | **12/12 (100%)** |
+
+`pnpm eval pii` passes its minimums: 99% recall, 95% precision and every
+picture decision. Provider's lower category recall is a labeling difference:
+the consent witness is labeled `provider` in ground truth and `name` by the
+model, and is hidden either way. The fixtures contain no email or SSN.
+Identifiers inside pictures are validated, but their localization accuracy is
+not scored. Ground-truth figures bypass OCR picture omissions; these results do
+not measure end-to-end redaction. The local report contains metrics and
+fixture IDs only at `packages/ai/evals/results/pii-latest.json`.
+
 ## Metrics and thresholds
 
 | Stage | Metric                    | Gate or score | Threshold                | Why                                                                                      |

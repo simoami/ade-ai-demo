@@ -8,6 +8,34 @@ import type {
 
 export type MatchStrength = 'strong' | 'partial' | 'none'
 
+/** Selects a decorative icon for pipeline categories and seeded display labels. */
+export function redactionIconKind(category: string) {
+  switch (category.replace(/\s/g, '').toLowerCase()) {
+    case 'name':
+    case 'dob':
+    case 'dateofbirth':
+    case 'id':
+    case 'recordnumber':
+    case 'address':
+    case 'phone':
+    case 'email':
+    case 'ssn':
+    case 'socialsecuritynumber':
+    case 'facility':
+    case 'provider':
+      return 'text'
+    case 'patientphoto':
+      return 'patientPhoto'
+    case 'face':
+    case 'unidentifiedface':
+      return 'face'
+    case 'signature':
+      return 'signature'
+    default:
+      return 'picture'
+  }
+}
+
 /** Applies the patient link rule: MRN, or last name, first name and date of birth, is a strong match. */
 export function matchStrength(
   fields: Record<MatchField, FieldMatch>

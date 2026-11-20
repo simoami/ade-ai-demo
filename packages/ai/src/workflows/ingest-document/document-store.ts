@@ -1,4 +1,4 @@
-import { createDb, documents, eq } from '@repo/db'
+import { createDb, documents, eq, redactions } from '@repo/db'
 
 type DocumentUpdate = Pick<
   typeof documents.$inferInsert,
@@ -40,4 +40,20 @@ export async function updateDocument(
     .where(eq(documents.id, documentId))
     .returning({ id: documents.id })
   if (rows.length !== 1) throw new Error('Document not found')
+}
+
+/** Atomically replaces one document's redactions so retries cannot duplicate rows. */
+export async function replaceRedactions(
+  documentId: string,
+  rows: (typeof redactions.$inferInsert)[]
+) {
+  const db = createDb()
+  const remove = db
+    .delete(redactions)
+    .where(eq(redactions.documentId, documentId))
+  if (rows.length) {
+    await db.batch([remove, db.insert(redactions).values(rows)])
+  } else {
+    await remove
+  }
 }
