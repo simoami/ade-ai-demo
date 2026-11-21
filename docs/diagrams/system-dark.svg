@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1840 920" width="1840" height="920" role="img" aria-label="System diagram: browser, Next.js and the eve workflow service on Vercel, with Blob, Neon, Reducto and OpenAI">
+<style>
+    .bg{fill:#0a0a0a}
+    .frame{fill:#0a0a0a;stroke:#3a3a3a;stroke-width:1.5}
+    .band,.panel{fill:url(#hatch);stroke:#3a3a3a;stroke-width:1.5}
+    .band{stroke:none}
+    .rule{stroke:#3a3a3a;stroke-width:1.5}
+    .box{fill:#0a0a0a;stroke:#333333;stroke-width:1.5}
+    .dot{fill:#333333}
+    .title{font:400 22px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#ededed;text-anchor:middle}
+    .sub{font:400 15px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#a1a1a1;text-anchor:middle}
+    .label{font:600 18px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#ededed;letter-spacing:1px}
+    .edge{fill:none;stroke:#ededed;stroke-width:1.5}
+    .head{fill:#ededed}
+    .pill{fill:#0a0a0a;stroke:#ededed;stroke-width:1.5}
+    .pill.accent{fill:#042f2e;stroke:#2dd4bf}
+    .pilltext{font:400 15px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#ededed;text-anchor:middle}
+    .pilltext.accent{fill:#2dd4bf}
+    .node{fill:#ededed}
+    .nodeicon{fill:none;stroke:#0a0a0a;stroke-width:1.6;stroke-linejoin:round}
+    </style>
+<defs>
+<pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<rect width="8" height="8" fill="#111111"/><line x1="0" y1="0" x2="0" y2="8" stroke="#1c1c1c" stroke-width="1"/></pattern>
+<marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" class="head"/></marker>
+</defs>
+<rect width="1840" height="920" class="bg"/>
+<rect x="40" y="300" width="200" height="110" rx="6" class="box"/>
+<circle cx="56" cy="316" r="3" class="dot"/>
+<circle cx="66" cy="316" r="3" class="dot"/>
+<circle cx="76" cy="316" r="3" class="dot"/>
+<text x="140.0" y="362.0" class="title">Browser</text>
+<rect x="1640" y="300" width="170" height="110" rx="6" class="box"/>
+<text x="1725.0" y="351.0" class="title">Vercel</text>
+<text x="1725.0" y="377.0" class="sub">Build System</text>
+<rect x="340" y="40" width="1200" height="560" rx="4" class="frame"/>
+<rect x="340" y="40" width="1200" height="150" rx="4" class="band"/>
+<line x1="340" y1="190" x2="1540" y2="190" class="rule"/>
+<text x="366" y="78" class="label">DEPLOYMENT PROTECTION</text>
+<rect x="370" y="100" width="560" height="64" rx="6" class="box"/>
+<text x="650.0" y="139.0" class="title">Vercel Authentication</text>
+<rect x="950" y="100" width="560" height="64" rx="6" class="box"/>
+<text x="1230.0" y="139.0" class="title">Vercel OIDC</text>
+<text x="366" y="232" class="label">IAD1</text>
+<rect x="400" y="300" width="200" height="110" rx="6" class="box"/>
+<text x="500.0" y="351.0" class="title">Next.js 16</text>
+<text x="500.0" y="377.0" class="sub">PPR · use cache</text>
+<rect x="800" y="250" width="710" height="310" rx="4" class="panel"/>
+<text x="826" y="288" class="label">EVE SERVICE · VERCEL WORKFLOW</text>
+<rect x="830" y="310" width="230" height="220" rx="6" class="box"/>
+<text x="945.0" y="416.0" class="title">Durable run</text>
+<text x="945.0" y="442.0" class="sub">one per document</text>
+<rect x="1130" y="310" width="350" height="46" rx="6" class="box"/>
+<text x="1305.0" y="340.0" class="title">Render &amp; OCR</text>
+<path d="M1060 333H1124" class="edge" marker-end="url(#head)"/>
+<rect x="1130" y="368" width="350" height="46" rx="6" class="box"/>
+<text x="1305.0" y="398.0" class="title">Redact identifiers</text>
+<path d="M1060 391H1124" class="edge" marker-end="url(#head)"/>
+<rect x="1130" y="426" width="350" height="46" rx="6" class="box"/>
+<text x="1305.0" y="456.0" class="title">Classify &amp; extract</text>
+<path d="M1060 449H1124" class="edge" marker-end="url(#head)"/>
+<rect x="1130" y="484" width="350" height="46" rx="6" class="box"/>
+<text x="1305.0" y="514.0" class="title">Human review</text>
+<path d="M1060 507H1124" class="edge" marker-end="url(#head)"/>
+<rect x="340" y="660" width="600" height="220" rx="4" class="panel"/>
+<text x="366" y="698" class="label">STORAGE</text>
+<rect x="370" y="720" width="260" height="120" rx="6" class="box"/>
+<text x="500.0" y="776.0" class="title">Vercel Blob</text>
+<text x="500.0" y="802.0" class="sub">private</text>
+<rect x="650" y="720" width="260" height="120" rx="6" class="box"/>
+<text x="780.0" y="776.0" class="title">Neon Postgres</text>
+<text x="780.0" y="802.0" class="sub">Vercel Marketplace</text>
+<rect x="960" y="660" width="580" height="220" rx="4" class="panel"/>
+<text x="986" y="698" class="label">MODELS &amp; OCR</text>
+<rect x="990" y="720" width="250" height="120" rx="6" class="box"/>
+<text x="1115.0" y="776.0" class="title">Reducto</text>
+<text x="1115.0" y="802.0" class="sub">OCR</text>
+<rect x="1260" y="720" width="250" height="120" rx="6" class="box"/>
+<text x="1385.0" y="776.0" class="title">OpenAI</text>
+<text x="1385.0" y="802.0" class="sub">AI SDK</text>
+<path d="M240 355H394" class="edge" marker-end="url(#head)"/>
+<path d="M500 300V170" class="edge" marker-end="url(#head)" marker-start="url(#head)"/>
+<circle cx="500" cy="190" r="17" class="node"/>
+<path transform="translate(492 181)" d="M8 1 2 3.5v4.2C2 11.6 4.6 15.2 8 16.6c3.4-1.4 6-5 6-8.9V3.5Z" class="nodeicon"/>
+<path d="M1230 170V244" class="edge" marker-end="url(#head)"/>
+<circle cx="1230" cy="190" r="17" class="node"/>
+<path transform="translate(1222 181)" d="M8 1 2 3.5v4.2C2 11.6 4.6 15.2 8 16.6c3.4-1.4 6-5 6-8.9V3.5Z" class="nodeicon"/>
+<path d="M600 355H794" class="edge" marker-end="url(#head)"/>
+<path d="M500 410V654" class="edge" marker-end="url(#head)"/>
+<path d="M870 560V654" class="edge" marker-end="url(#head)"/>
+<path d="M1250 560V654" class="edge" marker-end="url(#head)"/>
+<path d="M1640 355H1546" class="edge" marker-end="url(#head)"/>
+<path d="M364 780H140V416" class="edge" marker-end="url(#head)" marker-start="url(#head)"/>
+<rect x="285.0" y="341" width="70.0" height="28" rx="14" class="pill"/>
+<text x="320" y="360" class="pilltext">HTTPS</text>
+<rect x="620.0" y="341" width="154.0" height="28" rx="14" class="pill accent"/>
+<text x="697" y="360" class="pilltext accent">private binding</text>
+<rect x="465.0" y="616" width="70.0" height="28" rx="14" class="pill"/>
+<text x="500" y="635" class="pilltext">reads</text>
+<rect x="830.8" y="616" width="78.4" height="28" rx="14" class="pill"/>
+<text x="870" y="635" class="pilltext">writes</text>
+<rect x="1215.0" y="616" width="70.0" height="28" rx="14" class="pill"/>
+<text x="1250" y="635" class="pilltext">calls</text>
+<rect x="158.2" y="766" width="187.6" height="28" rx="14" class="pill accent"/>
+<text x="252" y="785" class="pilltext accent">upload · signed URL</text>
+</svg>
