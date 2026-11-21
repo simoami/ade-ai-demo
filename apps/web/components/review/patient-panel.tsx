@@ -1,6 +1,7 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandInput,
@@ -135,34 +136,38 @@ export function PatientPanel({
         title="Change patient"
         description="Choose the patient this document belongs to."
       >
-        <CommandInput placeholder="Search by patient ID or initials" />
-        <CommandList>
-          <CommandEmpty>No patients found.</CommandEmpty>
-          {patients.map((candidate) => {
-            const candidateFields = document.patientMatches[candidate.id]
-            return (
-              <CommandItem
-                key={candidate.id}
-                value={`${candidate.id} ${candidate.initials}`}
-                onSelect={() => {
-                  onLink(candidate.id)
-                  setPicking(false)
-                }}
-              >
-                <span className="font-medium">{candidate.id}</span>
-                <span className="text-muted-foreground">
-                  {candidate.initials} · {candidate.sex} ·{' '}
-                  {candidate.birthYear ?? 'Unknown'}
-                </span>
-                {candidateFields !== undefined && (
-                  <span className="ml-auto">
-                    <StrengthBadge strength={matchStrength(candidateFields)} />
+        <Command>
+          <CommandInput placeholder="Search by patient ID or initials" />
+          <CommandList>
+            <CommandEmpty>No patients found.</CommandEmpty>
+            {patients.map((candidate) => {
+              const candidateFields = document.patientMatches[candidate.id]
+              return (
+                <CommandItem
+                  key={candidate.id}
+                  value={`${candidate.id} ${candidate.initials}`}
+                  onSelect={() => {
+                    onLink(candidate.id)
+                    setPicking(false)
+                  }}
+                >
+                  <span className="font-medium">{candidate.id}</span>
+                  <span className="text-muted-foreground">
+                    {candidate.initials} · {candidate.sex} ·{' '}
+                    {candidate.birthYear ?? 'Unknown'}
                   </span>
-                )}
-              </CommandItem>
-            )
-          })}
-        </CommandList>
+                  {candidateFields !== undefined && (
+                    <span className="ml-auto">
+                      <StrengthBadge
+                        strength={matchStrength(candidateFields)}
+                      />
+                    </span>
+                  )}
+                </CommandItem>
+              )
+            })}
+          </CommandList>
+        </Command>
       </CommandDialog>
     </div>
   )
