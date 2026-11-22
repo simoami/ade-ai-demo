@@ -124,14 +124,14 @@ function ObservationResults({
   const [expanded, setExpanded] = useState(false)
   if (!result) return null
 
-  const { summary, observations, truncated } = result
+  const { summary, observations } = result
   const labels = {
-    lab: 'labs',
-    vital: 'vitals',
-    'adverse-event': 'adverse events',
-    'medical-history': 'medical histories',
-    medication: 'medications',
-    symptom: 'symptoms',
+    lab: ['lab', 'labs'],
+    vital: ['vital', 'vitals'],
+    'adverse-event': ['adverse event', 'adverse events'],
+    'medical-history': ['medical history', 'medical history'],
+    medication: ['medication', 'medications'],
+    symptom: ['symptom', 'symptoms'],
   }
   const href =
     context.page === 'document'
@@ -148,11 +148,15 @@ function ObservationResults({
           .filter(([, count]) => count > 0)
           .map(([kind, count]) => (
             <Badge key={kind} variant="secondary">
-              {count} {labels[kind as keyof typeof labels]}
+              {count} {labels[kind as keyof typeof labels][count === 1 ? 0 : 1]}
             </Badge>
           ))}
-        <Badge variant="outline">{summary.outOfRange} out of range</Badge>
-        <Badge variant="outline">{summary.unverified} unverified</Badge>
+        {summary.outOfRange > 0 && (
+          <Badge variant="outline">{summary.outOfRange} out of range</Badge>
+        )}
+        {summary.unverified > 0 && (
+          <Badge variant="outline">{summary.unverified} unverified</Badge>
+        )}
       </div>
       {observations
         .slice(0, expanded ? observations.length : 5)
@@ -170,11 +174,6 @@ function ObservationResults({
         >
           {expanded ? 'Show less' : `Show ${observations.length - 5} more`}
         </Button>
-      )}
-      {Boolean(truncated) && (
-        <p className="text-xs text-muted-foreground">
-          Showing selected observations from the full matching set.
-        </p>
       )}
       {href !== null && (
         <Link href={href} className="block text-xs text-primary underline">

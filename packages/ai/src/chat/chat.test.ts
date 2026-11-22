@@ -192,7 +192,7 @@ test('instructions include the stable rule forbidding restating tool results', (
     /Do not restate rows, values or tables already shown/
   )
   assert.match(toolPresentationInstructions, /at most 1–3 short sentences/)
-  assert.match(toolPresentationInstructions, /answer from summary counts/)
+  assert.match(toolPresentationInstructions, /never restate counts or mention truncation/)
   assert.ok(
     chatInstructions({ page: 'documents' }).includes(
       toolPresentationInstructions

@@ -50,7 +50,7 @@ export function defaultScope(
 
 /** Tool output is already visible; prose only adds brief, grounded highlights. */
 export const toolPresentationInstructions =
-  'Tool results are rendered to the user as cards, charts or checklists. Do not restate rows, values or tables already shown. Add at most 1–3 short sentences highlighting out-of-range, serious, unverified results or a notable trend, with citations only for clinical values or note claims you mention. For broad observation requests with no name or kind filter, answer from summary counts; do not enumerate observations.'
+  'Tool results are rendered to the user as cards, charts or checklists. Do not restate rows, values or tables already shown. Add at most 1–3 short sentences highlighting out-of-range, serious, unverified results or a notable trend, with citations only for clinical values or note claims you mention. Summary counts, truncation and the option to show more are already displayed with the cards, so never restate counts or mention truncation. For broad observation requests, name only what is clinically notable, such as out-of-range or serious results, or say nothing when nothing stands out.'
 
 /** Ground answers in cited, redacted records and forbid identifier reconstruction. */
 export function chatInstructions(context: PageContext) {

@@ -85,7 +85,7 @@ export function ChatDrawer({
       </DrawerTrigger>
       <DrawerContent
         keepMounted
-        className="rounded-none [--drawer-inset:0px] data-[swipe-axis=x]:w-full data-[swipe-axis=x]:sm:w-md"
+        className="rounded-none border-s shadow-xl [--drawer-inset:0px] data-[swipe-axis=x]:w-full data-[swipe-axis=x]:sm:w-md"
       >
         <DrawerHeader className="flex-row items-start justify-between border-b">
           <div>
@@ -170,10 +170,15 @@ function Conversation({ context }: { context: PageContext }) {
           </div>
         )}
         {messages.map((message) => (
-          <article key={message.id} className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              {message.role === 'user' ? 'You' : 'Assistant'}
-            </p>
+          <article
+            key={message.id}
+            aria-label={message.role === 'user' ? 'You' : 'Assistant'}
+            className={
+              message.role === 'user'
+                ? 'ms-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-muted px-3 py-2'
+                : 'space-y-2'
+            }
+          >
             {message.parts.map((part, index) => (
               <ChatPart
                 // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and text parts have no IDs.
