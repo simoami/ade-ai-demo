@@ -7,16 +7,9 @@ import {
   TransformComponent,
   TransformWrapper,
 } from 'react-zoom-pan-pinch'
-import { getCoverScale } from '#lib/page-zoom'
+import { getCoverScale, nextZoomStep, zoomSteps } from '#lib/page-zoom'
 import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
-
-const minZoom = 0.5
-
-const maxZoom = 3
-
-// Steps are fractions of the cover scale, so 100% means the page fills the viewer.
-const zoomStep = 0.25
 
 type Outline = {
   id: string
@@ -72,6 +65,22 @@ export function PageViewer({
     }
   }, [cover, page, viewport.width, viewport.height])
 
+  function stepZoom(direction: 'in' | 'out') {
+    const viewer = transformRef.current
+
+    if (!viewer) return
+
+    // Scales are absolute; zoom levels are relative to cover, so 100% fills the viewer.
+    const current = viewer.state.scale / cover
+    const next = nextZoomStep(current, direction)
+
+    if (next === undefined) return
+
+    void (direction === 'in'
+      ? viewer.zoomIn(cover * (next - current))
+      : viewer.zoomOut(cover * (current - next)))
+  }
+
   if (images.length === 0) {
     return (
       <section
@@ -93,8 +102,8 @@ export function PageViewer({
             variant="ghost"
             size="icon-sm"
             aria-label="Zoom out"
-            disabled={zoom <= minZoom + 0.001}
-            onClick={() => void transformRef.current?.zoomOut(cover * zoomStep)}
+            disabled={nextZoomStep(zoom, 'out') === undefined}
+            onClick={() => stepZoom('out')}
           >
             <ZoomOut />
           </Button>
@@ -111,8 +120,8 @@ export function PageViewer({
             variant="ghost"
             size="icon-sm"
             aria-label="Zoom in"
-            disabled={zoom >= maxZoom - 0.001}
-            onClick={() => void transformRef.current?.zoomIn(cover * zoomStep)}
+            disabled={nextZoomStep(zoom, 'in') === undefined}
+            onClick={() => stepZoom('in')}
           >
             <ZoomIn />
           </Button>
@@ -151,8 +160,8 @@ export function PageViewer({
             key={page}
             ref={transformRef}
             initialScale={cover}
-            minScale={cover * minZoom}
-            maxScale={cover * maxZoom}
+            minScale={cover * (zoomSteps[0] ?? 1)}
+            maxScale={cover * (zoomSteps.at(-1) ?? 1)}
             centerOnInit
             wheel={{
               activationKeys: (keys) =>
@@ -160,7 +169,7 @@ export function PageViewer({
             }}
             trackPadPanning={{ disabled: false }}
             keyboard={{ disabled: false }}
-            doubleClick={{ mode: 'zoomIn', step: cover * zoomStep * 2 }}
+            doubleClick={{ mode: 'zoomIn', step: cover * 0.5 }}
             onInit={({ state }) => setZoom(state.scale / cover)}
             onTransform={(_, { scale }) => setZoom(scale / cover)}
           >
