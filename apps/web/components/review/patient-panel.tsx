@@ -198,14 +198,14 @@ function FieldResult({ result }: { result: FieldMatch }) {
   if (result === 'match')
     return (
       <span className="flex items-center gap-1 text-xs text-success">
-        <Check className="size-4" /> Matches
+        <Check className="size-4" /> Matched
       </span>
     )
 
   if (result === 'mismatch')
     return (
       <span className="flex items-center gap-1 text-xs text-destructive">
-        <X className="size-4" /> Differs
+        <X className="size-4" /> Unmatched
       </span>
     )
 
