@@ -64,6 +64,13 @@ test('preserves optional source polygons and rejects observations without source
     removedByRedactionIds: [],
   }
   const mapped = observationSummary(row)
+  assert.equal(mapped.documentId, 'document')
+  assert.equal(mapped.valueNumeric, 1)
+  assert.deepEqual(mapped.details, {})
+  assert.equal(
+    observationSummary({ ...row, valueNumeric: null }).valueNumeric,
+    null
+  )
   assert.deepEqual(mapped.points, points)
   assert.deepEqual(mapped.box, box)
   assert.equal(mapped.page, 2)

@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { Redaction } from './records-types.ts'
-import { matchStrength, pendingCount, redactionIconKind } from './review.ts'
+import {
+  matchStrength,
+  pendingCount,
+  redactionIconKind,
+  reviewPage,
+} from './review.ts'
 
 const none = {
   lastName: 'absent',
@@ -100,4 +105,21 @@ test('counts only items that still need review', () => {
     { id: 'r3', page: 1, category: 'Phone', box, points: [], state: 'applied' },
   ]
   assert.equal(pendingCount(items), 1)
+})
+
+test('opens source-page citations only within the document bounds', () => {
+  assert.equal(reviewPage('2', 3), 2)
+  assert.equal(reviewPage('3', 3), 3)
+  for (const value of [
+    null,
+    '',
+    '0',
+    '-1',
+    '1.5',
+    '4',
+    'invalid',
+    'Infinity',
+  ]) {
+    assert.equal(reviewPage(value, 3), 1)
+  }
 })

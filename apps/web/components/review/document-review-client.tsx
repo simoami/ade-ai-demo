@@ -1,8 +1,10 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import type { Patient, ReviewDocument } from '#lib/records-types'
 import { retainPageUrls } from '#lib/retained-page-urls'
+import { reviewPage } from '#lib/review'
 import { ReviewWorkspace } from './review-workspace.tsx'
 
 /** Retains browser image URLs across server refreshes and review status transitions. */
@@ -15,6 +17,7 @@ export function DocumentReviewClient({
   patients: Patient[]
   signedAt: number
 }) {
+  const initialPage = reviewPage(useSearchParams().get('page'), document.pages)
   const [held, setHeld] = useState(() => ({
     source: document.pageImages,
     ...retainPageUrls(new Map(), document.pageImages, signedAt),
@@ -29,7 +32,8 @@ export function DocumentReviewClient({
 
   return (
     <ReviewWorkspace
-      key={`${document.id}:${document.status}`}
+      key={`${document.id}:${document.status}:${initialPage}`}
+      initialPage={initialPage}
       document={{ ...document, pageImages: held.images }}
       patients={patients}
     />
