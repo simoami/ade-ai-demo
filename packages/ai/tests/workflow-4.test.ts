@@ -402,3 +402,38 @@ test('rejects observations citing unknown blocks without persisting or leaking c
   assert.deepEqual(h.replaced, [])
   assert.ok(!h.updates.some((update) => update.status === 'needsReview'))
 })
+
+test('stores unmasked OCR row geometry and removes observations covered by a row redaction', async () => {
+  const h = extraction([observation()])
+  const box = { x: 0.1, y: 0.52, width: 0.4, height: 0.02 }
+  const ocr = pages.map((page) => ({
+    ...page,
+    words: ['Hemoglobin', '13.2', 'g/dL'].map((text, index) => ({
+      text,
+      blockId: 'labs',
+      box: { ...box, x: box.x + index * 0.15, width: 0.1 },
+    })),
+  }))
+  h.blobs.set(
+    `documents/${documentId}/ocr.json.enc`,
+    encryptArtifact(Buffer.from(JSON.stringify(ocr)), key)
+  )
+  await finishProcessing(documentId, 'clinical', {
+    ...h.overrides,
+    extract: async (input) => {
+      assert.deepEqual(input, ocr)
+      return [observation()]
+    },
+    redactions: async () => [
+      { id: 'row', page: 1, box, state: 'applied' },
+      { id: 'other-row', page: 1, box: { ...box, y: 0.56 }, state: 'applied' },
+    ],
+  })
+  const row = h.replaced[0]?.[0]
+  const source = row?.source?.[0]
+  assert.ok(source)
+  assert.equal(source.box.y, box.y)
+  assert.ok(Math.abs(source.box.height - box.height) < 1e-12)
+  assert.ok(source.box.height < (pages[0]?.blocks[1]?.box.height ?? 0))
+  assert.deepEqual(row?.removedByRedactionIds, ['row'])
+})

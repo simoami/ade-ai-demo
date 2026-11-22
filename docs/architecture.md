@@ -107,7 +107,10 @@ and index, and publishes burned pairs. A class step follows: clinical documents
 move to `extracting`, extraction reads identifier-masked OCR, and observation
 rows (UUID v5 from document, page, block, name and date; `flagged` below 0.7
 confidence; covering redactions recorded) replace the previous rows before
-`needsReview`. Consent documents go to `needsReview`; others to `unsupported`.
+`needsReview`. Observation source boxes cover the matching OCR row or narrative
+lines using unmasked word geometry, clipped to the block; missing words or matches
+fall back to the block box. Redaction coverage uses this source box.
+Consent documents go to `needsReview`; others to `unsupported`.
 The run then waits on the review hook and applies each action with
 `applyReviewAction`; a refused action leaves the loop waiting, and
 `markReviewed` or `discard` ends the run. After terminal review or discard, a durable step

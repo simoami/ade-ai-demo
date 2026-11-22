@@ -1,6 +1,7 @@
 import type { Box, observations } from '@repo/db'
 import type { ExtractedObservation } from '#stages/extract/extract-observations'
 import type { MaskedSpans } from '#stages/extract/mask-identifiers'
+import { observationBox } from '#stages/extract/observation-box'
 import type { OcrPage } from '#stages/ocr/ocr-result'
 import { documentScopedId } from './deterministic-id.ts'
 import {
@@ -86,6 +87,12 @@ export async function extractDocumentObservations(
       // Undated restatements in one block share an ID; the first is kept.
       if (rows.has(id)) continue
 
+      const box = observationBox(
+        block,
+        pages[observation.page - 1]?.words,
+        observation
+      )
+
       rows.set(id, {
         id,
         documentId,
@@ -100,7 +107,7 @@ export async function extractDocumentObservations(
         effectiveDate: observation.effectiveDate,
         dateSource: observation.dateSource,
         sourceFormat: observation.sourceFormat,
-        source: [{ page: observation.page, blockId: block.id, box: block.box }],
+        source: [{ page: observation.page, blockId: block.id, box }],
         reviewStatus:
           observation.confidence < flagBelow ? 'flagged' : 'unchecked',
         details: observation.details,
@@ -108,7 +115,7 @@ export async function extractDocumentObservations(
           .filter(
             (redaction) =>
               redaction.page === observation.page &&
-              coverage(block.box, redaction.box) >= removeAtCoverage
+              coverage(box, redaction.box) >= removeAtCoverage
           )
           .map((redaction) => redaction.id),
       })
