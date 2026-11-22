@@ -62,7 +62,7 @@ export function PatientPanel({
         <div className="rounded-lg border bg-card p-[13px]">
           <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarFallback className="bg-accent text-[10px] font-semibold text-accent-foreground">
+              <AvatarFallback className="bg-accent text-[80%] font-semibold text-accent-foreground">
                 {patient.initials}
               </AvatarFallback>
             </Avatar>
@@ -156,9 +156,9 @@ export function PatientPanel({
                     setPicking(false)
                   }}
                 >
-                  <div className="w-full flex items-center gap-1">
+                  <div className="w-full flex items-center gap-2">
                     <Avatar size="sm">
-                      <AvatarFallback className="bg-accent text-[9px] font-semibold text-accent-foreground">
+                      <AvatarFallback className="bg-accent text-[80%] font-semibold text-accent-foreground">
                         {candidate.initials}
                       </AvatarFallback>
                     </Avatar>
