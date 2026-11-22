@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 catalog:
+  ai: 7.0.173
+  "@ai-sdk/react": 4.0.177
   braintrust: 3.44.0
   "@ai-sdk/openai": 4.0.117
   "@biomejs/biome": 2.6.8
