@@ -42,14 +42,14 @@ import { PageViewer } from './page-viewer.tsx'
 import { PatientPanel } from './patient-panel.tsx'
 import { type ReviewItem, ReviewItems } from './review-items.tsx'
 
-type Tab = 'patient' | 'redactions' | 'observations'
+type Tab = 'general' | 'observations'
 
-/** Review screen: page rail, page viewer, and the patient, redaction and observation panels. */
+/** Review screen: page rail, page viewer, and the general (patient and redaction) and observation panels. */
 export function ReviewWorkspace({
   document,
   patients,
   initialPage = 1,
-  initialTab = 'patient',
+  initialTab = 'general',
 }: {
   document: ReviewDocument
   patients: Patient[]
@@ -276,17 +276,10 @@ export function ReviewWorkspace({
             <TabsList variant="line" className="w-full">
               <TabsTrigger
                 className="px-1 text-[9px] data-active:text-primary"
-                value="patient"
+                value="general"
               >
-                Patient match
-                {!linked && <Dot />}
-              </TabsTrigger>
-              <TabsTrigger
-                className="px-1 text-[9px] data-active:text-primary"
-                value="redactions"
-              >
-                Redactions
-                {pendingCount(redactions) > 0 && <Dot />}
+                General
+                {(!linked || pendingCount(redactions) > 0) && <Dot />}
               </TabsTrigger>
               <TabsTrigger
                 className="px-1 text-[9px] data-active:text-primary"
@@ -298,26 +291,32 @@ export function ReviewWorkspace({
             </TabsList>
           </Tabs>
           <div className="min-h-0 flex-1 overflow-auto px-[15px] py-4">
-            {tab === 'patient' && (
-              <PatientPanel
-                document={document}
-                patients={patients}
-                patientId={patientId}
-                creating={creating}
-                readOnly={readOnly}
-                onLink={(id) => relink({ patientId: id })}
-                onCreate={() => relink({ create: true })}
-              />
-            )}
-            {tab === 'redactions' && (
-              <ReviewItems
-                items={redactionItems}
-                page={page}
-                selectedId={selected?.id ?? null}
-                readOnly={readOnly}
-                onSelect={select}
-                onDecide={decide}
-              />
+            {tab === 'general' && (
+              <div className="flex flex-col gap-6">
+                <section className="flex flex-col gap-3">
+                  <h2 className="text-sm font-semibold">Patient match</h2>
+                  <PatientPanel
+                    document={document}
+                    patients={patients}
+                    patientId={patientId}
+                    creating={creating}
+                    readOnly={readOnly}
+                    onLink={(id) => relink({ patientId: id })}
+                    onCreate={() => relink({ create: true })}
+                  />
+                </section>
+                <section className="flex flex-col gap-3 border-t pt-5">
+                  <h2 className="text-sm font-semibold">Redactions</h2>
+                  <ReviewItems
+                    items={redactionItems}
+                    page={page}
+                    selectedId={selected?.id ?? null}
+                    readOnly={readOnly}
+                    onSelect={select}
+                    onDecide={decide}
+                  />
+                </section>
+              </div>
             )}
             {tab === 'observations' && (
               <div className="flex min-w-0 flex-col gap-4">

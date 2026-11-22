@@ -20,7 +20,7 @@ export function DocumentReviewClient({
   const searchParams = useSearchParams()
   const initialPage = reviewPage(searchParams.get('page'), document.pages)
   const initialTab =
-    searchParams.get('tab') === 'observations' ? 'observations' : 'patient'
+    searchParams.get('tab') === 'observations' ? 'observations' : 'general'
   const [held, setHeld] = useState(() => ({
     source: document.pageImages,
     ...retainPageUrls(new Map(), document.pageImages, signedAt),
