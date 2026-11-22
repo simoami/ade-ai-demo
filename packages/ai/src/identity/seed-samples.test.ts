@@ -155,3 +155,38 @@ test('fails before service calls with a clear list of missing variable names', (
     /Missing required environment variables: DATABASE_URL, BLOB_READ_WRITE_TOKEN, PATIENT_HASH_KEY/
   )
 })
+
+test('seeds distinct scanned table row boxes from synthetic fixture line spacing', async () => {
+  const data = await fixture('clinical-20')
+  const rows = sampleRows(
+    {
+      id: 'clinical-20',
+      fileName: 'clinical-20.pdf',
+      documentClass: 'clinical',
+      patientId: null,
+      status: 'needsReview',
+      uploadedAt: '2026-11-19T14:12:00Z',
+    },
+    data,
+    key
+  )
+  const page = data.pages[0]
+  const table = page?.scannedBlocks.find((block) => block.kind === 'table')
+  assert.ok(table)
+  const sources = rows.facts
+    .flatMap((fact) => fact.source ?? [])
+    .filter((source) => source.page === 1 && source.blockId === table.id)
+  assert.ok(sources.length >= 2)
+  for (const source of sources) {
+    assert.ok(source.box.height < table.box.height)
+    assert.ok(source.box.x >= table.box.x - 1e-12)
+    assert.ok(source.box.y >= table.box.y - 1e-12)
+    assert.ok(
+      source.box.x + source.box.width <= table.box.x + table.box.width + 1e-12
+    )
+    assert.ok(
+      source.box.y + source.box.height <= table.box.y + table.box.height + 1e-12
+    )
+  }
+  assert.notDeepEqual(sources[0]?.box, sources[1]?.box)
+})

@@ -17,6 +17,8 @@ import { logger } from '@repo/logger'
 import sharp from 'sharp'
 import { type Expected, expectedSchema } from '#evals/fixtures/expected'
 import { hashIdentifier, readPatientHashKey } from '#identity/hash-identifier'
+import { observationBox } from '#stages/extract/observation-box'
+import type { Block } from '#stages/ocr/ocr-result'
 import { renderPdf } from '#stages/render/render-pages'
 import { proposePatient } from '#workflows/ingest-document/analyze-document'
 import { publishRedactedPages } from '#workflows/ingest-document/publish-redacted-pages'
@@ -227,6 +229,33 @@ export function samplePatient(
   }
 }
 
+// Fixture blocks have four-point padding and uniform leading in generate-synthetic.ts.
+function fixtureObservationBox(
+  block: Block,
+  rotation: number,
+  observation: Expected['observations'][number]
+) {
+  const lines = block.text.split('\n')
+  const size = (block.box.height * 792 - 8) / (1.25 + (lines.length - 1) * 1.3)
+  const words = lines.flatMap((line, index) =>
+    line.split(/\s+/).map((text) => ({
+      text,
+      blockId: block.id,
+      box: {
+        x: block.box.x,
+        y: block.box.y + (4 + index * size * 1.3) / 792,
+        width: block.box.width,
+        height: (size * 1.25) / 792,
+      },
+    }))
+  )
+
+  return tiltedRegion(
+    observationBox(block, words, { ...observation, valueNumeric: null }),
+    rotation
+  ).box
+}
+
 /** Builds replay-safe review rows, preserving sample flags, figure masks and extraction status. */
 export function sampleRows(sample: Sample, expected: Expected, key: string) {
   const documentId = sampleId(sample.id)
@@ -275,7 +304,7 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
     }
 
     if (sample.status === 'extracting') continue
-    const blocks = new Map(page.scannedBlocks.map((block) => [block.id, block]))
+    const blocks = new Map(page.blocks.map((block) => [block.id, block]))
 
     for (const observation of expected.observations) {
       const block = blocks.get(observation.blockId)
@@ -293,7 +322,13 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
         effectiveDate: observation.effectiveDate,
         dateSource: 'document',
         sourceFormat: observation.sourceFormat,
-        source: [{ page: n, blockId: observation.blockId, box: block.box }],
+        source: [
+          {
+            page: n,
+            blockId: observation.blockId,
+            box: fixtureObservationBox(block, page.rotation, observation),
+          },
+        ],
         reviewStatus:
           observation.kind === 'adverse-event' && [1, 4, 9].includes(n)
             ? 'flagged'
