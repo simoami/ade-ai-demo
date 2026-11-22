@@ -3,13 +3,12 @@ import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { ObservationTrend } from '#components/observation-trend'
+import { ObservationTrend } from '#components/observations/observation-trend'
 import { PatientSkeleton } from '#components/record-skeletons'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
+import { observationTrends } from '#lib/observations'
 import { getPatientRecord } from '#lib/server/records'
-
-const trendedLabs = ['Glucose', 'Sodium']
 
 /** Patient profile: stored demographics, linked documents and lab trends. */
 async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
@@ -17,32 +16,7 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
   if (!record) notFound()
 
   const { patient, documents: linked, observations } = record
-  const trends = trendedLabs
-    .map((name) => {
-      const byDate = new Map(
-        observations
-          .filter(
-            (observation) =>
-              observation.name === name &&
-              observation.date !== '' &&
-              observation.value.trim() !== '' &&
-              Number.isFinite(Number(observation.value))
-          )
-          .map((observation) => [observation.date, observation])
-      )
-      const sorted = [...byDate.values()].sort((a, b) =>
-        a.date.localeCompare(b.date)
-      )
-      return {
-        name,
-        unit: sorted[0]?.unit ?? '',
-        points: sorted.map(({ date, value }) => ({
-          date,
-          value: Number(value),
-        })),
-      }
-    })
-    .filter((trend) => trend.points.length > 1)
+  const trends = observationTrends(observations)
 
   return (
     <main className="mx-auto max-w-[1500px] px-[34px] pt-[29px] pb-12 max-lg:px-[22px]">
@@ -139,14 +113,20 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
             ))}
           </ul>
         </section>
-        <section className="flex flex-col gap-4" aria-label="Lab trends">
+        <section
+          className="flex flex-col gap-4"
+          aria-label="Lab and vital trends"
+        >
           {trends.length === 0 ? (
             <p className="rounded-lg border bg-card p-4 text-muted-foreground">
-              No lab has been recorded on more than one date yet.
+              No lab or vital has two dated numeric observations yet.
             </p>
           ) : (
             trends.map((trend) => (
-              <ObservationTrend key={trend.name} {...trend} />
+              <ObservationTrend
+                key={`${trend.kind}-${trend.name}-${trend.unit}`}
+                {...trend}
+              />
             ))
           )}
         </section>

@@ -14,6 +14,9 @@ const points: [number, number][] = [
 
 const observation: Observation = {
   id: 'observation',
+  documentId: 'document',
+  valueNumeric: 1,
+  details: {},
   page: 1,
   kind: 'lab',
   name: 'Synthetic',

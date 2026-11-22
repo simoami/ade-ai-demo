@@ -19,9 +19,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
+import { ObservationTrend } from '#components/observations/observation-trend'
 import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
+import { observationTrends } from '#lib/observations'
 import type { Patient, ReviewDocument } from '#lib/records-types'
 import { pendingCount, redactionIconKind, reviewMode } from '#lib/review'
 import { reviewOutlines } from '#lib/review-outlines'
@@ -46,11 +48,13 @@ type Tab = 'patient' | 'redactions' | 'observations'
 export function ReviewWorkspace({
   document,
   patients,
+  initialPage = 1,
 }: {
   document: ReviewDocument
   patients: Patient[]
+  initialPage?: number
 }) {
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(initialPage)
   const [tab, setTab] = useState<Tab>('patient')
   const [selected, setSelected] = useState<ReviewItem | null>(null)
   const [overrides, setOverrides] = useState<ReviewOverrides>({
@@ -83,10 +87,23 @@ export function ReviewWorkspace({
   }))
   const observationItems: ReviewItem[] = observations.map((observation) => ({
     ...observation,
+    observation,
     label:
       `${observation.name} ${observation.value} ${observation.unit}`.trim(),
     detail: `${formatDate(observation.date)} · page ${observation.page}`,
   }))
+
+  const selectedObservation = observations.find(
+    (observation) => observation.id === selected?.id
+  )
+  const selectedTrend =
+    selectedObservation &&
+    observationTrends(observations).find(
+      (trend) =>
+        trend.kind === selectedObservation.kind &&
+        trend.name === selectedObservation.name &&
+        trend.unit === selectedObservation.unit
+    )
 
   const regions = [...redactions, ...observations]
   const outlines = reviewOutlines(redactions, observations, page, selected?.id)
@@ -301,14 +318,17 @@ export function ReviewWorkspace({
               />
             )}
             {tab === 'observations' && (
-              <ReviewItems
-                items={observationItems}
-                page={page}
-                selectedId={selected?.id ?? null}
-                readOnly={readOnly}
-                onSelect={select}
-                onDecide={decide}
-              />
+              <div className="flex min-w-0 flex-col gap-4">
+                {selectedTrend ? <ObservationTrend {...selectedTrend} /> : null}
+                <ReviewItems
+                  items={observationItems}
+                  page={page}
+                  selectedId={selected?.id ?? null}
+                  readOnly={readOnly}
+                  onSelect={select}
+                  onDecide={decide}
+                />
+              </div>
             )}
           </div>
         </aside>

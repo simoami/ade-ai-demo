@@ -1,5 +1,5 @@
 import type { observations } from '@repo/db'
-import type { FieldMatch, MatchField, Observation } from './records-types.ts'
+import type { FieldMatch, MatchField, Observation } from '#lib/records-types'
 
 type Hashes = Partial<Record<MatchField, string | null>>
 
@@ -54,6 +54,9 @@ export function observationSummary(
 
   return {
     id: row.id,
+    documentId: row.documentId,
+    valueNumeric: row.valueNumeric === null ? null : Number(row.valueNumeric),
+    details: row.details,
     page: source.page,
     kind: row.kind,
     name: row.name,

@@ -1,10 +1,11 @@
+import { z } from 'zod'
 import type {
   DocumentStatus,
   FieldMatch,
   MatchField,
   Observation,
   Redaction,
-} from './records-types.ts'
+} from '#lib/records-types'
 
 export type MatchStrength = 'strong' | 'partial' | 'none'
 
@@ -84,4 +85,10 @@ export const documentStatusLabels: Record<DocumentStatus, string> = {
   discarded: 'Discarded',
   unsupported: 'Unsupported',
   failed: 'Failed',
+}
+
+/** Validates a source-page query against the document, defaulting to its first page. */
+export function reviewPage(value: string | null, pages: number) {
+  const parsed = z.coerce.number().int().min(1).max(pages).safeParse(value)
+  return parsed.success ? parsed.data : 1
 }

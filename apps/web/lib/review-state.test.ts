@@ -22,6 +22,9 @@ const redaction: Redaction = {
 }
 const observation: Observation = {
   id: 'o1',
+  documentId: 'document',
+  valueNumeric: 6.1,
+  details: {},
   page: 1,
   kind: 'lab',
   name: 'HbA1c',
