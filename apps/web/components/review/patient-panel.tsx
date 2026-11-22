@@ -57,7 +57,7 @@ export function PatientPanel({
   const fields = patientId ? document.patientMatches[patientId] : undefined
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {patient && fields ? (
         <div className="rounded-lg border bg-card p-[13px]">
           <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export function PatientPanel({
         </p>
       )}
 
-      <p className="rounded-md bg-accent/40 p-2.5 text-[9px] leading-relaxed text-muted-foreground">
+      <p className="rounded-md bg-accent/40 p-2.5 text-[10px] leading-relaxed text-muted-foreground">
         Names, date of birth and MRN are compared using stored hashes. Sex is
         compared directly. Names and full dates of birth are not stored.
       </p>

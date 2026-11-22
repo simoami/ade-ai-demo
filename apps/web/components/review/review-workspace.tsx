@@ -292,7 +292,7 @@ export function ReviewWorkspace({
           </Tabs>
           <div className="min-h-0 flex-1 overflow-auto px-[15px] py-4">
             {tab === 'general' && (
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-3">
                 <section className="flex flex-col gap-3">
                   <h2 className="text-sm font-semibold">Patient identity</h2>
                   <PatientPanel
@@ -305,7 +305,7 @@ export function ReviewWorkspace({
                     onCreate={() => relink({ create: true })}
                   />
                 </section>
-                <section className="flex flex-col gap-3 border-t pt-5">
+                <section className="flex flex-col gap-3 border-t pt-4">
                   <h2 className="text-sm font-semibold">Redactions</h2>
                   <ReviewItems
                     items={redactionItems}
