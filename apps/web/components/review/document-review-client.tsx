@@ -17,7 +17,10 @@ export function DocumentReviewClient({
   patients: Patient[]
   signedAt: number
 }) {
-  const initialPage = reviewPage(useSearchParams().get('page'), document.pages)
+  const searchParams = useSearchParams()
+  const initialPage = reviewPage(searchParams.get('page'), document.pages)
+  const initialTab =
+    searchParams.get('tab') === 'observations' ? 'observations' : 'patient'
   const [held, setHeld] = useState(() => ({
     source: document.pageImages,
     ...retainPageUrls(new Map(), document.pageImages, signedAt),
@@ -32,8 +35,9 @@ export function DocumentReviewClient({
 
   return (
     <ReviewWorkspace
-      key={`${document.id}:${document.status}:${initialPage}`}
+      key={`${document.id}:${document.status}:${initialPage}:${initialTab}`}
       initialPage={initialPage}
+      initialTab={initialTab}
       document={{ ...document, pageImages: held.images }}
       patients={patients}
     />

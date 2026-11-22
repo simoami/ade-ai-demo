@@ -2,6 +2,7 @@
 
 import { useChat } from '@ai-sdk/react'
 import type { ChatMessage, PageContext } from '@repo/ai/chat'
+import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import {
   Drawer,
@@ -46,7 +47,11 @@ const presets = {
 }
 
 /** Ephemeral, page-scoped clinical assistant mounted beside the theme toggle. */
-export function ChatDrawer() {
+export function ChatDrawer({
+  documents,
+}: {
+  documents: { id: string; fileName: string }[]
+}) {
   const pathname = usePathname()
   const { id } = useParams<{ id?: string }>()
   const context: PageContext =
@@ -55,6 +60,15 @@ export function ChatDrawer() {
       : pathname.startsWith('/documents/') && id
         ? { page: 'document', documentId: id }
         : { page: pathname.startsWith('/patients') ? 'patients' : 'documents' }
+
+  const scope =
+    context.page === 'document'
+      ? `Document · ${documents.find((document) => document.id === context.documentId)?.fileName ?? context.documentId}`
+      : context.page === 'patient'
+        ? `Patient · ${context.patientId}`
+        : context.page === 'patients'
+          ? 'All patients'
+          : 'All documents'
 
   return (
     <Drawer swipeDirection="right" modal={false} disablePointerDismissal>
@@ -79,6 +93,12 @@ export function ChatDrawer() {
             <DrawerDescription>
               Answers from redacted records. Verify unreviewed values.
             </DrawerDescription>
+            <Badge
+              variant="secondary"
+              className="mt-2 max-w-full whitespace-normal break-all"
+            >
+              {scope}
+            </Badge>
           </div>
           <DrawerClose
             render={
@@ -155,8 +175,13 @@ function Conversation({ context }: { context: PageContext }) {
               {message.role === 'user' ? 'You' : 'Assistant'}
             </p>
             {message.parts.map((part, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and have no IDs for text.
-              <ChatPart key={`${message.id}-${index}`} part={part} />
+              <ChatPart
+                // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and text parts have no IDs.
+                key={`${message.id}-${index}`}
+                part={part}
+                context={context}
+                role={message.role}
+              />
             ))}
           </article>
         ))}

@@ -69,7 +69,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-1">
             <DemoAdmin samplesId={samplesId} />
             <Suspense fallback={null}>
-              <ChatDrawer />
+              <Assistant />
             </Suspense>
             <ThemeToggle />
           </div>
@@ -84,6 +84,17 @@ async function ReviewCount() {
   return (await getDocuments()).filter(
     (document) => document.status === 'needsReview'
   ).length
+}
+
+async function Assistant() {
+  return (
+    <ChatDrawer
+      documents={(await getDocuments()).map(({ id, fileName }) => ({
+        id,
+        fileName,
+      }))}
+    />
+  )
 }
 
 async function Breadcrumb() {

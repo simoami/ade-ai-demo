@@ -3,6 +3,7 @@ import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
+import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
 import { PatientSkeleton } from '#components/record-skeletons'
 import { StatusBadge } from '#components/status-badge'
@@ -131,6 +132,23 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
           )}
         </section>
       </div>
+      {/* biome-ignore lint/correctness/useUniqueElementIds: Stable fragment destination for the single patient page. */}
+      <section
+        id="observations"
+        aria-label="Observations"
+        className="mt-6 space-y-3 scroll-mt-4"
+      >
+        <h2 className="text-sm font-semibold">Observations</h2>
+        {observations.length ? (
+          observations.map((observation) => (
+            <ObservationCard key={observation.id} observation={observation} />
+          ))
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No observations found.
+          </p>
+        )}
+      </section>
     </main>
   )
 }

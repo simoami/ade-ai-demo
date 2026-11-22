@@ -37,7 +37,8 @@
     "recharts": "catalog:",
     "zod": "^4.6.7",
     "ai": "catalog:",
-    "@ai-sdk/react": "catalog:"
+    "@ai-sdk/react": "catalog:",
+    "streamdown": "catalog:"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Providers } from '#components/providers'
-import '@repo/ui/globals.css'
+import './globals.css'
 
 /** Document metadata for the application shell. */
 export const metadata: Metadata = {

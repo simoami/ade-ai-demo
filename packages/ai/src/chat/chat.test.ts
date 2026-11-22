@@ -4,11 +4,14 @@ import type { observations } from '@repo/db'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import { z } from 'zod'
 import {
+  chatInstructions,
   defaultScope,
   observationQuerySchema,
   pageContextSchema,
+  toolPresentationInstructions,
 } from './context.ts'
 import { observationFilters } from './queries.ts'
+import { observationQueryResult } from './selection.ts'
 import {
   chatTools,
   type ObservationView,
@@ -181,4 +184,130 @@ test('orders trends, excludes incompatible units and labels unverified points', 
     ]
   )
   assert.deepEqual(observationTrendResult('Missing', rows).points, [])
+})
+
+test('instructions include the stable rule forbidding restating tool results', () => {
+  assert.match(
+    toolPresentationInstructions,
+    /Do not restate rows, values or tables already shown/
+  )
+  assert.match(toolPresentationInstructions, /at most 1–3 short sentences/)
+  assert.match(toolPresentationInstructions, /answer from summary counts/)
+  assert.ok(
+    chatInstructions({ page: 'documents' }).includes(
+      toolPresentationInstructions
+    )
+  )
+})
+
+test('summarizes every matching observation before selecting the latest per kind and name', () => {
+  const views = observationViews(
+    Array.from({ length: 238 }, (_, index) => ({
+      ...row,
+      id: `obs-${index}`,
+      effectiveDate: index === 237 ? '2026-02-01' : '2026-01-01',
+      details: index < 2 ? { flagNormalized: 'high' as const } : {},
+      reviewStatus: index < 3 ? ('unchecked' as const) : ('confirmed' as const),
+    }))
+  )
+  const result = observationQueryResult(views)
+  assert.deepEqual(result.summary, {
+    total: 238,
+    byKind: {
+      lab: 238,
+      vital: 0,
+      'adverse-event': 0,
+      'medical-history': 0,
+      medication: 0,
+      symptom: 0,
+    },
+    outOfRange: 2,
+    unverified: 3,
+  })
+  assert.equal(result.observations.length, 1)
+  assert.equal(result.observations[0]?.id, 'obs-237')
+  assert.equal(result.truncated, true)
+})
+
+test('prioritizes abnormal, then unverified, then clinical kind order and caps at 20', () => {
+  const view = observationViews([row])[0]
+  assert.ok(view)
+  const rows: ObservationView[] = [
+    ...Array.from({ length: 25 }, (_, index) => ({
+      ...view,
+      id: `lab-${index}`,
+      name: `Test ${index}`,
+      state: 'accepted' as const,
+    })),
+    {
+      ...view,
+      id: 'abnormal',
+      name: 'Abnormal',
+      details: { flagNormalized: 'high' },
+      state: 'accepted',
+    },
+    { ...view, id: 'unverified', kind: 'symptom', name: 'Fatigue' },
+    ...(
+      [
+        'vital',
+        'adverse-event',
+        'medical-history',
+        'medication',
+        'symptom',
+      ] as const
+    ).map((kind) => ({
+      ...view,
+      kind,
+      id: kind,
+      name: kind,
+      state: 'accepted' as const,
+    })),
+  ]
+  const result = observationQueryResult(rows)
+  assert.equal(result.observations.length, 20)
+  assert.deepEqual(
+    result.observations.slice(0, 2).map((o) => o.id),
+    ['abnormal', 'unverified']
+  )
+  const ordered = observationQueryResult(rows.slice(-5))
+  assert.deepEqual(
+    ordered.observations.map((o) => o.kind),
+    ['vital', 'adverse-event', 'medical-history', 'medication', 'symptom']
+  )
+  assert.equal(result.truncated, true)
+})
+
+test('named queries retain the latest 20 repeated test results in chronological order', () => {
+  const view = observationViews([row])[0]
+  assert.ok(view)
+  const rows = Array.from({ length: 25 }, (_, index) => ({
+    ...view,
+    id: `obs-${index}`,
+    date: `2026-01-${String(index + 1).padStart(2, '0')}`,
+  }))
+  const result = observationQueryResult(rows, true)
+  assert.equal(result.summary.total, 25)
+  assert.equal(result.observations.length, 20)
+  assert.equal(result.observations[0]?.date, '2026-01-06')
+  assert.equal(result.observations.at(-1)?.date, '2026-01-25')
+  assert.equal(result.truncated, true)
+  assert.deepEqual(observationQueryResult([...rows].reverse(), true), result)
+})
+
+test('handles empty, undated and rejected observations deterministically without mutating input', () => {
+  const empty = observationQueryResult([])
+  assert.equal(empty.summary.total, 0)
+  assert.deepEqual(empty.observations, [])
+  assert.equal(empty.truncated, false)
+  const view = observationViews([row])[0]
+  assert.ok(view)
+  const rows: ObservationView[] = [
+    { ...view, id: 'z', date: '' },
+    { ...view, id: 'a', date: '' },
+    { ...view, state: 'rejected' },
+  ]
+  const result = observationQueryResult(rows)
+  assert.equal(result.summary.total, 2)
+  assert.equal(result.observations[0]?.id, 'a')
+  assert.equal(rows[0]?.id, 'z')
 })

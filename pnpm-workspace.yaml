@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 catalog:
+  streamdown: 2.7.1
   ai: 7.0.173
   "@ai-sdk/react": 4.0.177
   braintrust: 3.44.0

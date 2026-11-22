@@ -49,13 +49,15 @@ export function ReviewWorkspace({
   document,
   patients,
   initialPage = 1,
+  initialTab = 'patient',
 }: {
   document: ReviewDocument
   patients: Patient[]
   initialPage?: number
+  initialTab?: Tab
 }) {
   const [page, setPage] = useState(initialPage)
-  const [tab, setTab] = useState<Tab>('patient')
+  const [tab, setTab] = useState<Tab>(initialTab)
   const [selected, setSelected] = useState<ReviewItem | null>(null)
   const [overrides, setOverrides] = useState<ReviewOverrides>({
     decisions: {},

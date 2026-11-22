@@ -22,6 +22,7 @@ import {
   scopeSchema,
 } from './context.ts'
 import { observationFilters } from './queries.ts'
+import { observationQueryResult } from './selection.ts'
 
 /** Shared observation-card fields, including review state and page provenance. */
 export type ObservationView = {
@@ -87,9 +88,10 @@ export function observationViews(
 
 async function readObservations(
   input: z.infer<typeof observationQuerySchema>,
-  exactName = false
+  exactName = false,
+  limit?: number
 ) {
-  const rows = await createDb()
+  const query = createDb()
     .select({ observation: observations })
     .from(observations)
     .innerJoin(documents, eq(documents.id, observations.documentId))
@@ -102,7 +104,8 @@ async function readObservations(
       )
     )
     .orderBy(desc(observations.effectiveDate), asc(observations.id))
-    .limit(100)
+
+  const rows = await (limit ? query.limit(limit) : query)
 
   return observationViews(rows.map(({ observation }) => observation))
 }
@@ -156,14 +159,13 @@ export function chatTools(context: PageContext) {
   return {
     queryObservations: tool({
       description:
-        'List up to 100 active observations, newest first; unchecked and flagged values are unverified. Optional patient, document, kind, name and abnormal lab filters.',
+        'Summarize all matching active observations and show at most 20 cards: latest per kind and name, prioritized by abnormal and unverified results. A name filter returns the latest 20 matching results chronologically. Optional patient, document, kind, name and abnormal lab filters.',
       inputSchema: observationQuerySchema,
-      execute: async (input) => ({
-        observations: await readObservations({
-          ...input,
-          ...defaultScope(input, context),
-        }),
-      }),
+      execute: async (input) =>
+        observationQueryResult(
+          await readObservations({ ...input, ...defaultScope(input, context) }),
+          Boolean(input.name)
+        ),
     }),
     observationTrend: tool({
       description:
@@ -175,7 +177,7 @@ export function chatTools(context: PageContext) {
       execute: async ({ patientId, name }) => {
         return observationTrendResult(
           name,
-          await readObservations({ patientId, name }, true)
+          await readObservations({ patientId, name }, true, 100)
         )
       },
     }),

@@ -1,34 +1,38 @@
 'use client'
 
-import type { ChatMessage } from '@repo/ai/chat'
+import type { ChatMessage, PageContext } from '@repo/ai/chat'
+import { Badge } from '@repo/ui/components/badge'
+import { Button } from '@repo/ui/components/button'
 import { isToolUIPart } from 'ai'
 import Link from 'next/link'
+import { useState } from 'react'
+import { Streamdown } from 'streamdown'
 import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
 
 type Part = ChatMessage['parts'][number]
 
 /** Render cited text and the five typed clinical tool outputs without raw errors. */
-export function ChatPart({ part }: { part: Part }) {
+export function ChatPart({
+  part,
+  context,
+  role,
+}: {
+  part: Part
+  context: PageContext
+  role: ChatMessage['role']
+}) {
   if (part.type === 'text') {
-    const segments = part.text.split(/(\[[^\]]+\]\(\/documents\/[^\s)]+\))/g)
-    return (
-      <p className="whitespace-pre-wrap break-words">
-        {segments.map((segment) => {
-          const link = /^\[([^\]]+)\]\((\/documents\/[^\s)]+)\)$/.exec(segment)
-          return link ? (
-            <Link
-              key={segment}
-              href={link[2] ?? '/documents'}
-              className="text-primary underline"
-            >
-              {link[1]}
-            </Link>
-          ) : (
-            segment
-          )
-        })}
-      </p>
+    return role === 'assistant' ? (
+      <Streamdown
+        skipHtml
+        controls={false}
+        className="text-sm leading-relaxed break-words [&_a]:text-primary [&_a]:underline [&_table]:text-xs [&_th]:bg-muted [&_th]:p-2 [&_td]:p-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm"
+      >
+        {part.text}
+      </Streamdown>
+    ) : (
+      <p className="whitespace-pre-wrap break-words text-sm">{part.text}</p>
     )
   }
 
@@ -44,15 +48,7 @@ export function ChatPart({ part }: { part: Part }) {
 
   switch (part.type) {
     case 'tool-queryObservations':
-      return part.output.observations.length ? (
-        <div className="space-y-2">
-          {part.output.observations.map((observation) => (
-            <ObservationCard key={observation.id} observation={observation} />
-          ))}
-        </div>
-      ) : (
-        <p>No matching observations found.</p>
-      )
+      return <ObservationResults result={part.output} context={context} />
     case 'tool-observationTrend':
       return <ObservationTrend {...part.output} />
     case 'tool-reviewStatus': {
@@ -116,4 +112,77 @@ export function ChatPart({ part }: { part: Part }) {
     default:
       return null
   }
+}
+
+function ObservationResults({
+  result,
+  context,
+}: {
+  result: Extract<Part, { type: 'tool-queryObservations' }>['output']
+  context: PageContext
+}) {
+  const [expanded, setExpanded] = useState(false)
+  if (!result) return null
+
+  const { summary, observations, truncated } = result
+  const labels = {
+    lab: 'labs',
+    vital: 'vitals',
+    'adverse-event': 'adverse events',
+    'medical-history': 'medical histories',
+    medication: 'medications',
+    symptom: 'symptoms',
+  }
+  const href =
+    context.page === 'document'
+      ? `/documents/${encodeURIComponent(context.documentId)}?tab=observations`
+      : context.page === 'patient'
+        ? `/patients/${encodeURIComponent(context.patientId)}#observations`
+        : null
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-1 text-xs">
+        <span>{summary.total} observations:</span>
+        {Object.entries(summary.byKind)
+          .filter(([, count]) => count > 0)
+          .map(([kind, count]) => (
+            <Badge key={kind} variant="secondary">
+              {count} {labels[kind as keyof typeof labels]}
+            </Badge>
+          ))}
+        <Badge variant="outline">{summary.outOfRange} out of range</Badge>
+        <Badge variant="outline">{summary.unverified} unverified</Badge>
+      </div>
+      {observations
+        .slice(0, expanded ? observations.length : 5)
+        .map((observation) => (
+          <ObservationCard key={observation.id} observation={observation} />
+        ))}
+      {observations.length === 0 && <p>No matching observations found.</p>}
+      {observations.length > 5 && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full"
+          aria-expanded={expanded}
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? 'Show less' : `Show ${observations.length - 5} more`}
+        </Button>
+      )}
+      {Boolean(truncated) && (
+        <p className="text-xs text-muted-foreground">
+          Showing selected observations from the full matching set.
+        </p>
+      )}
+      {href !== null && (
+        <Link href={href} className="block text-xs text-primary underline">
+          {context.page === 'document'
+            ? 'Open in Observations tab'
+            : 'Open in Observations'}
+        </Link>
+      )}
+    </div>
+  )
 }
