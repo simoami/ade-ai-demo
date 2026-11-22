@@ -7782,7 +7782,10 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-10"
     },
@@ -7797,7 +7800,10 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-10"
     },
@@ -7812,7 +7818,10 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-10"
     },
@@ -7827,7 +7836,10 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-10"
     },
@@ -7842,7 +7854,10 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-10"
     },
@@ -7850,16 +7865,28 @@
       "id": "o6",
       "blockId": "p1-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-10",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-10"
+      "duplicateGroup": "Systolic blood pressure-2026-02-10"
     },
     {
       "id": "o7",
+      "blockId": "p1-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-10"
+    },
+    {
+      "id": "o8",
       "blockId": "p1-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -7871,7 +7898,7 @@
       "duplicateGroup": "Pulse-2026-02-10"
     },
     {
-      "id": "o8",
+      "id": "o9",
       "blockId": "p1-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -7883,7 +7910,7 @@
       "duplicateGroup": "Fatigue-2026-02-10"
     },
     {
-      "id": "o9",
+      "id": "o10",
       "blockId": "p1-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -7894,29 +7921,33 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
-    },
-    {
-      "id": "o10",
-      "blockId": "p2-b6",
-      "kind": "lab",
-      "name": "Glucose",
-      "value": "129",
-      "unit": "mg/dL",
-      "effectiveDate": "2026-02-11",
-      "sourceFormat": "table",
-      "details": {
-        "referenceRange": "70-99",
-        "flag": "H"
-      },
-      "duplicateGroup": "Glucose-2026-02-11"
     },
     {
       "id": "o11",
       "blockId": "p2-b6",
       "kind": "lab",
+      "name": "Glucose",
+      "value": "129",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "Glucose-2026-02-11"
+    },
+    {
+      "id": "o12",
+      "blockId": "p2-b6",
+      "kind": "lab",
       "name": "Sodium",
       "value": "140",
       "unit": "mmol/L",
@@ -7924,12 +7955,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-11"
     },
     {
-      "id": "o12",
+      "id": "o13",
       "blockId": "p2-b4",
       "kind": "lab",
       "name": "Glucose",
@@ -7939,12 +7973,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-11"
     },
     {
-      "id": "o13",
+      "id": "o14",
       "blockId": "p2-b4",
       "kind": "lab",
       "name": "Sodium",
@@ -7954,24 +7991,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-11"
     },
     {
-      "id": "o14",
+      "id": "o15",
       "blockId": "p2-b3",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-11",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-11"
+      "duplicateGroup": "Systolic blood pressure-2026-02-11"
     },
     {
-      "id": "o15",
+      "id": "o16",
+      "blockId": "p2-b3",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-11"
+    },
+    {
+      "id": "o17",
       "blockId": "p2-b3",
       "kind": "vital",
       "name": "Pulse",
@@ -7983,7 +8035,7 @@
       "duplicateGroup": "Pulse-2026-02-11"
     },
     {
-      "id": "o16",
+      "id": "o18",
       "blockId": "p2-b3",
       "kind": "symptom",
       "name": "Fatigue",
@@ -7995,7 +8047,7 @@
       "duplicateGroup": "Fatigue-2026-02-11"
     },
     {
-      "id": "o17",
+      "id": "o19",
       "blockId": "p2-b4",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8006,12 +8058,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o18",
+      "id": "o20",
       "blockId": "p3-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -8021,12 +8074,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-12"
     },
     {
-      "id": "o19",
+      "id": "o21",
       "blockId": "p3-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -8036,12 +8092,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-12"
     },
     {
-      "id": "o20",
+      "id": "o22",
       "blockId": "p3-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -8051,12 +8110,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-12"
     },
     {
-      "id": "o21",
+      "id": "o23",
       "blockId": "p3-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -8066,12 +8128,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-12"
     },
     {
-      "id": "o22",
+      "id": "o24",
       "blockId": "p3-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -8081,24 +8146,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-12"
     },
     {
-      "id": "o23",
+      "id": "o25",
       "blockId": "p3-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-12",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-12"
+      "duplicateGroup": "Systolic blood pressure-2026-02-12"
     },
     {
-      "id": "o24",
+      "id": "o26",
+      "blockId": "p3-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-12",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-12"
+    },
+    {
+      "id": "o27",
       "blockId": "p3-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -8110,7 +8190,7 @@
       "duplicateGroup": "Pulse-2026-02-12"
     },
     {
-      "id": "o25",
+      "id": "o28",
       "blockId": "p3-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -8122,7 +8202,7 @@
       "duplicateGroup": "Fatigue-2026-02-12"
     },
     {
-      "id": "o26",
+      "id": "o29",
       "blockId": "p3-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8133,12 +8213,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o27",
+      "id": "o30",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -8148,12 +8229,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-13"
     },
     {
-      "id": "o28",
+      "id": "o31",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -8163,12 +8247,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-13"
     },
     {
-      "id": "o29",
+      "id": "o32",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -8178,12 +8265,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-13"
     },
     {
-      "id": "o30",
+      "id": "o33",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -8193,12 +8283,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-13"
     },
     {
-      "id": "o31",
+      "id": "o34",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "BUN",
@@ -8208,12 +8301,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-13"
     },
     {
-      "id": "o32",
+      "id": "o35",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -8223,12 +8319,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-13"
     },
     {
-      "id": "o33",
+      "id": "o36",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "WBC",
@@ -8238,12 +8337,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-13"
     },
     {
-      "id": "o34",
+      "id": "o37",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -8253,12 +8355,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-13"
     },
     {
-      "id": "o35",
+      "id": "o38",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -8268,12 +8373,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-13"
     },
     {
-      "id": "o36",
+      "id": "o39",
       "blockId": "p4-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -8283,12 +8391,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-13"
     },
     {
-      "id": "o37",
+      "id": "o40",
       "blockId": "p4-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -8298,12 +8409,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-13"
     },
     {
-      "id": "o38",
+      "id": "o41",
       "blockId": "p4-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -8313,24 +8427,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-13"
     },
     {
-      "id": "o39",
+      "id": "o42",
       "blockId": "p4-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-13",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-13"
+      "duplicateGroup": "Systolic blood pressure-2026-02-13"
     },
     {
-      "id": "o40",
+      "id": "o43",
+      "blockId": "p4-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-13",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-13"
+    },
+    {
+      "id": "o44",
       "blockId": "p4-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -8342,7 +8471,7 @@
       "duplicateGroup": "Pulse-2026-02-13"
     },
     {
-      "id": "o41",
+      "id": "o45",
       "blockId": "p4-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -8354,7 +8483,7 @@
       "duplicateGroup": "Fatigue-2026-02-13"
     },
     {
-      "id": "o42",
+      "id": "o46",
       "blockId": "p4-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8365,12 +8494,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o43",
+      "id": "o47",
       "blockId": "p5-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -8380,12 +8510,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-14"
     },
     {
-      "id": "o44",
+      "id": "o48",
       "blockId": "p5-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -8395,12 +8528,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-14"
     },
     {
-      "id": "o45",
+      "id": "o49",
       "blockId": "p5-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -8410,12 +8546,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-14"
     },
     {
-      "id": "o46",
+      "id": "o50",
       "blockId": "p5-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -8425,12 +8564,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-14"
     },
     {
-      "id": "o47",
+      "id": "o51",
       "blockId": "p5-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -8440,24 +8582,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-14"
     },
     {
-      "id": "o48",
+      "id": "o52",
       "blockId": "p5-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-14",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-14"
+      "duplicateGroup": "Systolic blood pressure-2026-02-14"
     },
     {
-      "id": "o49",
+      "id": "o53",
+      "blockId": "p5-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-14",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-14"
+    },
+    {
+      "id": "o54",
       "blockId": "p5-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -8469,7 +8626,7 @@
       "duplicateGroup": "Pulse-2026-02-14"
     },
     {
-      "id": "o50",
+      "id": "o55",
       "blockId": "p5-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -8481,7 +8638,7 @@
       "duplicateGroup": "Fatigue-2026-02-14"
     },
     {
-      "id": "o51",
+      "id": "o56",
       "blockId": "p5-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8492,12 +8649,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o52",
+      "id": "o57",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -8507,12 +8665,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-15"
     },
     {
-      "id": "o53",
+      "id": "o58",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -8522,12 +8683,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-15"
     },
     {
-      "id": "o54",
+      "id": "o59",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -8537,12 +8701,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-15"
     },
     {
-      "id": "o55",
+      "id": "o60",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -8552,12 +8719,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-15"
     },
     {
-      "id": "o56",
+      "id": "o61",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "BUN",
@@ -8567,12 +8737,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-15"
     },
     {
-      "id": "o57",
+      "id": "o62",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -8582,12 +8755,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-15"
     },
     {
-      "id": "o58",
+      "id": "o63",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "WBC",
@@ -8597,12 +8773,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-15"
     },
     {
-      "id": "o59",
+      "id": "o64",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -8612,12 +8791,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-15"
     },
     {
-      "id": "o60",
+      "id": "o65",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -8627,12 +8809,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-15"
     },
     {
-      "id": "o61",
+      "id": "o66",
       "blockId": "p6-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -8642,12 +8827,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-15"
     },
     {
-      "id": "o62",
+      "id": "o67",
       "blockId": "p6-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -8657,12 +8845,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-15"
     },
     {
-      "id": "o63",
+      "id": "o68",
       "blockId": "p6-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -8672,24 +8863,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-15"
     },
     {
-      "id": "o64",
+      "id": "o69",
       "blockId": "p6-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-15",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-15"
+      "duplicateGroup": "Systolic blood pressure-2026-02-15"
     },
     {
-      "id": "o65",
+      "id": "o70",
+      "blockId": "p6-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-15",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-15"
+    },
+    {
+      "id": "o71",
       "blockId": "p6-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -8701,7 +8907,7 @@
       "duplicateGroup": "Pulse-2026-02-15"
     },
     {
-      "id": "o66",
+      "id": "o72",
       "blockId": "p6-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -8713,7 +8919,7 @@
       "duplicateGroup": "Fatigue-2026-02-15"
     },
     {
-      "id": "o67",
+      "id": "o73",
       "blockId": "p6-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8724,12 +8930,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o68",
+      "id": "o74",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -8739,12 +8946,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-16"
     },
     {
-      "id": "o69",
+      "id": "o75",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -8754,12 +8964,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-16"
     },
     {
-      "id": "o70",
+      "id": "o76",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -8769,12 +8982,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-16"
     },
     {
-      "id": "o71",
+      "id": "o77",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -8784,12 +9000,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-16"
     },
     {
-      "id": "o72",
+      "id": "o78",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "BUN",
@@ -8799,12 +9018,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-16"
     },
     {
-      "id": "o73",
+      "id": "o79",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -8814,12 +9036,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-16"
     },
     {
-      "id": "o74",
+      "id": "o80",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "WBC",
@@ -8829,12 +9054,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-16"
     },
     {
-      "id": "o75",
+      "id": "o81",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -8844,12 +9072,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-16"
     },
     {
-      "id": "o76",
+      "id": "o82",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -8859,12 +9090,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-16"
     },
     {
-      "id": "o77",
+      "id": "o83",
       "blockId": "p7-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -8874,12 +9108,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-16"
     },
     {
-      "id": "o78",
+      "id": "o84",
       "blockId": "p7-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -8889,12 +9126,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-16"
     },
     {
-      "id": "o79",
+      "id": "o85",
       "blockId": "p7-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -8904,24 +9144,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-16"
     },
     {
-      "id": "o80",
+      "id": "o86",
       "blockId": "p7-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-16",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-16"
+      "duplicateGroup": "Systolic blood pressure-2026-02-16"
     },
     {
-      "id": "o81",
+      "id": "o87",
+      "blockId": "p7-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-16",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-16"
+    },
+    {
+      "id": "o88",
       "blockId": "p7-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -8933,7 +9188,7 @@
       "duplicateGroup": "Pulse-2026-02-16"
     },
     {
-      "id": "o82",
+      "id": "o89",
       "blockId": "p7-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -8945,7 +9200,7 @@
       "duplicateGroup": "Fatigue-2026-02-16"
     },
     {
-      "id": "o83",
+      "id": "o90",
       "blockId": "p7-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -8956,12 +9211,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o84",
+      "id": "o91",
       "blockId": "p8-b6",
       "kind": "lab",
       "name": "Glucose",
@@ -8971,12 +9227,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-17"
     },
     {
-      "id": "o85",
+      "id": "o92",
       "blockId": "p8-b6",
       "kind": "lab",
       "name": "Sodium",
@@ -8986,12 +9245,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-17"
     },
     {
-      "id": "o86",
+      "id": "o93",
       "blockId": "p8-b4",
       "kind": "lab",
       "name": "Glucose",
@@ -9001,12 +9263,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-17"
     },
     {
-      "id": "o87",
+      "id": "o94",
       "blockId": "p8-b4",
       "kind": "lab",
       "name": "Sodium",
@@ -9016,24 +9281,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-17"
     },
     {
-      "id": "o88",
+      "id": "o95",
       "blockId": "p8-b3",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-17",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-17"
+      "duplicateGroup": "Systolic blood pressure-2026-02-17"
     },
     {
-      "id": "o89",
+      "id": "o96",
+      "blockId": "p8-b3",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-17",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-17"
+    },
+    {
+      "id": "o97",
       "blockId": "p8-b3",
       "kind": "vital",
       "name": "Pulse",
@@ -9045,7 +9325,7 @@
       "duplicateGroup": "Pulse-2026-02-17"
     },
     {
-      "id": "o90",
+      "id": "o98",
       "blockId": "p8-b3",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9057,7 +9337,7 @@
       "duplicateGroup": "Fatigue-2026-02-17"
     },
     {
-      "id": "o91",
+      "id": "o99",
       "blockId": "p8-b4",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9068,12 +9348,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o92",
+      "id": "o100",
       "blockId": "p9-b6",
       "kind": "lab",
       "name": "Glucose",
@@ -9083,12 +9364,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-18"
     },
     {
-      "id": "o93",
+      "id": "o101",
       "blockId": "p9-b6",
       "kind": "lab",
       "name": "Sodium",
@@ -9098,12 +9382,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-18"
     },
     {
-      "id": "o94",
+      "id": "o102",
       "blockId": "p9-b4",
       "kind": "lab",
       "name": "Glucose",
@@ -9113,12 +9400,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-18"
     },
     {
-      "id": "o95",
+      "id": "o103",
       "blockId": "p9-b4",
       "kind": "lab",
       "name": "Sodium",
@@ -9128,24 +9418,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-18"
     },
     {
-      "id": "o96",
+      "id": "o104",
       "blockId": "p9-b3",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-18",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-18"
+      "duplicateGroup": "Systolic blood pressure-2026-02-18"
     },
     {
-      "id": "o97",
+      "id": "o105",
+      "blockId": "p9-b3",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-18",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-18"
+    },
+    {
+      "id": "o106",
       "blockId": "p9-b3",
       "kind": "vital",
       "name": "Pulse",
@@ -9157,7 +9462,7 @@
       "duplicateGroup": "Pulse-2026-02-18"
     },
     {
-      "id": "o98",
+      "id": "o107",
       "blockId": "p9-b3",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9169,7 +9474,7 @@
       "duplicateGroup": "Fatigue-2026-02-18"
     },
     {
-      "id": "o99",
+      "id": "o108",
       "blockId": "p9-b4",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9180,12 +9485,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o100",
+      "id": "o109",
       "blockId": "p10-b6",
       "kind": "lab",
       "name": "Glucose",
@@ -9195,12 +9501,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-19"
     },
     {
-      "id": "o101",
+      "id": "o110",
       "blockId": "p10-b6",
       "kind": "lab",
       "name": "Sodium",
@@ -9210,12 +9519,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-19"
     },
     {
-      "id": "o102",
+      "id": "o111",
       "blockId": "p10-b4",
       "kind": "lab",
       "name": "Glucose",
@@ -9225,12 +9537,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-19"
     },
     {
-      "id": "o103",
+      "id": "o112",
       "blockId": "p10-b4",
       "kind": "lab",
       "name": "Sodium",
@@ -9240,24 +9555,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-19"
     },
     {
-      "id": "o104",
+      "id": "o113",
       "blockId": "p10-b3",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-19",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-19"
+      "duplicateGroup": "Systolic blood pressure-2026-02-19"
     },
     {
-      "id": "o105",
+      "id": "o114",
+      "blockId": "p10-b3",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-19",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-19"
+    },
+    {
+      "id": "o115",
       "blockId": "p10-b3",
       "kind": "vital",
       "name": "Pulse",
@@ -9269,7 +9599,7 @@
       "duplicateGroup": "Pulse-2026-02-19"
     },
     {
-      "id": "o106",
+      "id": "o116",
       "blockId": "p10-b3",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9281,7 +9611,7 @@
       "duplicateGroup": "Fatigue-2026-02-19"
     },
     {
-      "id": "o107",
+      "id": "o117",
       "blockId": "p10-b4",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9292,12 +9622,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o108",
+      "id": "o118",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -9307,12 +9638,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-20"
     },
     {
-      "id": "o109",
+      "id": "o119",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -9322,12 +9656,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-20"
     },
     {
-      "id": "o110",
+      "id": "o120",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -9337,12 +9674,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-20"
     },
     {
-      "id": "o111",
+      "id": "o121",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -9352,12 +9692,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-20"
     },
     {
-      "id": "o112",
+      "id": "o122",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "BUN",
@@ -9367,12 +9710,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-20"
     },
     {
-      "id": "o113",
+      "id": "o123",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -9382,12 +9728,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-20"
     },
     {
-      "id": "o114",
+      "id": "o124",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "WBC",
@@ -9397,12 +9746,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-20"
     },
     {
-      "id": "o115",
+      "id": "o125",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -9412,12 +9764,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-20"
     },
     {
-      "id": "o116",
+      "id": "o126",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -9427,12 +9782,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-20"
     },
     {
-      "id": "o117",
+      "id": "o127",
       "blockId": "p11-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -9442,12 +9800,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-20"
     },
     {
-      "id": "o118",
+      "id": "o128",
       "blockId": "p11-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -9457,12 +9818,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-20"
     },
     {
-      "id": "o119",
+      "id": "o129",
       "blockId": "p11-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -9472,24 +9836,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-20"
     },
     {
-      "id": "o120",
+      "id": "o130",
       "blockId": "p11-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-20",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-20"
+      "duplicateGroup": "Systolic blood pressure-2026-02-20"
     },
     {
-      "id": "o121",
+      "id": "o131",
+      "blockId": "p11-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-20",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-20"
+    },
+    {
+      "id": "o132",
       "blockId": "p11-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -9501,7 +9880,7 @@
       "duplicateGroup": "Pulse-2026-02-20"
     },
     {
-      "id": "o122",
+      "id": "o133",
       "blockId": "p11-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9513,7 +9892,7 @@
       "duplicateGroup": "Fatigue-2026-02-20"
     },
     {
-      "id": "o123",
+      "id": "o134",
       "blockId": "p11-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9524,12 +9903,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o124",
+      "id": "o135",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -9539,12 +9919,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-21"
     },
     {
-      "id": "o125",
+      "id": "o136",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -9554,12 +9937,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-21"
     },
     {
-      "id": "o126",
+      "id": "o137",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -9569,12 +9955,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-21"
     },
     {
-      "id": "o127",
+      "id": "o138",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -9584,12 +9973,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-21"
     },
     {
-      "id": "o128",
+      "id": "o139",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "BUN",
@@ -9599,12 +9991,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-21"
     },
     {
-      "id": "o129",
+      "id": "o140",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -9614,12 +10009,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-21"
     },
     {
-      "id": "o130",
+      "id": "o141",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "WBC",
@@ -9629,12 +10027,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-21"
     },
     {
-      "id": "o131",
+      "id": "o142",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -9644,12 +10045,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-21"
     },
     {
-      "id": "o132",
+      "id": "o143",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -9659,12 +10063,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-21"
     },
     {
-      "id": "o133",
+      "id": "o144",
       "blockId": "p12-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -9674,12 +10081,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-21"
     },
     {
-      "id": "o134",
+      "id": "o145",
       "blockId": "p12-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -9689,12 +10099,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-21"
     },
     {
-      "id": "o135",
+      "id": "o146",
       "blockId": "p12-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -9704,24 +10117,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-21"
     },
     {
-      "id": "o136",
+      "id": "o147",
       "blockId": "p12-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-21",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-21"
+      "duplicateGroup": "Systolic blood pressure-2026-02-21"
     },
     {
-      "id": "o137",
+      "id": "o148",
+      "blockId": "p12-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-21",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-21"
+    },
+    {
+      "id": "o149",
       "blockId": "p12-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -9733,7 +10161,7 @@
       "duplicateGroup": "Pulse-2026-02-21"
     },
     {
-      "id": "o138",
+      "id": "o150",
       "blockId": "p12-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9745,7 +10173,7 @@
       "duplicateGroup": "Fatigue-2026-02-21"
     },
     {
-      "id": "o139",
+      "id": "o151",
       "blockId": "p12-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9756,12 +10184,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o140",
+      "id": "o152",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -9771,12 +10200,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-22"
     },
     {
-      "id": "o141",
+      "id": "o153",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -9786,12 +10218,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-22"
     },
     {
-      "id": "o142",
+      "id": "o154",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -9801,12 +10236,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-22"
     },
     {
-      "id": "o143",
+      "id": "o155",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -9816,12 +10254,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-22"
     },
     {
-      "id": "o144",
+      "id": "o156",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "BUN",
@@ -9831,12 +10272,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-22"
     },
     {
-      "id": "o145",
+      "id": "o157",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -9846,12 +10290,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-22"
     },
     {
-      "id": "o146",
+      "id": "o158",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "WBC",
@@ -9861,12 +10308,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-22"
     },
     {
-      "id": "o147",
+      "id": "o159",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -9876,12 +10326,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-22"
     },
     {
-      "id": "o148",
+      "id": "o160",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -9891,12 +10344,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-22"
     },
     {
-      "id": "o149",
+      "id": "o161",
       "blockId": "p13-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -9906,12 +10362,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-22"
     },
     {
-      "id": "o150",
+      "id": "o162",
       "blockId": "p13-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -9921,12 +10380,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-22"
     },
     {
-      "id": "o151",
+      "id": "o163",
       "blockId": "p13-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -9936,24 +10398,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-22"
     },
     {
-      "id": "o152",
+      "id": "o164",
       "blockId": "p13-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-22",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-22"
+      "duplicateGroup": "Systolic blood pressure-2026-02-22"
     },
     {
-      "id": "o153",
+      "id": "o165",
+      "blockId": "p13-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-22",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-22"
+    },
+    {
+      "id": "o166",
       "blockId": "p13-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -9965,7 +10442,7 @@
       "duplicateGroup": "Pulse-2026-02-22"
     },
     {
-      "id": "o154",
+      "id": "o167",
       "blockId": "p13-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -9977,7 +10454,7 @@
       "duplicateGroup": "Fatigue-2026-02-22"
     },
     {
-      "id": "o155",
+      "id": "o168",
       "blockId": "p13-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -9988,12 +10465,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o156",
+      "id": "o169",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10003,12 +10481,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-23"
     },
     {
-      "id": "o157",
+      "id": "o170",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10018,12 +10499,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-23"
     },
     {
-      "id": "o158",
+      "id": "o171",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10033,12 +10517,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-23"
     },
     {
-      "id": "o159",
+      "id": "o172",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -10048,12 +10535,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-23"
     },
     {
-      "id": "o160",
+      "id": "o173",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "BUN",
@@ -10063,12 +10553,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-23"
     },
     {
-      "id": "o161",
+      "id": "o174",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -10078,12 +10571,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-23"
     },
     {
-      "id": "o162",
+      "id": "o175",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "WBC",
@@ -10093,12 +10589,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-23"
     },
     {
-      "id": "o163",
+      "id": "o176",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -10108,12 +10607,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-23"
     },
     {
-      "id": "o164",
+      "id": "o177",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -10123,12 +10625,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-23"
     },
     {
-      "id": "o165",
+      "id": "o178",
       "blockId": "p14-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -10138,12 +10643,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-23"
     },
     {
-      "id": "o166",
+      "id": "o179",
       "blockId": "p14-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -10153,12 +10661,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-23"
     },
     {
-      "id": "o167",
+      "id": "o180",
       "blockId": "p14-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -10168,24 +10679,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-23"
     },
     {
-      "id": "o168",
+      "id": "o181",
       "blockId": "p14-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-23",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-23"
+      "duplicateGroup": "Systolic blood pressure-2026-02-23"
     },
     {
-      "id": "o169",
+      "id": "o182",
+      "blockId": "p14-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-23",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-23"
+    },
+    {
+      "id": "o183",
       "blockId": "p14-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -10197,7 +10723,7 @@
       "duplicateGroup": "Pulse-2026-02-23"
     },
     {
-      "id": "o170",
+      "id": "o184",
       "blockId": "p14-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10209,7 +10735,7 @@
       "duplicateGroup": "Fatigue-2026-02-23"
     },
     {
-      "id": "o171",
+      "id": "o185",
       "blockId": "p14-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10220,12 +10746,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o172",
+      "id": "o186",
       "blockId": "p15-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10235,12 +10762,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-24"
     },
     {
-      "id": "o173",
+      "id": "o187",
       "blockId": "p15-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10250,12 +10780,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-24"
     },
     {
-      "id": "o174",
+      "id": "o188",
       "blockId": "p15-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10265,12 +10798,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-24"
     },
     {
-      "id": "o175",
+      "id": "o189",
       "blockId": "p15-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -10280,12 +10816,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-24"
     },
     {
-      "id": "o176",
+      "id": "o190",
       "blockId": "p15-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -10295,24 +10834,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-24"
     },
     {
-      "id": "o177",
+      "id": "o191",
       "blockId": "p15-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-24",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-24"
+      "duplicateGroup": "Systolic blood pressure-2026-02-24"
     },
     {
-      "id": "o178",
+      "id": "o192",
+      "blockId": "p15-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-24",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-24"
+    },
+    {
+      "id": "o193",
       "blockId": "p15-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -10324,7 +10878,7 @@
       "duplicateGroup": "Pulse-2026-02-24"
     },
     {
-      "id": "o179",
+      "id": "o194",
       "blockId": "p15-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10336,7 +10890,7 @@
       "duplicateGroup": "Fatigue-2026-02-24"
     },
     {
-      "id": "o180",
+      "id": "o195",
       "blockId": "p15-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10347,12 +10901,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o181",
+      "id": "o196",
       "blockId": "p16-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10362,12 +10917,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-25"
     },
     {
-      "id": "o182",
+      "id": "o197",
       "blockId": "p16-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10377,12 +10935,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-25"
     },
     {
-      "id": "o183",
+      "id": "o198",
       "blockId": "p16-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10392,12 +10953,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-25"
     },
     {
-      "id": "o184",
+      "id": "o199",
       "blockId": "p16-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -10407,12 +10971,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-25"
     },
     {
-      "id": "o185",
+      "id": "o200",
       "blockId": "p16-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -10422,24 +10989,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-25"
     },
     {
-      "id": "o186",
+      "id": "o201",
       "blockId": "p16-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-25",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-25"
+      "duplicateGroup": "Systolic blood pressure-2026-02-25"
     },
     {
-      "id": "o187",
+      "id": "o202",
+      "blockId": "p16-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-25",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-25"
+    },
+    {
+      "id": "o203",
       "blockId": "p16-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -10451,7 +11033,7 @@
       "duplicateGroup": "Pulse-2026-02-25"
     },
     {
-      "id": "o188",
+      "id": "o204",
       "blockId": "p16-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10463,7 +11045,7 @@
       "duplicateGroup": "Fatigue-2026-02-25"
     },
     {
-      "id": "o189",
+      "id": "o205",
       "blockId": "p16-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10474,12 +11056,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o190",
+      "id": "o206",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10489,12 +11072,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-26"
     },
     {
-      "id": "o191",
+      "id": "o207",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10504,12 +11090,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-26"
     },
     {
-      "id": "o192",
+      "id": "o208",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10519,12 +11108,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-26"
     },
     {
-      "id": "o193",
+      "id": "o209",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -10534,12 +11126,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-02-26"
     },
     {
-      "id": "o194",
+      "id": "o210",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "BUN",
@@ -10549,12 +11144,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-02-26"
     },
     {
-      "id": "o195",
+      "id": "o211",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -10564,12 +11162,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-02-26"
     },
     {
-      "id": "o196",
+      "id": "o212",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "WBC",
@@ -10579,12 +11180,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-02-26"
     },
     {
-      "id": "o197",
+      "id": "o213",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -10594,12 +11198,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-02-26"
     },
     {
-      "id": "o198",
+      "id": "o214",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -10609,12 +11216,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-02-26"
     },
     {
-      "id": "o199",
+      "id": "o215",
       "blockId": "p17-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -10624,12 +11234,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-02-26"
     },
     {
-      "id": "o200",
+      "id": "o216",
       "blockId": "p17-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -10639,12 +11252,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-26"
     },
     {
-      "id": "o201",
+      "id": "o217",
       "blockId": "p17-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -10654,24 +11270,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-26"
     },
     {
-      "id": "o202",
+      "id": "o218",
       "blockId": "p17-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-26",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-26"
+      "duplicateGroup": "Systolic blood pressure-2026-02-26"
     },
     {
-      "id": "o203",
+      "id": "o219",
+      "blockId": "p17-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-26",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-26"
+    },
+    {
+      "id": "o220",
       "blockId": "p17-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -10683,7 +11314,7 @@
       "duplicateGroup": "Pulse-2026-02-26"
     },
     {
-      "id": "o204",
+      "id": "o221",
       "blockId": "p17-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10695,7 +11326,7 @@
       "duplicateGroup": "Fatigue-2026-02-26"
     },
     {
-      "id": "o205",
+      "id": "o222",
       "blockId": "p17-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10706,12 +11337,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o206",
+      "id": "o223",
       "blockId": "p18-b6",
       "kind": "lab",
       "name": "Glucose",
@@ -10721,12 +11353,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-27"
     },
     {
-      "id": "o207",
+      "id": "o224",
       "blockId": "p18-b6",
       "kind": "lab",
       "name": "Sodium",
@@ -10736,12 +11371,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-27"
     },
     {
-      "id": "o208",
+      "id": "o225",
       "blockId": "p18-b4",
       "kind": "lab",
       "name": "Glucose",
@@ -10751,12 +11389,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-27"
     },
     {
-      "id": "o209",
+      "id": "o226",
       "blockId": "p18-b4",
       "kind": "lab",
       "name": "Sodium",
@@ -10766,24 +11407,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-27"
     },
     {
-      "id": "o210",
+      "id": "o227",
       "blockId": "p18-b3",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-27",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-27"
+      "duplicateGroup": "Systolic blood pressure-2026-02-27"
     },
     {
-      "id": "o211",
+      "id": "o228",
+      "blockId": "p18-b3",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-27",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-27"
+    },
+    {
+      "id": "o229",
       "blockId": "p18-b3",
       "kind": "vital",
       "name": "Pulse",
@@ -10795,7 +11451,7 @@
       "duplicateGroup": "Pulse-2026-02-27"
     },
     {
-      "id": "o212",
+      "id": "o230",
       "blockId": "p18-b3",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10807,7 +11463,7 @@
       "duplicateGroup": "Fatigue-2026-02-27"
     },
     {
-      "id": "o213",
+      "id": "o231",
       "blockId": "p18-b4",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10818,12 +11474,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o214",
+      "id": "o232",
       "blockId": "p19-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10833,12 +11490,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-28"
     },
     {
-      "id": "o215",
+      "id": "o233",
       "blockId": "p19-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10848,12 +11508,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-28"
     },
     {
-      "id": "o216",
+      "id": "o234",
       "blockId": "p19-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10863,12 +11526,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-02-28"
     },
     {
-      "id": "o217",
+      "id": "o235",
       "blockId": "p19-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -10878,12 +11544,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-02-28"
     },
     {
-      "id": "o218",
+      "id": "o236",
       "blockId": "p19-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -10893,24 +11562,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-02-28"
     },
     {
-      "id": "o219",
+      "id": "o237",
       "blockId": "p19-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-02-28",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-02-28"
+      "duplicateGroup": "Systolic blood pressure-2026-02-28"
     },
     {
-      "id": "o220",
+      "id": "o238",
+      "blockId": "p19-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-28",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-02-28"
+    },
+    {
+      "id": "o239",
       "blockId": "p19-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -10922,7 +11606,7 @@
       "duplicateGroup": "Pulse-2026-02-28"
     },
     {
-      "id": "o221",
+      "id": "o240",
       "blockId": "p19-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -10934,7 +11618,7 @@
       "duplicateGroup": "Fatigue-2026-02-28"
     },
     {
-      "id": "o222",
+      "id": "o241",
       "blockId": "p19-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -10945,12 +11629,13 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     },
     {
-      "id": "o223",
+      "id": "o242",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Glucose",
@@ -10960,12 +11645,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-03-01"
     },
     {
-      "id": "o224",
+      "id": "o243",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Sodium",
@@ -10975,12 +11663,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-03-01"
     },
     {
-      "id": "o225",
+      "id": "o244",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Potassium",
@@ -10990,12 +11681,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "3.5-5.1",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Potassium-2026-03-01"
     },
     {
-      "id": "o226",
+      "id": "o245",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Chloride",
@@ -11005,12 +11699,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "98-107",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Chloride-2026-03-01"
     },
     {
-      "id": "o227",
+      "id": "o246",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "BUN",
@@ -11020,12 +11717,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "7-20",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "BUN-2026-03-01"
     },
     {
-      "id": "o228",
+      "id": "o247",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Creatinine",
@@ -11035,12 +11735,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "0.6-1.2",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Creatinine-2026-03-01"
     },
     {
-      "id": "o229",
+      "id": "o248",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "WBC",
@@ -11050,12 +11753,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-11.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "WBC-2026-03-01"
     },
     {
-      "id": "o230",
+      "id": "o249",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Hemoglobin",
@@ -11065,12 +11771,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "12.0-16.0",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Hemoglobin-2026-03-01"
     },
     {
-      "id": "o231",
+      "id": "o250",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "Platelets",
@@ -11080,12 +11789,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "150-400",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Platelets-2026-03-01"
     },
     {
-      "id": "o232",
+      "id": "o251",
       "blockId": "p20-b3",
       "kind": "lab",
       "name": "HbA1c",
@@ -11095,12 +11807,15 @@
       "sourceFormat": "table",
       "details": {
         "referenceRange": "4.0-5.6",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "HbA1c-2026-03-01"
     },
     {
-      "id": "o233",
+      "id": "o252",
       "blockId": "p20-b5",
       "kind": "lab",
       "name": "Glucose",
@@ -11110,12 +11825,15 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "70-99",
-        "flag": "H"
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
       },
       "duplicateGroup": "Glucose-2026-03-01"
     },
     {
-      "id": "o234",
+      "id": "o253",
       "blockId": "p20-b5",
       "kind": "lab",
       "name": "Sodium",
@@ -11125,24 +11843,39 @@
       "sourceFormat": "narrative",
       "details": {
         "referenceRange": "135-145",
-        "flag": "N"
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
       },
       "duplicateGroup": "Sodium-2026-03-01"
     },
     {
-      "id": "o235",
+      "id": "o254",
       "blockId": "p20-b4",
       "kind": "vital",
-      "name": "Blood pressure",
-      "value": "128/82",
+      "name": "Systolic blood pressure",
+      "value": "128",
       "unit": "mmHg",
       "effectiveDate": "2026-03-01",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Blood pressure-2026-03-01"
+      "duplicateGroup": "Systolic blood pressure-2026-03-01"
     },
     {
-      "id": "o236",
+      "id": "o255",
+      "blockId": "p20-b4",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-03-01",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-03-01"
+    },
+    {
+      "id": "o256",
       "blockId": "p20-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -11154,7 +11887,7 @@
       "duplicateGroup": "Pulse-2026-03-01"
     },
     {
-      "id": "o237",
+      "id": "o257",
       "blockId": "p20-b4",
       "kind": "symptom",
       "name": "Fatigue",
@@ -11166,7 +11899,7 @@
       "duplicateGroup": "Fatigue-2026-03-01"
     },
     {
-      "id": "o238",
+      "id": "o258",
       "blockId": "p20-b5",
       "kind": "adverse-event",
       "name": "Nausea",
@@ -11177,7 +11910,8 @@
       "details": {
         "startDate": "2026-02-01",
         "endDate": "2026-02-03",
-        "seriousness": "non-serious"
+        "seriousness": "non-serious",
+        "serious": false
       },
       "duplicateGroup": "Nausea-2026-02-01"
     }

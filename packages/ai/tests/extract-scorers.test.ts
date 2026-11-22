@@ -65,6 +65,7 @@ test('matches on normalized name, value and date and scores units among matches'
     matched: 2,
     recall: 1,
     precision: 2 / 3,
+    fieldAccuracy: 1,
     unitAccuracy: 0.5,
     dedupeAccuracy: 1,
   })
@@ -109,5 +110,25 @@ test('handles empty documents and applies ceilings', () => {
       scoreObservations([{ expected, actual: keptObservations(expected) }])
     ),
     false
+  )
+})
+
+test('scores new kind details and penalizes missing or incorrect fields', () => {
+  const event = truth('ae', 'narrative', {
+    kind: 'adverse-event',
+    details: { serious: true, outcome: 'recovered', ongoing: false },
+  })
+  assert.equal(
+    scoreObservations([{ expected: [event], actual: [event] }]).fieldAccuracy,
+    1
+  )
+  assert.equal(
+    scoreObservations([
+      {
+        expected: [event],
+        actual: [{ ...event, details: { serious: false } }],
+      },
+    ]).fieldAccuracy,
+    0.25
   )
 })

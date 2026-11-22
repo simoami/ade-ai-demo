@@ -1,3 +1,4 @@
+import type { ObservationDetails } from '@repo/db'
 import { logger } from '@repo/logger'
 import { generateText, Output } from 'ai'
 import { z } from 'zod'
@@ -5,6 +6,7 @@ import { models } from '#models'
 import type { OcrPage } from '#stages/ocr/ocr-result'
 import { dedupeObservations } from './dedupe-observations.ts'
 import { type MaskedSpans, maskIdentifiers } from './mask-identifiers.ts'
+import { normalizeObservation } from './normalize-observation.ts'
 import { buildExtractionPrompt, extractionPrompt } from './prompt.ts'
 
 const log = logger.getSubLogger({ name: 'extract' })
@@ -16,7 +18,14 @@ export const observationOutputSchema = z.object({
   observations: z.array(
     z.object({
       blockId: z.string(),
-      kind: z.enum(['lab', 'vital', 'symptom', 'adverse-event']),
+      kind: z.enum([
+        'lab',
+        'vital',
+        'symptom',
+        'adverse-event',
+        'medical-history',
+        'medication',
+      ]),
       name: z.string().trim().min(1),
       value: z.string().trim().min(1),
       unit: z.string().trim().min(1).nullable(),
@@ -29,6 +38,18 @@ export const observationOutputSchema = z.object({
         startDate: isoDate.nullable(),
         endDate: isoDate.nullable(),
         seriousness: z.string().nullable(),
+        outcome: z
+          .enum([
+            'recovered',
+            'recovering',
+            'not-recovered',
+            'fatal',
+            'unknown',
+          ])
+          .nullable(),
+        ongoing: z.boolean().nullable(),
+        route: z.string().nullable(),
+        frequency: z.string().nullable(),
       }),
       confidence: z.number().min(0).max(1),
     })
@@ -43,7 +64,7 @@ type ObservationOutput = z.infer<
 export type ExtractedObservation = Omit<ObservationOutput, 'details'> & {
   page: number
   valueNumeric: number | null
-  details: Partial<Record<keyof ObservationOutput['details'], string>>
+  details: ObservationDetails
 }
 
 /** Rejects invalid output without including document text in errors; numeric values are parsed in code. */
@@ -55,7 +76,7 @@ export function validateObservationOutput(
   const parsed = observationOutputSchema.safeParse(output)
   if (!parsed.success) throw new Error('Invalid observation schema')
 
-  return parsed.data.observations.map((observation) => {
+  return parsed.data.observations.flatMap((observation) => {
     if (
       !ocr.blocks.some(
         (block) => block.id === observation.blockId && block.kind !== 'figure'
@@ -68,18 +89,16 @@ export function validateObservationOutput(
     )
       throw new Error('Invalid observation date source')
 
-    return {
+    return normalizeObservation({
       ...observation,
       page,
       valueNumeric: /^-?\d+(\.\d+)?$/.test(observation.value)
         ? Number(observation.value)
         : null,
       details: Object.fromEntries(
-        Object.entries(observation.details).filter(
-          (entry): entry is [string, string] => entry[1] !== null
-        )
+        Object.entries(observation.details).filter((entry) => entry[1] !== null)
       ),
-    }
+    })
   })
 }
 

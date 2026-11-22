@@ -56,6 +56,10 @@ const observation = {
     startDate: null,
     endDate: null,
     seriousness: null,
+    outcome: null,
+    ongoing: null,
+    route: null,
+    frequency: null,
   },
   confidence: 0.9,
 }
@@ -112,7 +116,13 @@ test('validates output, parses numeric values and drops null details', () => {
   assert.deepEqual(result, {
     page: 3,
     valueNumeric: 133,
-    details: { referenceRange: '70-99', flag: 'H' },
+    details: {
+      referenceRange: '70-99',
+      flag: 'H',
+      rangeLow: 70,
+      rangeHigh: 99,
+      flagNormalized: 'high',
+    },
   })
   assert.equal(
     validateObservationOutput(
@@ -273,5 +283,110 @@ test('treats differently formatted restatements of one reading as duplicates', (
       observation,
     ]),
     [observation]
+  )
+})
+
+test('normalizes both BP formats at the output boundary and validates new kind details', () => {
+  const combined = validateObservationOutput(
+    {
+      observations: [
+        {
+          ...observation,
+          kind: 'vital',
+          name: 'Blood pressure',
+          value: '120/70',
+          unit: null,
+        },
+      ],
+    },
+    page,
+    1
+  )
+  const separate = validateObservationOutput(
+    {
+      observations: [
+        {
+          ...observation,
+          kind: 'vital',
+          name: 'SBP',
+          value: '120',
+          unit: null,
+        },
+        {
+          ...observation,
+          kind: 'vital',
+          name: 'Diastolic BP',
+          value: '70',
+          unit: null,
+        },
+      ],
+    },
+    page,
+    1
+  )
+  assert.deepEqual(combined, separate)
+  const details = {
+    ...observation.details,
+    referenceRange: null,
+    flag: null,
+    startDate: '2020-01-01',
+    ongoing: true,
+  }
+  const [history, medication, event] = validateObservationOutput(
+    {
+      observations: [
+        {
+          ...observation,
+          kind: 'medical-history',
+          name: 'Hypertension',
+          value: 'present',
+          details,
+        },
+        {
+          ...observation,
+          kind: 'medication',
+          name: 'Metformin',
+          value: '500 mg',
+          unit: null,
+          details: { ...details, route: 'oral', frequency: 'twice daily' },
+        },
+        {
+          ...observation,
+          kind: 'adverse-event',
+          name: 'Dehydration',
+          value: 'severe',
+          details: {
+            ...details,
+            seriousness: 'serious (hospitalization)',
+            outcome: 'recovered',
+            ongoing: false,
+          },
+        },
+      ],
+    },
+    page,
+    1
+  )
+  assert.equal(history?.details.startDate, '2020-01-01')
+  assert.equal(medication?.valueNumeric, 500)
+  assert.equal(medication?.unit, 'mg')
+  assert.equal(event?.details.serious, true)
+  assert.equal(event?.details.outcome, 'recovered')
+  assert.equal(event?.details.ongoing, false)
+  assert.throws(
+    () =>
+      validateObservationOutput(
+        {
+          observations: [
+            {
+              ...observation,
+              details: { ...details, outcome: 'PRIVATE invalid outcome' },
+            },
+          ],
+        },
+        page,
+        1
+      ),
+    { message: 'Invalid observation schema' }
   )
 })

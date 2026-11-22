@@ -5,7 +5,13 @@ type Truth = Expected['observations'][number]
 
 type Actual = Pick<
   ExtractedObservation,
-  'name' | 'value' | 'unit' | 'effectiveDate' | 'sourceFormat'
+  | 'name'
+  | 'value'
+  | 'unit'
+  | 'effectiveDate'
+  | 'sourceFormat'
+  | 'kind'
+  | 'details'
 >
 
 const formatRank = { table: 0, list: 1, narrative: 2 }
@@ -43,6 +49,8 @@ export function scoreObservations(
   let matched = 0
   let unitMatched = 0
   let groupsCorrect = 0
+  let fields = 0
+  let fieldsMatched = 0
 
   for (const document of documents) {
     const kept = keptObservations(document.expected)
@@ -56,6 +64,13 @@ export function scoreObservations(
       if (actual) {
         unused.splice(index, 1)
         matched++
+        fields++
+        if (actual.kind === truth.kind) fieldsMatched++
+        for (const [field, value] of Object.entries(truth.details)) {
+          fields++
+          if (actual.details[field as keyof Actual['details']] === value)
+            fieldsMatched++
+        }
         if (normalize(actual.unit) === normalize(truth.unit)) unitMatched++
       }
 
@@ -78,6 +93,7 @@ export function scoreObservations(
     matched,
     recall: expected ? matched / expected : 1,
     precision: predicted ? matched / predicted : expected ? 0 : 1,
+    fieldAccuracy: fields ? fieldsMatched / fields : null,
     unitAccuracy: matched ? unitMatched / matched : null,
     dedupeAccuracy: expected ? groupsCorrect / expected : 1,
   }
@@ -88,6 +104,7 @@ export function exceedsExtractionCeilings(
   score: ReturnType<typeof scoreObservations>
 ) {
   return (
+    (score.fieldAccuracy ?? 0) < 0.95 ||
     score.recall < 0.95 ||
     score.precision < 0.95 ||
     (score.unitAccuracy ?? 0) < 0.98 ||

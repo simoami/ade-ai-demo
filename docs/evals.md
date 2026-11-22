@@ -165,38 +165,29 @@ report holds field correctness, match outcomes and sex only at
 
 ## Observation extraction
 
-`extract-v1`, `gpt-6.1-sol`, `synthetic-v3`: clinical-01, clinical-02 and
-clinical-03 (six development pages, 74 stated observations in 59 duplicate
-groups), using ground-truth OCR text blocks with every ground-truth identifier
-span replaced by `[REDACTED]`. One model call per page, then within-document
-deduplication. Measured 2026-11-20 at `9de3cf2` plus the extraction changes;
-all three cases completed in 21 s wall time.
-[Experiment](https://www.braintrust.dev/app/Simo/p/ade-document-stages/experiments/extract-extract-v1-1795199141162).
+`extract-v2` extracts labs, vitals, symptoms, adverse events, medical history
+and medications using `gpt-6.1-sol`. The development suite covers clinical-01,
+clinical-02, clinical-03 and clinical-followup; clinical-20 remains outside the
+model suite for cost. Extraction receives ground-truth identifier-masked OCR.
 
-| Metric             | Result       | Ceiling |
-| ------------------ | ------------ | ------- |
-| Observation recall | 59/59 (100%) | >= 95%  |
-| Precision          | 59/59 (100%) | >= 95%  |
-| Unit accuracy      | 59/59 (100%) | >= 98%  |
-| Dedupe accuracy    | 59/59 (100%) | >= 95%  |
+Ground truth uses canonical systolic and diastolic blood pressure observations.
+The follow-up uses separate SBP/DBP readings on March 10, medications, ongoing
+hypertension and a serious dehydration event with a recovered outcome. It links
+to PT-1042 alongside clinical-20 for cross-document trends.
 
-Truth is deduplicated per `duplicateGroup`: the first observation in the
-preferred source format (table, then list, then narrative). Output matches
-truth one-to-one on case- and whitespace-normalized name and value plus the
-exact effective date. Unit accuracy counts matched observations whose
-normalized unit agrees. A group is deduplicated correctly when exactly one
-output observation has its name and date and that observation has the
-preferred source format.
+Recall and precision match normalized name/value and exact date one-to-one;
+unit accuracy and preferred-format deduplication are scored separately. Field
+accuracy checks kind and every expected detail, including lab bounds and flags,
+AE seriousness/outcome/ongoing, medication route/frequency and history dates.
+Ceilings are 95% recall, precision, field accuracy and deduplication accuracy,
+and 98% unit accuracy. New prompt scores require a model-backed run; prior
+prompt measurements do not validate this prompt.
 
-The subset saturates every metric, so it does not yet discriminate between
-prompts: the templated corpus repeats the same names, units and phrasing.
-Reference ranges, flags, adverse-event details, `dateSource`, block IDs and
-confidence are not scored. Clinical-20 is excluded for cost; held-out
-fixtures are not used. Ceilings are fixed tolerances: missing or invented
-observations reach the reviewer, so recall and precision allow about one miss
-in twenty; a wrong unit misstates a value, so units allow one in fifty.
-Runtime/schema failures fail the suite. The local report holds metrics only at
-`packages/ai/evals/results/extract-latest.json`.
+Pure unit tests cover range parsing, printed flag precedence, both BP formats,
+stable component IDs, seriousness and medication numeric doses. Note indexing
+tests use a fake embedder to verify identifier masking, chunk limits, source
+regions, stable IDs, embedding validation and replacement after success only.
+No API keys are needed for these tests.
 
 ## Metrics and thresholds
 
@@ -329,8 +320,8 @@ Generate fixtures with `node packages/ai/scripts/generate-synthetic.ts`.
 EVAL_FIXTURE=clinical-01 EVAL_VARIANT=scanned EVAL_DPI=216 pnpm eval:ocr
 ```
 
-There are six short clinical fixtures (2, 3, 1, 4, 5 and 2 pages), two consent
-fixtures (1 and 2 pages), a fax cover and invoice (1 page each), the 20-page
+There are seven short clinical fixtures (2, 3, 1, 4, 5, 2 and 1 pages),
+two consent fixtures (1 and 2 pages), a fax cover and invoice (1 page each), the 20-page
 clinical benchmark, and five picture fixtures: an intake form with a patient
 photo and contact icons, a two-page referral with a logo, a captioned
 clinician portrait, a two-column letter and an unlabeled face, a consent form

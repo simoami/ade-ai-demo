@@ -112,6 +112,19 @@ lines using unmasked word geometry, clipped to the block; missing words or match
 fall back to the block box. On skewed pages the row is selected in the deskewed frame and
 stored as a rotated polygon. Redaction coverage uses the axis-aligned source box.
 Consent documents go to `needsReview`; others to `unsupported`.
+Clinical and consent documents then run a durable note-indexing step. It masks
+identifier spans, drops figures, splits text blocks at 2,000 characters, embeds
+with `text-embedding-3-small` (1536 dimensions), and atomically replaces
+`note_chunks` with document/page/index UUID v5 IDs and page/block/box sources.
+Only counts enter workflow history. Text identifier redactions are already
+masked; overlapping non-identifier redactions suppress chunks from search.
+Rejecting a redaction clears its suppression IDs without restoring identifiers.
+
+Extraction supports lab, vital, symptom, adverse-event, medical-history and
+medication kinds. Validation parses printed lab ranges and flags, splits combined
+BP and canonicalizes separate SBP/DBP readings to systolic/diastolic observations
+in mmHg, and derives serious booleans from printed AE seriousness. Dates,
+outcomes, ongoing status and medication route/frequency remain source-backed.
 The run then waits on the review hook and applies each action with
 `applyReviewAction`; a refused action leaves the loop waiting, and
 `markReviewed` or `discard` ends the run. After terminal review or discard, a durable step
@@ -144,14 +157,10 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
 6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review. Reducto returns only axis-aligned boxes, so a redaction takes its angle from Tesseract line baselines, or else from the page skew (the median angle between neighbouring OCR words); observation outlines use the same page skew. OCR providers that return word polygons (Azure Document Intelligence, AWS Textract, Google Document AI) would remove both estimates.
 7. **Redact.** All placed candidates are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` in the database. `ocr.redacted.json` is pending.
-8. **Observations.** Structured extraction over tables, lists and narrative, then within-document deduplication that is date-aware and prefers table over list over narrative. The review agent checks each batch against the source with `viewSourceRegion` and `readBlocks`, and returns a verdict per observation:
-   - `confirmed`: accepted.
-   - `corrected`: applied automatically, badged, revertible.
-   - `rejected`: hidden, restorable.
-   - `flagged`: needs a person; blocks review completion.
-   - `unchecked`: the agent failed; blocks review completion.
-9. **Note index.** Doctor-note sections (joined across pages) are chunked, embedded from redacted text, and stored with their source regions.
-10. **Enrichment.** Comprehend Medical extracts entities, assertions and codes from redacted chunk text.
+8. **Observations.** Structured extraction over tables, lists and narrative, with code normalization and date-aware deduplication preferring table over list over narrative. Confidence below 0.7 is flagged; other observations start unchecked. The reviewer confirms, corrects or rejects them.
+9. **Note index.** Clinical and consent text blocks are identifier-masked, chunked, embedded and stored with their source regions. Unsupported documents are not indexed. Synthetic sample seeding also writes masked note chunks.
+
+Entity enrichment is not implemented.
 
 ## Demo administration
 
@@ -171,8 +180,8 @@ cleanup. The returned count is the number of document rows deleted.
 
 After processing, the run waits on a single review hook in a loop. The UI resumes it with typed actions: `redaction.update`, `observation.resolve`, `patient.link`, `discard`, `markReviewed`. Each action writes a review event and runs one idempotent refresh step.
 
-- **New or approved redaction.** Refresh burns it in, rewrites `ocr.redacted.json`, and tests overlap against observations and note chunks. Coverage is the intersection area divided by the item's area. An observation at 0.3 or more is removed; a note chunk at 0.5 or more is removed, and below that its text is scrubbed and re-embedded. Removal is soft and records the redaction, so its enrichment disappears with it and everything returns if the redaction is rejected.
-- **Rejected candidate.** Its text is unmasked and refresh re-embeds the chunks whose redacted text changed.
+- **Approved redaction.** Candidates are already burned during processing. Approval changes their review state.
+- **Rejected candidate.** The page is republished from the encrypted review source with the remaining masks. Observation and note suppression IDs for the rejected redaction are cleared. Note text retains identifier masking.
 - **Mark as reviewed** is enabled when nothing blocks it: no flagged or unchecked observations, no redactions needing review, no identity mismatch. It creates the patient if needed, locks the document, and deletes the review-only artifacts.
 - **Discard** (duplicate upload, wrong patient) deletes the review-only artifacts and the document's derived data.
 

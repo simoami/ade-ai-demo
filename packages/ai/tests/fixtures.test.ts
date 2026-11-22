@@ -48,7 +48,7 @@ test('rotation preserves center and exchanges physical axes at ninety degrees', 
 test('all checked-in synthetic variants validate and have real continuation references', async () => {
   const { syntheticDataset } = await import('#evals/fixtures/dataset')
   const rows = await syntheticDataset()
-  assert.equal(rows.length, 32)
+  assert.equal(rows.length, 34)
   for (const row of rows) {
     const priorIds = new Set<string>()
     for (const { blocks, pii } of row.expected) {

@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The screens read Postgres through `apps/web/lib/server/records.ts`. `pnpm --filter @repo/ai seed:samples` loads six synthetic fixtures (redacted pages to Blob, rows to Postgres); run it, and `pnpm --filter @repo/db db:migrate`, for each Neon branch a deployment uses.
+`apps/web` is the Next.js App Router application (strict TypeScript, Tailwind v4). `packages/ui` exports shadcn components built on Base UI as `@repo/ui`; shared styles live in `src/styles/globals.css`. Keep UI primitives there, app routes in `apps/web/app`, and app components in `apps/web/components`. The screens read Postgres through `apps/web/lib/server/records.ts`. `pnpm --filter @repo/ai seed:samples` loads seven synthetic fixtures (redacted pages to Blob, rows and masked note embeddings to Postgres); run it, and `pnpm --filter @repo/db db:migrate`, for each Neon branch a deployment uses.
 
 `packages/ai` (`@repo/ai`) owns the eve agent in `agent/`. Local Next.js uses `withEve` with `eveRoot: "../../packages/ai"` to start its service and proxy `/eve/v1/*`. Root `vercel.ts` composes separate web and eve services; a private binding connects the document gateway to eve. Workflows and steps live in `src/workflows/ingest-document`; plain stages live in `src/stages/render`, `src/stages/ocr` (LLM, Datalab and Reducto OCR providers), `src/stages/pii`, `src/stages/redact`, `src/stages/classify`, `src/stages/demographics` and `src/stages/extract`. Next.js calls the authenticated document channel through `apps/web/lib/server/pipeline-client.ts`.
 
@@ -91,7 +91,8 @@ URLs (15 minutes), with separate full images and thumbnails and real page propor
 only during `reading` and `redacting`. Serialize `publishRedactedPages` per document:
 write all pairs, publish the version, then delete obsolete pages and renders.
 Migration 0002 adds the nullable version and 0003 adds `documents.proposed_patient`
-and the `observation.update` and `patient.create` review actions; migrate and reseed each deployment branch.
+and the `observation.update` and `patient.create` review actions. Migration 0004
+adds medical-history and medication kinds; migrate and reseed each deployment branch.
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
 Postgres (`DATABASE_URL`). Web uploads accept up to 10 PDF, PNG or JPEG files per selection, 20 MB per file; each file starts its own document. The workflow accepts uploaded PDFs or ordered
@@ -99,6 +100,11 @@ PNG/JPEG images and runs rendering and Reducto OCR, then classification, demogra
 (hashed with `PATIENT_HASH_KEY` inside the step) and identifier detection as parallel steps,
 then picture review and redaction. Clinical documents are extracted (`extracting`, then
 `needsReview`), consent documents go to `needsReview` and others to `unsupported`.
+Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
+and derives AE seriousness in code. Clinical and consent documents then index
+identifier-masked OCR blocks with `embeddingModel` into `note_chunks` (1536 dimensions),
+replacing rows atomically with document/page/index UUID v5 IDs. Keep chunk text
+and embeddings inside the durable step; return counts only.
 The redaction step checkpoints encrypted burned pages, encrypted unredacted review
 sources and a manifest before publication so retries can finish after render deletion.
 Redaction and observation rows are replaced atomically using UUID v5 IDs. Rendering scratch directories are

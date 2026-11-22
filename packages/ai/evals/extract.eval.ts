@@ -13,8 +13,13 @@ import { promptVersion } from '#stages/extract/prompt'
 
 const log = logger.getSubLogger({ name: 'extract-eval' })
 
-// Six development pages cover every observation kind and source format; clinical-20 is left out for cost.
-const fixtureIds = ['clinical-01', 'clinical-02', 'clinical-03']
+// Development pages cover every observation kind and both BP formats; clinical-20 is left out for cost.
+const fixtureIds = [
+  'clinical-01',
+  'clinical-02',
+  'clinical-03',
+  'clinical-followup',
+]
 
 const data = await Promise.all(
   fixtureIds.map(async (id) => {
@@ -92,6 +97,7 @@ const result = await Eval(
         return [
           { name: 'observationRecall', score: score.recall },
           { name: 'observationPrecision', score: score.precision },
+          { name: 'fieldAccuracy', score: score.fieldAccuracy },
           { name: 'unitAccuracy', score: score.unitAccuracy },
           { name: 'dedupeAccuracy', score: score.dedupeAccuracy },
         ]

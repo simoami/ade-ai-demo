@@ -5,6 +5,7 @@ import { detectIdentifiers } from '#workflows/ingest-document/steps/detect-ident
 import { fail } from '#workflows/ingest-document/steps/fail.step'
 import { finish } from '#workflows/ingest-document/steps/finish-processing.step'
 import { identifyPatient } from '#workflows/ingest-document/steps/identify-patient.step'
+import { indexNotes } from '#workflows/ingest-document/steps/index-notes.step'
 import { readPages } from '#workflows/ingest-document/steps/read-pages.step'
 import { redactPages } from '#workflows/ingest-document/steps/redact-pages.step'
 import { renderPages } from '#workflows/ingest-document/steps/render-pages.step'
@@ -30,6 +31,7 @@ export async function ingestDocument(input: IngestInput) {
     ])
     await redactPages(documentId, pageCount)
     await finish(documentId, documentClass)
+    if (documentClass !== 'other') await indexNotes(documentId)
 
     using hook = createHook<ReviewAction>({ token: reviewToken(documentId) })
     if (await hook.getConflict()) {

@@ -43,6 +43,20 @@ export type ObservationDetails = {
   flag?: string
   startDate?: string
   endDate?: string
+  rangeLow?: number | null
+  rangeHigh?: number | null
+  flagNormalized?: 'low' | 'normal' | 'high' | 'abnormal' | null
+  serious?: boolean | null
+  outcome?:
+    | 'recovered'
+    | 'recovering'
+    | 'not-recovered'
+    | 'fatal'
+    | 'unknown'
+    | null
+  ongoing?: boolean | null
+  route?: string | null
+  frequency?: string | null
   seriousness?: string
 }
 
@@ -76,6 +90,8 @@ export const observationKind = pgEnum('observation_kind', [
   'vital',
   'symptom',
   'adverse-event',
+  'medical-history',
+  'medication',
 ])
 
 export const observationReviewStatus = pgEnum('observation_review_status', [

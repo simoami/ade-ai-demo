@@ -63,7 +63,7 @@ test('preserves the birth year while masking the ISO month and day', async () =>
 
 test('maps six fixtures to the existing counts, review flags, and figure handling', async () => {
   const cases = [
-    ['clinical-20', 'needsReview', 200, 238, 2, 3],
+    ['clinical-20', 'needsReview', 200, 258, 2, 3],
     ['intake-01', 'needsReview', 12, 0, 0, 0],
     ['referral-01', 'extracting', 17, 0, 1, 0],
     ['consent-01', 'reviewed', 10, 0, 0, 0],
@@ -189,4 +189,65 @@ test('seeds distinct scanned table row boxes from synthetic fixture line spacing
     )
   }
   assert.notDeepEqual(sources[0]?.box, sources[1]?.box)
+})
+
+test('links the follow-up to the same synthetic identity and includes normalized clinical facts', async () => {
+  const data = await fixture('clinical-followup')
+  assert.deepEqual(
+    fixtureHashes(data, key),
+    fixtureHashes(await fixture('clinical-20'), key)
+  )
+  const { facts, masks } = sampleRows(
+    {
+      id: 'clinical-followup',
+      fileName: 'clinical-followup.pdf',
+      documentClass: 'clinical',
+      patientId: 'PT-1042',
+      status: 'reviewed',
+      uploadedAt: '2026-11-20T10:00:00Z',
+    },
+    data,
+    key
+  )
+  assert.ok(facts.every((fact) => fact.reviewStatus === 'confirmed'))
+  assert.ok(masks.every((mask) => mask.state === 'accepted'))
+  assert.ok(
+    facts.some(
+      (fact) =>
+        fact.kind === 'medical-history' && fact.details?.ongoing === true
+    )
+  )
+  assert.ok(
+    facts.some(
+      (fact) =>
+        fact.kind === 'medication' &&
+        fact.valueNumeric === '500' &&
+        fact.unit === 'mg'
+    )
+  )
+  assert.ok(
+    facts.some(
+      (fact) =>
+        fact.kind === 'adverse-event' &&
+        fact.details?.serious === true &&
+        fact.details.outcome === 'recovered'
+    )
+  )
+  assert.ok(
+    facts.some(
+      (fact) => fact.kind === 'lab' && fact.details?.flagNormalized === 'high'
+    )
+  )
+  assert.ok(
+    facts.some(
+      (fact) =>
+        fact.name === 'Systolic blood pressure' && fact.valueNumeric === '122'
+    )
+  )
+  assert.ok(
+    facts.some(
+      (fact) =>
+        fact.kind === 'symptom' && fact.details?.startDate === '2026-03-01'
+    )
+  )
 })

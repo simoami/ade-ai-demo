@@ -1,0 +1,739 @@
+{
+  "id": "clinical-followup",
+  "datasetVersion": "synthetic-v3",
+  "seed": 7316,
+  "split": "development",
+  "documentClass": "clinical",
+  "pages": [
+    {
+      "page": 0,
+      "rotation": -1.4525876916013658,
+      "blocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "Fictional Quartz Health\nPatient: Bex Samplewick  DOB 1978-04-12",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.030303030303030304,
+            "width": 0.28851633986928105,
+            "height": 0.03746843434343434
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "header",
+          "text": "Printed 2026-03-10\nMRN FAKE-7310",
+          "box": {
+            "x": 0.8053684640522876,
+            "y": 0.030303030303030304,
+            "width": 0.13580800653594774,
+            "height": 0.03746843434343434
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.35576307189542483,
+            "y": 0.08544823232323231,
+            "width": 0.28847385620915034,
+            "height": 0.032196969696969696
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "table",
+          "text": "Test Result Units Reference Flag\nGlucose 106 mg/dL 70-99 H\nSodium 140 mmol/L 135-145 N\nPotassium 4.1 mmol/L 3.5-5.1 N\nChloride 102 mmol/L 98-107 N\nBUN 14 mg/dL 7-20 N\nCreatinine 0.9 mg/dL 0.6-1.2 N\nWBC 7.2 10^3/uL 4.0-11.0 N\nHemoglobin 13.1 g/dL 12.0-16.0 N\nPlatelets 251 10^3/uL 150-400 N\nHbA1c 6.1 % 4.0-5.6 H",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.13027146464646464,
+            "width": 0.6251429738562091,
+            "height": 0.14504419191919193
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "list",
+          "text": "- SBP: 122 mmHg (2026-03-10)\n- DBP: 78 mmHg (2026-03-10)\n- Pulse: 76 beats/min (2026-03-10)\n- Symptoms: mild fatigue since 2026-03-01, ongoing; no dyspnea",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.2879419191919192,
+            "width": 0.4823039215686275,
+            "height": 0.07512626262626262
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Encounter 2026-03-10. Dr. Zavi Fableton reviewed Bex Samplewick. Glucose was 106 mg/dL on 2026-03-10; sodium was 140\nmmol/L. Contact: 202-555-0147. Address: 17 Fiction Lane, Exampleville, ZZ 00000. Mild nausea began 2026-02-01 and ended\n2026-02-03. Seriousness: non-serious. No hospitalization was needed. Plan: review intake and hydration. Review complete.\nMedical history: hypertension since 2020-01-01, ongoing. Medications: metformin 500 mg oral twice daily since 2026-02-15,\nongoing. Severe dehydration began 2026-03-02 and ended 2026-03-05. Seriousness: serious (hospitalization). Outcome:\nrecovered. Ongoing: no.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.37569444444444444,
+            "width": 0.8328366013071894,
+            "height": 0.09816919191919192
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7310 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.058823529411764705,
+            "y": 0.9318181818181818,
+            "width": 0.4797042483660131,
+            "height": 0.03263888888888892
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8700571895424837,
+            "y": 0.9318181818181818,
+            "width": 0.0711192810457516,
+            "height": 0.0211489898989899
+          },
+          "continues": null
+        }
+      ],
+      "scannedBlocks": [
+        {
+          "id": "p1-b1",
+          "kind": "header",
+          "text": "Fictional Quartz Health\nPatient: Bex Samplewick  DOB 1978-04-12",
+          "box": {
+            "x": 0.04355664942761206,
+            "y": 0.033444341174910075,
+            "width": 0.2896527950332264,
+            "height": 0.043107973357243534
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b2",
+          "kind": "header",
+          "text": "Printed 2026-03-10\nMRN FAKE-7310",
+          "box": {
+            "x": 0.789861677493213,
+            "y": 0.021812019446060538,
+            "width": 0.1369935354146985,
+            "height": 0.040116658136693795
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b3",
+          "kind": "heading",
+          "text": "Clinical encounter record",
+          "box": {
+            "x": 0.34220983583382747,
+            "y": 0.08275607719186762,
+            "width": 0.28943739187214257,
+            "height": 0.03783737053888375
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b4",
+          "kind": "table",
+          "text": "Test Result Units Reference Flag\nGlucose 106 mg/dL 70-99 H\nSodium 140 mmol/L 135-145 N\nPotassium 4.1 mmol/L 3.5-5.1 N\nChloride 102 mmol/L 98-107 N\nBUN 14 mg/dL 7-20 N\nCreatinine 0.9 mg/dL 0.6-1.2 N\nWBC 7.2 10^3/uL 4.0-11.0 N\nHemoglobin 13.1 g/dL 12.0-16.0 N\nPlatelets 251 10^3/uL 150-400 N\nHbA1c 6.1 % 4.0-5.6 H",
+          "box": {
+            "x": 0.04683616617360997,
+            "y": 0.12678666563791402,
+            "width": 0.62970033104654,
+            "height": 0.1572431452752021
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b5",
+          "kind": "list",
+          "text": "- SBP: 122 mmHg (2026-03-10)\n- DBP: 78 mmHg (2026-03-10)\n- Pulse: 76 beats/min (2026-03-10)\n- Symptoms: mild fatigue since 2026-03-01, ongoing; no dyspnea",
+          "box": {
+            "x": 0.052008627855409495,
+            "y": 0.2872044434441193,
+            "width": 0.4846134867034021,
+            "height": 0.08454969293501596
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b6",
+          "kind": "paragraph",
+          "text": "Encounter 2026-03-10. Dr. Zavi Fableton reviewed Bex Samplewick. Glucose was 106 mg/dL on 2026-03-10; sodium was 140\nmmol/L. Contact: 202-555-0147. Address: 17 Fiction Lane, Exampleville, ZZ 00000. Mild nausea began 2026-02-01 and ended\n2026-02-03. Seriousness: non-serious. No hospitalization was needed. Plan: review intake and hydration. Review complete.\nMedical history: hypertension since 2020-01-01, ongoing. Medications: metformin 500 mg oral twice daily since 2026-02-15,\nongoing. Severe dehydration began 2026-03-02 and ended 2026-03-05. Seriousness: serious (hospitalization). Outcome:\nrecovered. Ongoing: no.",
+          "box": {
+            "x": 0.054887395317952614,
+            "y": 0.36806238698248506,
+            "width": 0.8357894560589371,
+            "height": 0.11445159917568876
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b7",
+          "kind": "footer",
+          "text": "SYNTHETIC - NOT A PATIENT RECORD\nBex Samplewick | MRN FAKE-7310 | Confidential synthetic data for software evaluation only.",
+          "box": {
+            "x": 0.0731313252298535,
+            "y": 0.9309247161676519,
+            "width": 0.480620828415709,
+            "height": 0.042025049268532344
+          },
+          "continues": null
+        },
+        {
+          "id": "p1-b8",
+          "kind": "footer",
+          "text": "Page 1 of 1",
+          "box": {
+            "x": 0.8841042906859016,
+            "y": 0.923037463801998,
+            "width": 0.07179023011844754,
+            "height": 0.02253530801108594
+          },
+          "continues": null
+        }
+      ],
+      "pii": [
+        {
+          "text": "Fictional Quartz Health",
+          "category": "facility",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.03535353535353535,
+            "width": 0.15154166666666669,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.05025618123333586,
+            "y": 0.04104831196858644,
+            "width": 0.15193306720930366,
+            "height": 0.016379554983938727
+          },
+          "blockId": "p1-b1",
+          "start": 0,
+          "end": 23
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.11917892156862746,
+            "y": 0.049305555555555554,
+            "width": 0.10815277777777779,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.10451603380096414,
+            "y": 0.054791530487316276,
+            "width": 0.10855812159327088,
+            "height": 0.015529635134098052
+          },
+          "blockId": "p1-b1",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "1978-04-12",
+          "category": "dob",
+          "box": {
+            "x": 0.2697761437908497,
+            "y": 0.049305555555555554,
+            "width": 0.07102777777777777,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.25506486072626633,
+            "y": 0.052568788754538465,
+            "width": 0.07144505192884842,
+            "height": 0.014802414980889411
+          },
+          "blockId": "p1-b1",
+          "start": 53,
+          "end": 63
+        },
+        {
+          "text": "FAKE-7310",
+          "category": "id",
+          "box": {
+            "x": 0.8624321895424836,
+            "y": 0.049305555555555554,
+            "width": 0.07220833333333335,
+            "height": 0.01341540404040404
+          },
+          "scannedBox": {
+            "x": 0.8475304529962067,
+            "y": 0.04093646702568893,
+            "width": 0.07262522810598115,
+            "height": 0.014825540200875398
+          },
+          "blockId": "p1-b2",
+          "start": 23,
+          "end": 32
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.3949477124183007,
+            "y": 0.3807449494949495,
+            "width": 0.10683823529411764,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.3910692473134313,
+            "y": 0.3807482889051258,
+            "width": 0.10726988974212098,
+            "height": 0.01629277314060973
+          },
+          "blockId": "p1-b6",
+          "start": 49,
+          "end": 63
+        },
+        {
+          "text": "Dr. Zavi Fableton",
+          "category": "provider",
+          "box": {
+            "x": 0.21897712418300655,
+            "y": 0.3807449494949495,
+            "width": 0.10983823529411763,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.21515520825441792,
+            "y": 0.38413650971797614,
+            "width": 0.1102689256745995,
+            "height": 0.016351538405515453
+          },
+          "blockId": "p1-b6",
+          "start": 22,
+          "end": 39
+        },
+        {
+          "text": "202-555-0147",
+          "category": "phone",
+          "box": {
+            "x": 0.17897712418300651,
+            "y": 0.39551767676767674,
+            "width": 0.09155882352941176,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.17565268952849367,
+            "y": 0.40004609137881597,
+            "width": 0.09199538810562469,
+            "height": 0.01599347358062403
+          },
+          "blockId": "p1-b6",
+          "start": 134,
+          "end": 146
+        },
+        {
+          "text": "17 Fiction Lane, Exampleville, ZZ 00000",
+          "category": "address",
+          "box": {
+            "x": 0.3392124183006536,
+            "y": 0.39551767676767674,
+            "width": 0.26148529411764704,
+            "height": 0.014204545454545454
+          },
+          "scannedBox": {
+            "x": 0.3358364910985262,
+            "y": 0.39357874352391864,
+            "width": 0.2618672518300855,
+            "height": 0.019322064933496474
+          },
+          "blockId": "p1-b6",
+          "start": 157,
+          "end": 196
+        },
+        {
+          "text": "Bex Samplewick",
+          "category": "name",
+          "box": {
+            "x": 0.06535947712418301,
+            "y": 0.9483585858585859,
+            "width": 0.08309640522875818,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.08020778917815491,
+            "y": 0.955100697608257,
+            "width": 0.08343213646609399,
+            "height": 0.012672156887140962
+          },
+          "blockId": "p1-b7",
+          "start": 33,
+          "end": 47
+        },
+        {
+          "text": "FAKE-7310",
+          "category": "id",
+          "box": {
+            "x": 0.18701307189542482,
+            "y": 0.9483585858585859,
+            "width": 0.05820751633986928,
+            "height": 0.011047979797979798
+          },
+          "scannedBox": {
+            "x": 0.20182228985620249,
+            "y": 0.9532052297500224,
+            "width": 0.05855124576701254,
+            "height": 0.012184622837552395
+          },
+          "blockId": "p1-b7",
+          "start": 54,
+          "end": 63
+        }
+      ],
+      "figures": []
+    }
+  ],
+  "observations": [
+    {
+      "id": "o1",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "106",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "Glucose-2026-03-10"
+    },
+    {
+      "id": "o2",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Sodium-2026-03-10"
+    },
+    {
+      "id": "o3",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Potassium",
+      "value": "4.1",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "3.5-5.1",
+        "flag": "N",
+        "rangeLow": 3.5,
+        "rangeHigh": 5.1,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Potassium-2026-03-10"
+    },
+    {
+      "id": "o4",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Chloride",
+      "value": "102",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "98-107",
+        "flag": "N",
+        "rangeLow": 98,
+        "rangeHigh": 107,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Chloride-2026-03-10"
+    },
+    {
+      "id": "o5",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "BUN",
+      "value": "14",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "7-20",
+        "flag": "N",
+        "rangeLow": 7,
+        "rangeHigh": 20,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "BUN-2026-03-10"
+    },
+    {
+      "id": "o6",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Creatinine",
+      "value": "0.9",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "0.6-1.2",
+        "flag": "N",
+        "rangeLow": 0.6,
+        "rangeHigh": 1.2,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Creatinine-2026-03-10"
+    },
+    {
+      "id": "o7",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "WBC",
+      "value": "7.2",
+      "unit": "10^3/uL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "4.0-11.0",
+        "flag": "N",
+        "rangeLow": 4,
+        "rangeHigh": 11,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "WBC-2026-03-10"
+    },
+    {
+      "id": "o8",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Hemoglobin",
+      "value": "13.1",
+      "unit": "g/dL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "12.0-16.0",
+        "flag": "N",
+        "rangeLow": 12,
+        "rangeHigh": 16,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Hemoglobin-2026-03-10"
+    },
+    {
+      "id": "o9",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "Platelets",
+      "value": "251",
+      "unit": "10^3/uL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "150-400",
+        "flag": "N",
+        "rangeLow": 150,
+        "rangeHigh": 400,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Platelets-2026-03-10"
+    },
+    {
+      "id": "o10",
+      "blockId": "p1-b4",
+      "kind": "lab",
+      "name": "HbA1c",
+      "value": "6.1",
+      "unit": "%",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "4.0-5.6",
+        "flag": "H",
+        "rangeLow": 4,
+        "rangeHigh": 5.6,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "HbA1c-2026-03-10"
+    },
+    {
+      "id": "o11",
+      "blockId": "p1-b6",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "106",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "Glucose-2026-03-10"
+    },
+    {
+      "id": "o12",
+      "blockId": "p1-b6",
+      "kind": "lab",
+      "name": "Sodium",
+      "value": "140",
+      "unit": "mmol/L",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "135-145",
+        "flag": "N",
+        "rangeLow": 135,
+        "rangeHigh": 145,
+        "flagNormalized": "normal"
+      },
+      "duplicateGroup": "Sodium-2026-03-10"
+    },
+    {
+      "id": "o13",
+      "blockId": "p1-b5",
+      "kind": "vital",
+      "name": "Systolic blood pressure",
+      "value": "122",
+      "unit": "mmHg",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Systolic blood pressure-2026-03-10"
+    },
+    {
+      "id": "o14",
+      "blockId": "p1-b5",
+      "kind": "vital",
+      "name": "Diastolic blood pressure",
+      "value": "78",
+      "unit": "mmHg",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Diastolic blood pressure-2026-03-10"
+    },
+    {
+      "id": "o15",
+      "blockId": "p1-b6",
+      "kind": "medical-history",
+      "name": "Hypertension",
+      "value": "present",
+      "unit": null,
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2020-01-01",
+        "ongoing": true
+      },
+      "duplicateGroup": "Hypertension-2026-03-10"
+    },
+    {
+      "id": "o16",
+      "blockId": "p1-b6",
+      "kind": "medication",
+      "name": "Metformin",
+      "value": "500 mg",
+      "unit": "mg",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-15",
+        "ongoing": true,
+        "route": "oral",
+        "frequency": "twice daily"
+      },
+      "duplicateGroup": "Metformin-2026-03-10"
+    },
+    {
+      "id": "o17",
+      "blockId": "p1-b6",
+      "kind": "adverse-event",
+      "name": "Dehydration",
+      "value": "severe",
+      "unit": null,
+      "effectiveDate": "2026-03-02",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-03-02",
+        "endDate": "2026-03-05",
+        "seriousness": "serious (hospitalization)",
+        "serious": true,
+        "outcome": "recovered",
+        "ongoing": false
+      },
+      "duplicateGroup": "Dehydration-2026-03-02"
+    },
+    {
+      "id": "o18",
+      "blockId": "p1-b5",
+      "kind": "vital",
+      "name": "Pulse",
+      "value": "76",
+      "unit": "beats/min",
+      "effectiveDate": "2026-03-10",
+      "sourceFormat": "list",
+      "details": {},
+      "duplicateGroup": "Pulse-2026-03-10"
+    },
+    {
+      "id": "o19",
+      "blockId": "p1-b5",
+      "kind": "symptom",
+      "name": "Fatigue",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-03-01",
+      "sourceFormat": "list",
+      "details": {
+        "startDate": "2026-03-01",
+        "ongoing": true
+      },
+      "duplicateGroup": "Fatigue-2026-03-01"
+    },
+    {
+      "id": "o20",
+      "blockId": "p1-b6",
+      "kind": "adverse-event",
+      "name": "Nausea",
+      "value": "mild",
+      "unit": null,
+      "effectiveDate": "2026-02-01",
+      "sourceFormat": "narrative",
+      "details": {
+        "startDate": "2026-02-01",
+        "endDate": "2026-02-03",
+        "seriousness": "non-serious",
+        "serious": false
+      },
+      "duplicateGroup": "Nausea-2026-02-01"
+    }
+  ]
+}

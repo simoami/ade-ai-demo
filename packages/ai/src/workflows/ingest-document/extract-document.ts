@@ -29,7 +29,14 @@ type Dependencies = ArtifactDependencies & {
     pages: OcrPage[],
     masked: MaskedSpans
   ) => Promise<ExtractedObservation[]>
-  redactions: typeof listRedactions
+  redactions: (
+    documentId: string
+  ) => Promise<
+    Pick<
+      Awaited<ReturnType<typeof listRedactions>>[number],
+      'id' | 'page' | 'box' | 'state'
+    >[]
+  >
   replace: typeof replaceObservations
 }
 

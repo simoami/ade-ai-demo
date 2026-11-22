@@ -17,10 +17,13 @@ import { logger } from '@repo/logger'
 import sharp from 'sharp'
 import { type Expected, expectedSchema } from '#evals/fixtures/expected'
 import { hashIdentifier, readPatientHashKey } from '#identity/hash-identifier'
+import { normalizeObservation } from '#stages/extract/normalize-observation'
 import { observationBox } from '#stages/extract/observation-box'
 import type { Block } from '#stages/ocr/ocr-result'
 import { renderPdf } from '#stages/render/render-pages'
 import { proposePatient } from '#workflows/ingest-document/analyze-document'
+import { replaceNoteChunks } from '#workflows/ingest-document/document-store'
+import { buildNoteChunks } from '#workflows/ingest-document/index-notes'
 import { publishRedactedPages } from '#workflows/ingest-document/publish-redacted-pages'
 
 const log = logger.getSubLogger({ name: 'seed-samples' })
@@ -38,6 +41,14 @@ type Sample = {
 }
 
 const samples: Sample[] = [
+  {
+    id: 'clinical-followup',
+    fileName: 'clinical-followup.pdf',
+    documentClass: 'clinical',
+    patientId: 'PT-1042',
+    status: 'reviewed',
+    uploadedAt: '2026-11-20T10:00:00Z',
+  },
   {
     id: 'clinical-20',
     fileName: 'clinical-20.pdf',
@@ -280,7 +291,9 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
           sample.id === 'clinical-20' &&
           ['2:address', '5:provider'].includes(`${n}:${pii.category}`)
             ? 'needsReview'
-            : ['consent-01', 'radiology-01'].includes(sample.id)
+            : ['consent-01', 'radiology-01', 'clinical-followup'].includes(
+                  sample.id
+                )
               ? 'accepted'
               : 'applied',
       })
@@ -309,15 +322,24 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
     for (const observation of expected.observations) {
       const block = blocks.get(observation.blockId)
       if (!block) continue
+      const [normalized] = normalizeObservation({
+        ...observation,
+        valueNumeric: /^-?\d+(\.\d+)?$/.test(observation.value)
+          ? Number(observation.value)
+          : null,
+      })
+      if (!normalized) throw new Error('Missing normalized fixture observation')
+
       facts.push({
         id: sampleId(`${sample.id}:${observation.id}`),
         documentId,
         kind: observation.kind,
         name: observation.name,
         value: observation.value,
-        valueNumeric: /^-?\d+(\.\d+)?$/.test(observation.value)
-          ? observation.value
-          : null,
+        valueNumeric:
+          normalized.valueNumeric === null
+            ? null
+            : String(normalized.valueNumeric),
         unit: observation.unit,
         effectiveDate: observation.effectiveDate,
         dateSource: 'document',
@@ -330,10 +352,12 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
           },
         ],
         reviewStatus:
-          observation.kind === 'adverse-event' && [1, 4, 9].includes(n)
+          sample.id === 'clinical-20' &&
+          observation.kind === 'adverse-event' &&
+          [1, 4, 9].includes(n)
             ? 'flagged'
             : 'confirmed',
-        details: observation.details,
+        details: normalized.details,
       })
     }
   }
@@ -356,12 +380,13 @@ async function loadFixture(id: string) {
   return result.data
 }
 
-/** Seeds the six synthetic samples; no network calls occur until explicit invocation and env validation. */
+/** Seeds synthetic samples and their identifier-masked search indexes; no network calls occur until explicit invocation and env validation. */
 export async function seedSamples() {
   const missing = [
     'DATABASE_URL',
     'BLOB_READ_WRITE_TOKEN',
     'PATIENT_HASH_KEY',
+    'OPENAI_API_KEY',
   ].filter((name) => !process.env[name]?.trim())
   if (missing.length)
     throw new Error(
@@ -475,6 +500,30 @@ export async function seedSamples() {
         ...(masks.length ? [db.insert(redactions).values(masks)] : []),
         ...(facts.length ? [db.insert(observations).values(facts)] : []),
       ])
+      if (!beforeRedaction && sample.documentClass !== 'other') {
+        const chunks = await buildNoteChunks(
+          row.id,
+          expected.pages.map(({ scannedBlocks }) => ({
+            blocks: scannedBlocks,
+            usage: { latencyMs: 0 },
+          })),
+          expected.pages.flatMap((page) =>
+            page.pii.flatMap((span) =>
+              'blockId' in span
+                ? [
+                    {
+                      page: page.page + 1,
+                      blockId: span.blockId,
+                      start: span.start,
+                      end: span.end,
+                    },
+                  ]
+                : []
+            )
+          )
+        )
+        await replaceNoteChunks(row.id, chunks)
+      }
       if (redactedPages.length)
         await publishRedactedPages(row.id, redactedPages)
       log.info('Sample seeded', {

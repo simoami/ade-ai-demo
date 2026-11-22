@@ -8,6 +8,7 @@ import {
   documentStatus,
   documents,
   noteChunks,
+  observationKind,
   observations,
   patients,
   redactionState,
@@ -197,4 +198,21 @@ test('stores a nullable redacted page version with no implicit published copy in
     sql.trim(),
     'ALTER TABLE "documents" ADD COLUMN "page_version" integer;'
   )
+})
+
+test('adds medical history and medication without replacing existing observation kinds', () => {
+  assert.deepEqual(observationKind.enumValues, [
+    'lab',
+    'vital',
+    'symptom',
+    'adverse-event',
+    'medical-history',
+    'medication',
+  ])
+  const migration = readFileSync(
+    new URL('../migrations/0004_fuzzy_peter_quill.sql', import.meta.url),
+    'utf8'
+  )
+  assert.match(migration, /ADD VALUE 'medical-history'/)
+  assert.match(migration, /ADD VALUE 'medication'/)
 })

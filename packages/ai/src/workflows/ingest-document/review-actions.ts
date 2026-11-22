@@ -4,6 +4,7 @@ import {
   createDb,
   documents,
   eq,
+  noteChunks,
   observations,
   patients,
   redactions,
@@ -398,7 +399,15 @@ async function writeReview(documentId: string, change: ReviewWrite) {
           )
         )
     )
-  if (change.restoreRedactionId)
+  if (change.restoreRedactionId) {
+    queries.push(
+      db
+        .update(noteChunks)
+        .set({
+          removedByRedactionIds: sql`array_remove(${noteChunks.removedByRedactionIds}, ${change.restoreRedactionId})`,
+        })
+        .where(eq(noteChunks.documentId, documentId))
+    )
     queries.push(
       db
         .update(observations)
@@ -407,6 +416,7 @@ async function writeReview(documentId: string, change: ReviewWrite) {
         })
         .where(eq(observations.documentId, documentId))
     )
+  }
 
   // Neon HTTP batches run in one transaction, so the event and its row changes commit together.
   await db.batch([

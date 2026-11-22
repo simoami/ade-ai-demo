@@ -67,6 +67,7 @@ export const fixtureSpecs = [
     form: 'skin',
     title: 'Dermatology follow-up',
   },
+  { id: 'clinical-followup', pages: 1, kind: 'clinical', scan: 0.3 },
 ] as const
 
 type Run = { text: string; x: number; align?: 'right' | 'center' }
@@ -218,10 +219,14 @@ export async function generateFixture(
   const random = randomSource(seed)
   const pick = <T>(values: readonly [T, ...T[]]) =>
     values[Math.floor(random() * values.length)] ?? values[0]
-  const person = pick(['Aven Testmere', 'Bex Samplewick', 'Cora Fictionvale'])
+  // The follow-up shares clinical-20 identifiers so demo trends span documents.
+  const person =
+    spec.id === 'clinical-followup'
+      ? 'Bex Samplewick'
+      : pick(['Aven Testmere', 'Bex Samplewick', 'Cora Fictionvale'])
   const provider = pick(['Dr. Neri Mockwell', 'Dr. Zavi Fableton'])
   const facility = pick(['Imaginary Fern Clinic', 'Fictional Quartz Health'])
-  const mrn = `FAKE-${seed}`
+  const mrn = spec.id === 'clinical-followup' ? 'FAKE-7310' : `FAKE-${seed}`
   const dob = '1978-04-12'
   const phone = '202-555-0147'
   const address = '17 Fiction Lane, Exampleville, ZZ 00000'
@@ -401,7 +406,9 @@ export async function generateFixture(
       }
       return { id, bottom: bottom + 14 }
     }
-    const date = new Date(Date.UTC(2026, 1, 10 + index))
+    const date = new Date(
+      Date.UTC(2026, spec.id === 'clinical-followup' ? 2 : 1, 10 + index)
+    )
       .toISOString()
       .slice(0, 10)
     let top = 28
@@ -528,9 +535,13 @@ export async function generateFixture(
         }))
       )
       const vitals = [
-        `- BP: 128/82 mmHg (${date})`,
+        ...(spec.id === 'clinical-followup'
+          ? [`- SBP: 122 mmHg (${date})`, `- DBP: 78 mmHg (${date})`]
+          : [`- BP: 128/82 mmHg (${date})`]),
         `- Pulse: 76 beats/min (${date})`,
-        '- Symptoms: mild fatigue; no dyspnea',
+        spec.id === 'clinical-followup'
+          ? '- Symptoms: mild fatigue since 2026-03-01, ongoing; no dyspnea'
+          : '- Symptoms: mild fatigue; no dyspnea',
       ]
       const plan =
         index > 0
@@ -539,6 +550,10 @@ export async function generateFixture(
             ? 'Plan: review intake and hydration. Note continues.'
             : 'Plan: review intake and hydration. Review complete.'
       const narrative = `Encounter ${date}. ${provider} reviewed ${person}. Glucose was ${glucose} mg/dL on ${date}; sodium was 140 mmol/L. Contact: ${phone}. Address: ${address}. Mild nausea began 2026-02-01 and ended 2026-02-03. Seriousness: non-serious. No hospitalization was needed. ${plan}`
+      const followup = spec.id === 'clinical-followup'
+      const clinicalNote = followup
+        ? `${narrative} Medical history: hypertension since 2020-01-01, ongoing. Medications: metformin 500 mg oral twice daily since 2026-02-15, ongoing. Severe dehydration began 2026-03-02 and ended 2026-03-05. Seriousness: serious (hospitalization). Outcome: recovered. Ongoing: no.`
+        : narrative
       const stamp = [`REVIEWED ${date}`, 'Chart copy']
       const continues = (id: string) => (index > 0 ? id : null)
       let ids: { table: string; list: string; note: string }
@@ -546,7 +561,7 @@ export async function generateFixture(
         const listBlock = add('list', vitals, { y: top, size: 9.5 })
         const noteBlock = add(
           'paragraph',
-          wrap(narrative, body, 10, 250, keep),
+          wrap(clinicalNote, body, 10, 250, keep),
           { y: listBlock.bottom, continues: continues(previous.note) }
         )
         const labHeading = add('heading', [`Labs collected ${date}`], {
@@ -581,7 +596,7 @@ export async function generateFixture(
         const listBlock = add('list', vitals, { y: tableBlock.bottom })
         const noteBlock = add(
           'paragraph',
-          wrap(narrative, body, dense ? 9 : 10, 520, keep),
+          wrap(clinicalNote, body, dense ? 9 : 10, 520, keep),
           {
             y: listBlock.bottom,
             size: dense ? 9 : 10,
@@ -627,15 +642,89 @@ export async function generateFixture(
         observation(table, 'lab', name, value, unit, 'table', {
           referenceRange,
           flag,
+          rangeLow: Number(referenceRange.split('-')[0]),
+          rangeHigh: Number(referenceRange.split('-')[1]),
+          flagNormalized: flag === 'H' ? 'high' : 'normal',
         })
       for (const [name, value, unit, referenceRange, flag] of panel.slice(0, 2))
         observation(note, 'lab', name, value, unit, 'narrative', {
           referenceRange,
           flag,
+          rangeLow: Number(referenceRange.split('-')[0]),
+          rangeHigh: Number(referenceRange.split('-')[1]),
+          flagNormalized: flag === 'H' ? 'high' : 'normal',
         })
-      observation(list, 'vital', 'Blood pressure', '128/82', 'mmHg', 'list', {})
+      observation(
+        list,
+        'vital',
+        'Systolic blood pressure',
+        followup ? '122' : '128',
+        'mmHg',
+        'list',
+        {}
+      )
+      observation(
+        list,
+        'vital',
+        'Diastolic blood pressure',
+        followup ? '78' : '82',
+        'mmHg',
+        'list',
+        {}
+      )
+      if (followup) {
+        observation(
+          note,
+          'medical-history',
+          'Hypertension',
+          'present',
+          null,
+          'narrative',
+          { startDate: '2020-01-01', ongoing: true }
+        )
+        observation(
+          note,
+          'medication',
+          'Metformin',
+          '500 mg',
+          'mg',
+          'narrative',
+          {
+            route: 'oral',
+            frequency: 'twice daily',
+            startDate: '2026-02-15',
+            ongoing: true,
+          }
+        )
+        observation(
+          note,
+          'adverse-event',
+          'Dehydration',
+          'severe',
+          null,
+          'narrative',
+          {
+            startDate: '2026-03-02',
+            endDate: '2026-03-05',
+            seriousness: 'serious (hospitalization)',
+            serious: true,
+            outcome: 'recovered',
+            ongoing: false,
+          },
+          '2026-03-02'
+        )
+      }
       observation(list, 'vital', 'Pulse', '76', 'beats/min', 'list', {})
-      observation(list, 'symptom', 'Fatigue', 'mild', null, 'list', {})
+      observation(
+        list,
+        'symptom',
+        'Fatigue',
+        'mild',
+        null,
+        'list',
+        followup ? { startDate: '2026-03-01', ongoing: true } : {},
+        followup ? '2026-03-01' : date
+      )
       observation(
         note,
         'adverse-event',
@@ -647,6 +736,7 @@ export async function generateFixture(
           startDate: '2026-02-01',
           endDate: '2026-02-03',
           seriousness: 'non-serious',
+          serious: false,
         },
         '2026-02-01'
       )

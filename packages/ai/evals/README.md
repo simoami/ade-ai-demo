@@ -70,7 +70,7 @@ held-out included, over ground-truth text blocks. Scorers in
 flag consent summaries that repeat any ground-truth identifier text. Any
 misclassification or leaking summary fails the suite.
 
-`pnpm eval demographics` runs `demographics-v1` with Sol on the 14 clinical
+`pnpm eval demographics` runs `demographics-v1` with Sol on the 15 clinical
 and consent fixtures. Truth is the fixture's most frequent patient name, DOB
 and MRN spans. Scorers in `scorers/demographics.ts` compare keyed hashes under
 a per-run random key, then run `matchPatient` against two patients derived
@@ -81,13 +81,14 @@ Local reports hold metrics and fixture IDs only, never summaries or values.
 
 ## Observation extraction
 
-`pnpm eval extract` runs `extract-v1` with Sol on clinical-01, clinical-02 and
-clinical-03 (six development pages). Input is ground-truth text blocks with
+`pnpm eval extract` runs `extract-v2` with Sol on clinical-01, clinical-02,
+clinical-03 and clinical-followup (seven development pages). Input is ground-truth text blocks with
 whole ground-truth identifier spans masked, so extraction is isolated from OCR
 and identifier detection. Scorers in `scorers/extract.ts` compare
 deduplicated output with ground truth deduplicated per `duplicateGroup`
 (table over list over narrative): recall and precision on normalized name,
-value and effective date, unit accuracy among matches, and dedupe accuracy
+value and effective date, kind and detail field accuracy, unit accuracy among
+matches, and dedupe accuracy
 (exactly one survivor per group, in the preferred format). Error ceilings are
-5% missed or extra observations, 2% wrong units and 5% wrong groups; results
+5% missed or extra observations, 5% wrong fields, 2% wrong units and 5% wrong groups; results
 and reasons are in `docs/evals.md`.

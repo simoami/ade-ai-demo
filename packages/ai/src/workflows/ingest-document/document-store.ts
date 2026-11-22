@@ -3,6 +3,7 @@ import {
   documents,
   eq,
   type IdentifierHashes,
+  noteChunks,
   observations,
   or,
   patients,
@@ -102,6 +103,7 @@ export async function listRedactions(documentId: string) {
       page: redactions.page,
       box: redactions.box,
       state: redactions.state,
+      category: redactions.category,
     })
     .from(redactions)
     .where(eq(redactions.documentId, documentId))
@@ -131,4 +133,17 @@ export async function findPatientCandidates(hashes: IdentifierHashes) {
     })
     .from(patients)
     .where(or(...matches))
+}
+
+/** Replaces masked chunks in one Neon transaction so retries cannot duplicate an index. */
+export async function replaceNoteChunks(
+  documentId: string,
+  rows: (typeof noteChunks.$inferInsert)[]
+) {
+  const db = createDb()
+  const remove = db
+    .delete(noteChunks)
+    .where(eq(noteChunks.documentId, documentId))
+  if (rows.length) await db.batch([remove, db.insert(noteChunks).values(rows)])
+  else await remove
 }

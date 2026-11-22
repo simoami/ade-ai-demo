@@ -21,7 +21,11 @@ again. The class step then extracts clinical documents from identifier-masked
 OCR (`extracting`, then `needsReview`), sends consent documents to `needsReview`
 and others to `unsupported`. Observation rows use UUID v5 IDs from the document,
 page, block, name and date, are `flagged` below 0.7 confidence and list
-redactions covering at least 30% of their source box.
+redactions covering at least 30% of their source box. Validation normalizes lab
+bounds/flags, BP components, medication numeric doses and AE seriousness.
+A durable indexing step follows clinical extraction and consent processing:
+it embeds identifier-masked text blocks into `note_chunks` with source regions,
+replacing rows atomically using document/page/index UUID v5 IDs.
 
 The workflow waits on `document:<UUID>:review` and applies each action with
 `applyReviewAction` (`review-actions.ts`). Refused actions leave the loop

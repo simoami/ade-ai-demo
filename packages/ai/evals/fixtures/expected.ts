@@ -64,7 +64,14 @@ export const expectedSchema = z.object({
     z.object({
       id: z.string(),
       blockId: z.string(),
-      kind: z.enum(['lab', 'vital', 'symptom', 'adverse-event']),
+      kind: z.enum([
+        'lab',
+        'vital',
+        'symptom',
+        'adverse-event',
+        'medical-history',
+        'medication',
+      ]),
       name: z.string(),
       value: z.string(),
       unit: z.string().nullable(),
@@ -76,6 +83,26 @@ export const expectedSchema = z.object({
         startDate: z.string().optional(),
         endDate: z.string().optional(),
         seriousness: z.string().optional(),
+        rangeLow: z.number().nullable().optional(),
+        rangeHigh: z.number().nullable().optional(),
+        flagNormalized: z
+          .enum(['low', 'normal', 'high', 'abnormal'])
+          .nullable()
+          .optional(),
+        serious: z.boolean().nullable().optional(),
+        outcome: z
+          .enum([
+            'recovered',
+            'recovering',
+            'not-recovered',
+            'fatal',
+            'unknown',
+          ])
+          .nullable()
+          .optional(),
+        ongoing: z.boolean().nullable().optional(),
+        route: z.string().nullable().optional(),
+        frequency: z.string().nullable().optional(),
       }),
       duplicateGroup: z.string(),
     })
