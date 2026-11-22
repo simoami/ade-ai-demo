@@ -61,24 +61,23 @@ export function PageViewer({
 
   useEffect(() => {
     if (page > 0 && viewport.width > 0 && viewport.height > 0) {
-      void transformRef.current?.centerView(cover, 0)
+      void transformRef.current?.centerView(1, 0)
     }
-  }, [cover, page, viewport.width, viewport.height])
+  }, [page, viewport.width, viewport.height])
 
   function stepZoom(direction: 'in' | 'out') {
     const viewer = transformRef.current
 
     if (!viewer) return
 
-    // Scales are absolute; zoom levels are relative to cover, so 100% fills the viewer.
-    const current = viewer.state.scale / cover
+    const current = viewer.state.scale
     const next = nextZoomStep(current, direction)
 
     if (next === undefined) return
 
     void (direction === 'in'
-      ? viewer.zoomIn(cover * (next - current))
-      : viewer.zoomOut(cover * (current - next)))
+      ? viewer.zoomIn(next - current)
+      : viewer.zoomOut(current - next))
   }
 
   if (images.length === 0) {
@@ -112,7 +111,7 @@ export function PageViewer({
             size="sm"
             className="w-12 px-0 text-[10px] tabular-nums"
             aria-label="Reset zoom to 100%"
-            onClick={() => void transformRef.current?.centerView(cover)}
+            onClick={() => void transformRef.current?.centerView(1)}
           >
             {Math.round(zoom * 100)}%
           </Button>
@@ -159,9 +158,9 @@ export function PageViewer({
           <TransformWrapper
             key={page}
             ref={transformRef}
-            initialScale={cover}
-            minScale={cover * (zoomSteps[0] ?? 1)}
-            maxScale={cover * (zoomSteps.at(-1) ?? 1)}
+            initialScale={1}
+            minScale={zoomSteps[0]}
+            maxScale={zoomSteps.at(-1)}
             centerOnInit
             wheel={{
               activationKeys: (keys) =>
@@ -169,13 +168,17 @@ export function PageViewer({
             }}
             trackPadPanning={{ disabled: false }}
             keyboard={{ disabled: false }}
-            doubleClick={{ mode: 'zoomIn', step: cover * 0.5 }}
-            onInit={({ state }) => setZoom(state.scale / cover)}
-            onTransform={(_, { scale }) => setZoom(scale / cover)}
+            doubleClick={{ mode: 'zoomIn', step: 0.5 }}
+            onInit={({ state }) => setZoom(state.scale)}
+            onTransform={(_, { scale }) => setZoom(scale)}
           >
             <TransformComponent
               wrapperStyle={{ width: '100%', height: '100%' }}
-              contentStyle={{ width: image.width, height: image.height }}
+              // Content is laid out at the cover size, so the library's scale is the zoom level itself.
+              contentStyle={{
+                width: image.width * cover,
+                height: image.height * cover,
+              }}
               wrapperClass="cursor-grab active:cursor-grabbing"
             >
               <div className="relative size-full bg-white shadow-sm ring-1 ring-border">
