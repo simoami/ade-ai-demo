@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReviewAction } from '@repo/ai/review-action'
+import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { Button } from '@repo/ui/components/button'
 import {
   Dialog,
@@ -320,11 +321,13 @@ export function ReviewWorkspace({
 
       <footer className="flex h-[62px] shrink-0 items-center justify-between gap-3 border-t bg-card px-[22px]">
         <div className="flex items-center gap-2 [&_div]:flex [&_div]:flex-col [&_div]:gap-1 [&_strong]:text-[9px] [&_div>span]:text-[8px] [&_div>span]:text-muted-foreground">
-          <span className="grid size-[29px] place-items-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
-            {patients.find((patient) => patient.id === patientId)?.initials ??
-              (creating ? document.proposedPatient?.initials : undefined) ??
-              '?'}
-          </span>
+          <Avatar className="size-[29px]">
+            <AvatarFallback className="bg-accent text-[9px] font-bold text-accent-foreground">
+              {patients.find((patient) => patient.id === patientId)?.initials ??
+                (creating ? document.proposedPatient?.initials : undefined) ??
+                '?'}
+            </AvatarFallback>
+          </Avatar>
           <div>
             <span>Reviewing for</span>
             <strong>

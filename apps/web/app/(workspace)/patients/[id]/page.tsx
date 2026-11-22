@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -56,9 +57,11 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
         <span>Patients / Patient profile</span>
       </div>
       <header className="flex items-center gap-[15px] border-b pb-[21px] [&_h1]:mt-1 [&_h1]:mb-2 [&_h1]:text-[22px] [&_h1]:font-semibold [&_h1]:tracking-tight">
-        <span className="grid size-[55px] place-items-center rounded-full bg-accent text-base font-semibold text-accent-foreground">
-          {patient.initials}
-        </span>
+        <Avatar className="size-[55px]">
+          <AvatarFallback className="bg-accent text-base font-semibold text-accent-foreground">
+            {patient.initials}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex-1">
           <div className="text-[9px] font-bold tracking-[.12em] text-muted-foreground">
             PATIENT PROFILE

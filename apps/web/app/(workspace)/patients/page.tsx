@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { PatientsSkeleton } from '#components/record-skeletons'
@@ -21,9 +22,11 @@ async function PatientRows() {
               href={`/patients/${patient.id}`}
               className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50"
             >
-              <span className="grid size-8 place-items-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
-                {patient.initials}
-              </span>
+              <Avatar>
+                <AvatarFallback className="bg-accent text-xs font-semibold text-accent-foreground">
+                  {patient.initials}
+                </AvatarFallback>
+              </Avatar>
               <span className="flex-1 text-sm font-medium">{patient.id}</span>
               <span className="text-sm text-muted-foreground">
                 {patient.sex} · born {patient.birthYear ?? 'Unknown'} ·{' '}

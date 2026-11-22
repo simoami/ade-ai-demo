@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import {
@@ -60,9 +61,11 @@ export function PatientPanel({
       {patient && fields ? (
         <div className="rounded-lg border bg-card p-[13px]">
           <div className="flex items-center gap-2">
-            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">
-              {patient.initials}
-            </span>
+            <Avatar>
+              <AvatarFallback className="bg-accent text-[10px] font-semibold text-accent-foreground">
+                {patient.initials}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="text-sm font-medium">{patient.id}</span>
               <span className="text-xs text-muted-foreground">
@@ -84,9 +87,11 @@ export function PatientPanel({
         </div>
       ) : creating && document.proposedPatient ? (
         <div className="flex items-center gap-2 rounded-lg border bg-card p-[13px]">
-          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-[10px] font-semibold text-accent-foreground">
-            {document.proposedPatient.initials}
-          </span>
+          <Avatar>
+            <AvatarFallback className="bg-accent text-[10px] font-semibold text-accent-foreground">
+              {document.proposedPatient.initials}
+            </AvatarFallback>
+          </Avatar>
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="text-sm font-medium">New patient</span>
             <span className="text-xs text-muted-foreground">
@@ -151,17 +156,15 @@ export function PatientPanel({
                     setPicking(false)
                   }}
                 >
-                  <span className="font-medium">{candidate.id}</span>
-                  <span className="text-muted-foreground">
-                    {candidate.initials} · {candidate.sex} ·{' '}
-                    {candidate.birthYear ?? 'Unknown'}
-                  </span>
-                  {candidateFields !== undefined && (
-                    <span className="ml-auto">
-                      <StrengthBadge
-                        strength={matchStrength(candidateFields)}
-                      />
+                  <div className="w-full flex gap-1">
+                    <span className="font-medium">{candidate.id}</span>
+                    <span className="text-muted-foreground">
+                      {candidate.initials} · {candidate.sex} ·{' '}
+                      {candidate.birthYear ?? 'Unknown'}
                     </span>
+                  </div>
+                  {candidateFields !== undefined && (
+                    <StrengthBadge strength={matchStrength(candidateFields)} />
                   )}
                 </CommandItem>
               )
