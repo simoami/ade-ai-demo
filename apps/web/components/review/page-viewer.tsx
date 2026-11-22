@@ -11,6 +11,11 @@ import { getCoverScale, nextZoomStep, zoomSteps } from '#lib/page-zoom'
 import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
 
+// The library clamps the centered position to the page edges.
+const selectionZoom = 1.5
+
+const selectedOutlineId = (id: string) => `page-outline-${id}`
+
 type Outline = {
   id: string
   box: Box
@@ -64,6 +69,18 @@ export function PageViewer({
       void transformRef.current?.centerView(1, 0)
     }
   }, [page, viewport.width, viewport.height])
+
+  const selectedId = outlines.find(({ tone }) => tone === 'selected')?.id
+
+  // Runs after the page is centered, so a selection elsewhere on the page is brought into view.
+  useEffect(() => {
+    if (!selectedId || viewport.width === 0 || viewport.height === 0) return
+
+    void transformRef.current?.zoomToElement(
+      selectedOutlineId(selectedId),
+      selectionZoom
+    )
+  }, [selectedId, viewport.width, viewport.height])
 
   function stepZoom(direction: 'in' | 'out') {
     const viewer = transformRef.current
@@ -217,6 +234,11 @@ export function PageViewer({
                     return (
                       <g
                         key={id}
+                        id={
+                          tone === 'selected'
+                            ? selectedOutlineId(id)
+                            : undefined
+                        }
                         fill="none"
                         strokeWidth={1.25}
                         strokeLinejoin="round"
