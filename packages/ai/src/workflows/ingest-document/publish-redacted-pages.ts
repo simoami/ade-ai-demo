@@ -1,5 +1,6 @@
 import { storage } from '@repo/storage'
 import sharp from 'sharp'
+import { deleteObsoleteArtifacts } from './artifact-cleanup.ts'
 import { findDocument, updateDocument } from './document-store.ts'
 
 type Dependencies = {
@@ -60,25 +61,12 @@ export async function publishRedactedPages(
   await deps.update(documentId, { pageVersion: version })
 
   // List after the version switch so incomplete writes never remove the visible copy.
-  for (const prefix of [
-    `documents/${documentId}/render/`,
-    `documents/${documentId}/pages/`,
-  ]) {
-    let cursor: string | undefined
-    do {
-      const result = await deps.storage.list(prefix, cursor)
-      const obsolete = result.blobs
-        .filter(
-          ({ pathname }) =>
-            !pathname.match(
-              new RegExp(`/pages/\\d+-v${version}(-thumb)?\\.webp$`)
-            )
-        )
-        .map(({ pathname }) => pathname)
-      if (obsolete.length) await deps.storage.delete(obsolete)
-      cursor = result.hasMore ? result.cursor : undefined
-    } while (cursor)
-  }
+  await deleteObsoleteArtifacts(
+    documentId,
+    version,
+    [`documents/${documentId}/render/`, `documents/${documentId}/pages/`],
+    deps.storage
+  )
 
   return version
 }

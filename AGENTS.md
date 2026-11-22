@@ -104,6 +104,7 @@ sources and a manifest before publication so retries can finish after render del
 Redaction and observation rows are replaced atomically using UUID v5 IDs. Rendering scratch directories are
 removed inside the step. The review loop applies each action through `applyReviewAction`. The workspace Admin dialog offers synthetic
 PDF downloads and an authenticated reset that cancels runs, removes document
-Blobs and deletes document rows while preserving patients. Per-document
-artifact cleanup is not implemented. Deployment requires Deployment Protection and service
+Blobs and deletes document rows while preserving patients. After terminal review or discard, a durable step
+deletes originals and transient Blob artifacts, retaining only published redacted page pairs. The required original pathname
+remains historical metadata and is never fetched after cleanup. Deployment requires Deployment Protection and service
 credentials. Keep document content out of logs and OCR out of workflow history.

@@ -110,9 +110,10 @@ confidence; covering redactions recorded) replace the previous rows before
 `needsReview`. Consent documents go to `needsReview`; others to `unsupported`.
 The run then waits on the review hook and applies each action with
 `applyReviewAction`; a refused action leaves the loop waiting, and
-`markReviewed` or `discard` ends the run. Per-document artifact cleanup
-is not implemented. The web server signs full-image and thumbnail URLs for the browser to load directly
-from private Blob. Before publication, renders are exposed only during `reading`
+`markReviewed` or `discard` ends the run. After terminal review or discard, a durable step
+deletes originals and transient Blob artifacts, retaining only published redacted page pairs. The required original pathname
+remains historical metadata and is never fetched after cleanup. The web server signs full-image and thumbnail URLs
+for the browser to load directly from private Blob. Before publication, renders are exposed only during `reading`
 or `redacting`. Published pages take precedence in every status; encrypted OCR
 is never served. URLs expire after 15 minutes; reopening the review issues fresh URLs.
 `documents.page_version` is nullable until publication. The workflow serializes

@@ -169,3 +169,33 @@ test('sends authenticated DELETE and rejects an invalid document count', async (
   valid = false
   await assert.rejects(pipeline.deleteDocuments(), /Service unavailable/)
 })
+
+test('passes validated review refusals through 409 responses and ignores malformed refusals', async (t) => {
+  configure()
+  const bodies = [
+    { refusal: 'reviewIncomplete' },
+    { refusal: 'unknown' },
+    { refusal: { code: 'reviewIncomplete' } },
+    null,
+  ]
+
+  for (const body of bodies) {
+    const request = t.mock.method(globalThis, 'fetch', async () =>
+      Response.json(body, { status: 409 })
+    )
+
+    await assert.rejects(
+      pipeline.review(documentId, { type: 'markReviewed' }),
+      (error: unknown) => {
+        assert.ok(error instanceof PipelineError)
+        assert.equal(error.status, 409)
+        assert.equal(
+          error.refusal,
+          body === bodies[0] ? 'reviewIncomplete' : undefined
+        )
+        return true
+      }
+    )
+    request.mock.restore()
+  }
+})

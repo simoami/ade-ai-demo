@@ -147,3 +147,22 @@ test('posts the action and reports refusals and failures as inline messages', as
     /could not be saved/
   )
 })
+
+test('explains incomplete review and uses the generic conflict message for other refusals', async () => {
+  for (const refusal of [
+    'reviewIncomplete',
+    'notReviewable',
+    'unknown',
+    null,
+    { code: 'reviewIncomplete' },
+  ]) {
+    assert.equal(
+      await submitReview('doc', { type: 'markReviewed' }, async () =>
+        Response.json({ refusal }, { status: 409 })
+      ),
+      refusal === 'reviewIncomplete'
+        ? 'Link a patient and resolve every item that needs review first.'
+        : 'This change no longer applies. Refresh to see the current review.'
+    )
+  }
+})

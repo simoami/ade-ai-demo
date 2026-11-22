@@ -68,3 +68,19 @@ test('rejects patient creation carrying document content', async (t) => {
   )
   assert.equal(review.mock.callCount(), 0)
 })
+
+test('returns the service refusal with its safe error message without invalidating caches', async (t) => {
+  const invalidation = t.mock.method(recordCache, 'invalidate', () => {})
+  t.mock.method(pipeline, 'review', async () => {
+    throw new PipelineError(409, 'reviewIncomplete')
+  })
+
+  const response = await POST(request({ type: 'markReviewed' }), context)
+
+  assert.equal(response.status, 409)
+  assert.deepEqual(await response.json(), {
+    error: 'Review action refused',
+    refusal: 'reviewIncomplete',
+  })
+  assert.equal(invalidation.mock.callCount(), 0)
+})

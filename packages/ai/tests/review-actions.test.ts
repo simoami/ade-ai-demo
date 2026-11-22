@@ -84,27 +84,6 @@ function harness(state: ReviewState | undefined) {
       put: async () => {
         throw new Error('Review actions never write Blobs')
       },
-      list: async (prefix, cursor) => {
-        calls.push(`list:${cursor ?? ''}`)
-        return {
-          blobs: [...blobs.keys()]
-            .filter((path) => path.startsWith(prefix))
-            .slice(cursor ? 1 : 0, cursor ? 2 : 1)
-            .map((pathname) => ({
-              pathname,
-              url: '',
-              downloadUrl: '',
-              size: 1,
-              uploadedAt: new Date(),
-              etag: '',
-            })),
-          hasMore: !cursor,
-          cursor: cursor ? undefined : 'next',
-        }
-      },
-      delete: async (paths) => {
-        calls.push(`delete:${[paths].flat().length}`)
-      },
     },
     burn: async (image, regions) => {
       calls.push(`burn:${image.toString()}:${regions.length}`)
@@ -387,10 +366,10 @@ test('refuses mark as reviewed while the link or any item still needs review', a
   assert.deepEqual(result, { applied: true })
   assert.equal(writes[0]?.document?.status, 'reviewed')
   assert.ok(writes[0]?.document?.reviewedAt instanceof Date)
-  assert.deepEqual(calls, ['list:', 'delete:1', 'list:next', 'delete:1'])
+  assert.deepEqual(calls, [])
 })
 
-test('discards unsupported documents and deletes review sources', async () => {
+test('discards unsupported documents before artifact cleanup', async () => {
   const { result, writes, calls } = await apply(
     { type: 'discard' },
     reviewState({ status: 'unsupported' })
@@ -402,17 +381,17 @@ test('discards unsupported documents and deletes review sources', async () => {
       document: { status: 'discarded' },
     },
   ])
-  assert.equal(calls.filter((call) => call.startsWith('delete')).length, 2)
+  assert.deepEqual(calls, [])
 })
 
-test('repeats source cleanup without another event when a terminal action is retried', async () => {
+test('does not write another event when a terminal action is retried', async () => {
   const { result, writes, calls } = await apply(
     { type: 'discard' },
     reviewState({ status: 'discarded' })
   )
   assert.deepEqual(result, { applied: false })
   assert.deepEqual(writes, [])
-  assert.ok(calls.includes('delete:1'))
+  assert.deepEqual(calls, [])
 })
 
 test('refuses review actions outside review and on unsupported documents', async () => {

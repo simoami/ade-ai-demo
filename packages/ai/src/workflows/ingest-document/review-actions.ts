@@ -63,13 +63,13 @@ export type ReviewWrite = {
 
 type Plan =
   | { refusal: ReviewRefusal }
-  | { write: ReviewWrite | null; reburn: boolean; terminal: boolean }
+  | { write: ReviewWrite | null; reburn: boolean }
 
 type Dependencies = {
   load: (documentId: string) => Promise<ReviewState | undefined>
   patientExists: (patientId: string) => Promise<boolean>
   write: (documentId: string, write: ReviewWrite) => Promise<void>
-  storage: Pick<typeof storage, 'get' | 'put' | 'list' | 'delete'>
+  storage: Pick<typeof storage, 'get' | 'put'>
   key: () => Buffer
   burn: (
     image: Uint8Array,
@@ -141,7 +141,6 @@ export async function applyReviewAction(
   if (plan.reburn && action.type === 'redaction.update')
     await reburnPages(documentId, state, action.redactionId, deps)
   if (plan.write) await deps.write(documentId, plan.write)
-  if (plan.terminal) await deleteReviewSources(documentId, deps)
 
   return { applied: plan.write !== null }
 }
@@ -157,14 +156,14 @@ async function planAction(
     terminal &&
     state.status === (action.type === 'discard' ? 'discarded' : 'reviewed')
   )
-    return { write: null, reburn: false, terminal }
+    return { write: null, reburn: false }
   if (
     state.status !== 'needsReview' &&
     !(action.type === 'discard' && state.status === 'unsupported')
   )
     return { refusal: 'notReviewable' }
 
-  const unchanged = { write: null, reburn: false, terminal: false }
+  const unchanged = { write: null, reburn: false }
   switch (action.type) {
     case 'redaction.update': {
       const redaction = state.redactions.find(
@@ -187,7 +186,6 @@ async function planAction(
           ...(rejected ? { restoreRedactionId: redaction.id } : {}),
         },
         reburn: rejected,
-        terminal: false,
       }
     }
     case 'observation.update': {
@@ -211,7 +209,6 @@ async function planAction(
           observation: { id: observation.id, reviewStatus },
         },
         reburn: false,
-        terminal: false,
       }
     }
     case 'patient.link': {
@@ -229,7 +226,6 @@ async function planAction(
           document: { patientId: action.patientId, identityMismatch: false },
         },
         reburn: false,
-        terminal: false,
       }
     }
     case 'patient.create': {
@@ -255,7 +251,6 @@ async function planAction(
           document: { patientId, identityMismatch: false },
         },
         reburn: false,
-        terminal: false,
       }
     }
     case 'markReviewed': {
@@ -276,7 +271,6 @@ async function planAction(
           document: { status: 'reviewed', reviewedAt: new Date() },
         },
         reburn: false,
-        terminal: true,
       }
     }
     case 'discard':
@@ -286,7 +280,6 @@ async function planAction(
           document: { status: 'discarded' },
         },
         reburn: false,
-        terminal: true,
       }
   }
 }
@@ -326,19 +319,6 @@ async function reburnPages(
   }
 
   await deps.publish(documentId, pages)
-}
-
-async function deleteReviewSources(documentId: string, deps: Dependencies) {
-  let cursor: string | undefined
-  do {
-    const result = await deps.storage.list(
-      reviewSourcePrefix(documentId),
-      cursor
-    )
-    if (result.blobs.length)
-      await deps.storage.delete(result.blobs.map(({ pathname }) => pathname))
-    cursor = result.hasMore ? result.cursor : undefined
-  } while (cursor)
 }
 
 async function loadReviewState(
