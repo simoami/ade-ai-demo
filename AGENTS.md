@@ -102,7 +102,7 @@ then picture review and redaction. Clinical documents are extracted (`extracting
 `needsReview`), consent documents go to `needsReview` and others to `unsupported`.
 Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
 and derives AE seriousness in code. Clinical and consent documents then index
-identifier-masked OCR blocks with `embeddingModel` into `note_chunks` (1536 dimensions),
+identifier-masked OCR sections (each heading with the blocks under it) with `embeddingModel` into `note_chunks` (1536 dimensions),
 replacing rows atomically with document/page/index UUID v5 IDs. Keep chunk text
 and embeddings inside the durable step; return counts only.
 Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible. Accepting or rejecting a redaction republishes pages from encrypted review sources before recording the decision.

@@ -42,7 +42,38 @@ export function isSearchableNoteBlock(block: Block): boolean {
   )
 }
 
-/** Builds bounded chunks from identifier-masked blocks; embeddings and text never enter workflow history. */
+// A character ceiling keeps even a dense OCR block within the embedding model's token limit.
+const maxChunkLength = 2000
+
+/** Groups each heading with the blocks under it so a section is retrieved with its title; blocks before any heading stay separate. */
+function noteSections(blocks: Block[], page: number) {
+  const sections: { text: string; source: Chunk['source'] }[] = []
+  let heading: string | null = null
+  for (const block of blocks) {
+    const text = block.text.trim()
+    const source = { page, blockId: block.id, box: block.box }
+    const current = sections.at(-1)
+    if (block.kind === 'heading') {
+      heading = text
+      sections.push({ text, source: [source] })
+    } else if (
+      heading !== null &&
+      current &&
+      current.text.length + text.length < maxChunkLength
+    ) {
+      current.text += `\n${text}`
+      current.source.push(source)
+    } else {
+      sections.push({
+        text: heading === null ? text : `${heading}\n${text}`,
+        source: [source],
+      })
+    }
+  }
+  return sections
+}
+
+/** Builds bounded section chunks from identifier-masked blocks; embeddings and text never enter workflow history. */
 export async function buildNoteChunks(
   documentId: string,
   pages: OcrPage[],
@@ -51,22 +82,20 @@ export async function buildNoteChunks(
 ): Promise<Chunk[]> {
   const chunks = maskIdentifiers(pages, spans).flatMap((page, pageIndex) => {
     let index = 0
-    return page.blocks.filter(isSearchableNoteBlock).flatMap((block) => {
-      const text = block.text.trim()
-
-      // A character ceiling keeps even a dense OCR block within the embedding model's token limit.
-      return Array.from(
-        { length: Math.ceil(text.length / 2000) },
+    const blocks = page.blocks.filter(isSearchableNoteBlock)
+    return noteSections(blocks, pageIndex + 1).flatMap(({ text, source }) =>
+      Array.from(
+        { length: Math.ceil(text.length / maxChunkLength) },
         (_, part) => ({
           id: documentScopedId(documentId, `note:${pageIndex + 1}:${index++}`),
           documentId,
-          text: text.slice(part * 2000, (part + 1) * 2000),
-          source: [{ page: pageIndex + 1, blockId: block.id, box: block.box }],
+          text: text.slice(part * maxChunkLength, (part + 1) * maxChunkLength),
+          source,
         })
       ).filter((chunk) =>
         /[\p{L}\p{N}]/u.test(chunk.text.replaceAll(identifierPlaceholder, ''))
       )
-    })
+    )
   })
   if (!chunks.length) return []
 

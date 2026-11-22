@@ -97,6 +97,41 @@ test('bounds large blocks, keeps unique IDs and skips blank text without calling
   )
 })
 
+test('indexes each heading with the blocks under it and keeps earlier blocks separate', async () => {
+  const block = (id: string, kind: 'heading' | 'paragraph', text: string) => ({
+    id,
+    kind,
+    text,
+    box,
+    continues: null,
+  })
+  const chunks = await buildNoteChunks(
+    documentId,
+    [
+      {
+        blocks: [
+          block('title', 'paragraph', 'Screening visit'),
+          block('cc', 'heading', 'Chief complaint'),
+          block('cc-body', 'paragraph', 'Synthetic fatigue for two weeks'),
+          block('plan', 'heading', 'Plan'),
+          block('plan-body', 'paragraph', 'Synthetic follow-up in one month'),
+        ],
+        usage: { latencyMs: 0 },
+      },
+    ],
+    [],
+    embed
+  )
+  assert.deepEqual(
+    chunks.map(({ text, source }) => [text, source.map((s) => s.blockId)]),
+    [
+      ['Screening visit', ['title']],
+      ['Chief complaint\nSynthetic fatigue for two weeks', ['cc', 'cc-body']],
+      ['Plan\nSynthetic follow-up in one month', ['plan', 'plan-body']],
+    ]
+  )
+})
+
 test('rejects invalid embedding count, dimensions and provider errors without exposing text', async () => {
   for (const embedder of [
     async () => [],
