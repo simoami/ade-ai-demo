@@ -16,6 +16,7 @@ type Outline = {
   box: Box
   points?: Redaction['points']
   tone: 'review' | 'selected'
+  spotlight: boolean
 }
 
 /** Shows page images at their original proportions with source outlines. */
@@ -197,7 +198,7 @@ export function PageViewer({
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 size-full overflow-visible"
                 >
-                  {outlines.map(({ id, box, points, tone }) => {
+                  {outlines.map(({ id, box, points, tone, spotlight }) => {
                     const polygon = points ?? [
                       [box.x, box.y],
                       [box.x + box.width, box.y],
@@ -221,6 +222,14 @@ export function PageViewer({
                         strokeWidth={1.25}
                         strokeLinejoin="round"
                       >
+                        {spotlight === true && (
+                          <path
+                            d={`M0 0H${pageSize.width}V${pageSize.height}H0Z M${padded.map(([x, y]) => `${x},${y}`).join('L')}Z`}
+                            fill="black"
+                            fillOpacity={0.18}
+                            fillRule="evenodd"
+                          />
+                        )}
                         <polygon points={coordinates} stroke="white" />
                         <polygon
                           points={coordinates}

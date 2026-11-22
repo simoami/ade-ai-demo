@@ -1,3 +1,4 @@
+import type { observations } from '@repo/db'
 import type { FieldMatch, MatchField, Observation } from './records-types.ts'
 
 type Hashes = Partial<Record<MatchField, string | null>>
@@ -41,5 +42,26 @@ export function observationState(
     case 'confirmed':
     case 'corrected':
       return 'accepted'
+  }
+}
+
+/** Maps a stored observation and its source polygon to the review screen. */
+export function observationSummary(
+  row: typeof observations.$inferSelect
+): Observation {
+  const source = row.source[0]
+  if (!source) throw new Error('Observation source is missing')
+
+  return {
+    id: row.id,
+    page: source.page,
+    kind: row.kind,
+    name: row.name,
+    value: row.value,
+    unit: row.unit ?? '',
+    date: row.effectiveDate ?? '',
+    box: source.box,
+    points: source.points,
+    state: observationState(row.reviewStatus),
   }
 }

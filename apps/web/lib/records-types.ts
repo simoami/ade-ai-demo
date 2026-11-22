@@ -54,6 +54,7 @@ export type Observation = {
   unit: string
   date: string
   box: Box
+  points?: [number, number][]
   state: 'extracted' | 'needsReview' | 'accepted' | 'rejected'
 }
 

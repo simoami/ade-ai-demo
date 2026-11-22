@@ -24,6 +24,7 @@ import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
 import type { Patient, ReviewDocument } from '#lib/records-types'
 import { pendingCount, redactionIconKind, reviewMode } from '#lib/review'
+import { reviewOutlines } from '#lib/review-outlines'
 import {
   canDiscard,
   canMarkReviewed,
@@ -88,16 +89,7 @@ export function ReviewWorkspace({
   }))
 
   const regions = [...redactions, ...observations]
-  const outlines = regions
-    .filter((item) => item.page === page)
-    .filter((item) => item.state === 'needsReview' || item.id === selected?.id)
-    .map((item) => ({
-      id: item.id,
-      box: item.box,
-      points: 'points' in item ? item.points : undefined,
-      tone:
-        item.id === selected?.id ? ('selected' as const) : ('review' as const),
-    }))
+  const outlines = reviewOutlines(redactions, observations, page, selected?.id)
 
   function select(item: ReviewItem) {
     setSelected(item)

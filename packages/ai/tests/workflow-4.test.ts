@@ -292,6 +292,9 @@ function extraction(extracted: ExtractedObservation[]) {
     replaced,
     overrides: {
       ...h.deps,
+      find: async () => ({
+        pageDimensions: pages.map(() => ({ width: 612, height: 792 })),
+      }),
       extract: async (ocr: OcrPage[], masked: unknown) => {
         assert.deepEqual(ocr, pages)
         assert.deepEqual(masked, spans)
@@ -436,4 +439,70 @@ test('stores unmasked OCR row geometry and removes observations covered by a row
   assert.ok(Math.abs(source.box.height - box.height) < 1e-12)
   assert.ok(source.box.height < (pages[0]?.blocks[1]?.box.height ?? 0))
   assert.deepEqual(row?.removedByRedactionIds, ['row'])
+})
+
+test('persists tilted source corners using stored page dimensions while coverage uses the bounding box', async () => {
+  const h = extraction([observation()])
+  const angle = (2.5 * Math.PI) / 180
+  const aspectRatio = 2
+  const ocr = pages.map((page) => ({
+    ...page,
+    words: ['Hemoglobin', 'Other'].flatMap((name, row) =>
+      [name, '13.2', 'g/dL', 'synthetic', 'cell', 'cell', 'cell', 'cell'].map(
+        (text, column) => ({
+          text,
+          blockId: 'labs',
+          box: {
+            x: 0.1 + column * 0.045,
+            y:
+              0.51 +
+              row * 0.025 +
+              column * 0.045 * aspectRatio * Math.tan(angle),
+            width: 0.03,
+            height: 0.007,
+          },
+        })
+      )
+    ),
+  }))
+  h.blobs.set(
+    `documents/${documentId}/ocr.json.enc`,
+    encryptArtifact(Buffer.from(JSON.stringify(ocr)), key)
+  )
+  await finishProcessing(documentId, 'clinical', {
+    ...h.overrides,
+    find: async () => ({ pageDimensions: [{ width: 2000, height: 1000 }] }),
+    extract: async () => [observation()],
+  })
+  const row = h.replaced[0]?.[0]
+  const source = row?.source?.[0]
+  assert.ok(source?.points?.[0] && source.points[1])
+  const [first, second] = source.points
+  assert.ok(first && second)
+  const measured = Math.atan2(
+    second[1] - first[1],
+    (second[0] - first[0]) * aspectRatio
+  )
+  assert.ok(Math.abs(measured - angle) < 1e-12)
+  assert.equal('points' in source.box, false)
+  assert.deepEqual(row?.removedByRedactionIds, ['covering'])
+})
+
+test('rejects missing or invalid page dimensions before extraction without persisting', async () => {
+  for (const dimensions of [
+    [],
+    [{ width: 0, height: 792 }],
+    [{ width: 612, height: NaN }],
+  ]) {
+    const h = extraction([observation()])
+    await assert.rejects(
+      finishProcessing(documentId, 'clinical', {
+        ...h.overrides,
+        find: async () => ({ pageDimensions: dimensions }),
+        extract: async () => assert.fail('extraction must not run'),
+      }),
+      { message: 'Document extraction failed' }
+    )
+    assert.deepEqual(h.replaced, [])
+  }
 })

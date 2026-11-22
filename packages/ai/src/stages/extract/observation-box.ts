@@ -6,6 +6,26 @@ function normalize(text: string) {
   return text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 }
 
+type Point = [number, number]
+
+function corners(box: Box): Point[] {
+  return [
+    [box.x, box.y],
+    [box.x + box.width, box.y],
+    [box.x + box.width, box.y + box.height],
+    [box.x, box.y + box.height],
+  ]
+}
+
+function bounds(points: Point[]): Box {
+  const xs = points.map(([x]) => x)
+  const ys = points.map(([, y]) => y)
+  const x = Math.min(...xs)
+  const y = Math.min(...ys)
+
+  return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y }
+}
+
 function center(word: Word) {
   return word.box.y + word.box.height / 2
 }
@@ -14,9 +34,24 @@ function center(word: Word) {
 export function observationBox(
   block: Block,
   words: Word[] | undefined,
-  observation: Observation
-): Box {
-  const blockWords = words?.filter((word) => word.blockId === block.id) ?? []
+  observation: Observation,
+  geometry: { angle: number; aspectRatio: number } = {
+    angle: 0,
+    aspectRatio: 1,
+  }
+): Box & { points?: Point[] } {
+  const { angle, aspectRatio } = geometry
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  const deskew = ([x, y]: Point): Point => [
+    x * aspectRatio * cos + y * sin,
+    -x * aspectRatio * sin + y * cos,
+  ]
+  const originalWords = words?.filter((word) => word.blockId === block.id) ?? []
+  const blockWords = originalWords.map((word) => ({
+    ...word,
+    box: bounds(corners(word.box).map(deskew)),
+  }))
   if (!blockWords.length) return block.box
 
   const valueTokens = new Set(
@@ -65,18 +100,25 @@ export function observationBox(
   const row = blockWords.filter(
     (word) => center(word) >= top && center(word) <= bottom
   )
-  const x = Math.max(block.box.x, Math.min(...row.map((word) => word.box.x)))
-  const y = Math.max(block.box.y, Math.min(...row.map((word) => word.box.y)))
-  const right = Math.min(
-    block.box.x + block.box.width,
-    Math.max(...row.map((word) => word.box.x + word.box.width))
+  const rectangle = bounds(row.flatMap((word) => corners(word.box)))
+  const points = corners(rectangle).map(
+    ([x, y]): Point => [
+      Math.max(
+        block.box.x,
+        Math.min(
+          block.box.x + block.box.width,
+          (x * cos - y * sin) / aspectRatio
+        )
+      ),
+      Math.max(
+        block.box.y,
+        Math.min(block.box.y + block.box.height, x * sin + y * cos)
+      ),
+    ]
   )
-  const end = Math.min(
-    block.box.y + block.box.height,
-    Math.max(...row.map((word) => word.box.y + word.box.height))
-  )
+  const box = bounds(points)
 
-  return right > x && end > y
-    ? { x, y, width: right - x, height: end - y }
-    : block.box
+  if (box.width <= 0 || box.height <= 0) return block.box
+
+  return { ...box, points }
 }

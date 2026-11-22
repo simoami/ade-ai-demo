@@ -30,7 +30,12 @@ export type ProposedPatient = {
 }
 
 /** One source region, using a one-based page number and the OCR block ID. */
-export type SourceRegion = { page: number; blockId: string; box: Box }
+export type SourceRegion = {
+  page: number
+  blockId: string
+  box: Box
+  points?: [number, number][]
+}
 
 /** Kind-specific details are validated by the extraction boundary before persistence. */
 export type ObservationDetails = {
