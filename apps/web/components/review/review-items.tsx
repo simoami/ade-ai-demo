@@ -1,3 +1,4 @@
+import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import { cn } from '@repo/ui/lib/utils'
 import {
@@ -61,14 +62,12 @@ export function ReviewItems({
   const clinicalList = items.some((item) => item.observation)
   const groups = clinicalList
     ? groupObservations(clinical).map((group) => ({
-        title: `${group.title} · ${group.observations.length}`,
+        title: group.title,
         items: group.observations,
       }))
     : [
-        ...(flagged.length
-          ? [{ title: `Needs review · ${flagged.length}`, items: flagged }]
-          : []),
-        { title: `Page ${page} · Total ${onPage.length}`, items: onPage },
+        ...(flagged.length ? [{ title: 'Needs review', items: flagged }] : []),
+        { title: `Page ${page}`, items: onPage },
       ]
 
   return (
@@ -80,6 +79,7 @@ export function ReviewItems({
         <ItemGroup
           key={group.title}
           title={group.title}
+          count={group.items.length}
           separateCards={clinicalList}
         >
           {group.items.length === 0 && (
@@ -150,17 +150,22 @@ export function ReviewItems({
 
 function ItemGroup({
   title,
+  count,
   children,
   separateCards,
 }: {
   title: string
+  count: number
   separateCards: boolean
   children: React.ReactNode
 }) {
   return (
     <section className="flex flex-col">
-      <h3 className="pb-1.5 text-xs font-medium text-muted-foreground">
+      <h3 className="flex items-center gap-1.5 pb-2 text-[11px] font-semibold tracking-wide text-foreground uppercase">
         {title}
+        <Badge variant="secondary" className="tabular-nums">
+          {count}
+        </Badge>
       </h3>
       <ul
         className={
