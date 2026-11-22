@@ -6,7 +6,7 @@ Pictures are judged by what they identify, not by whether they show a face. A pa
 
 ## Processing preview
 
-While a document is processing and has no published page version, the protected viewer issues single-file GET-only signed URLs for private render/thumbnail pairs only while Postgres status is `reading` or `redacting`. The browser loads them directly from Blob; URLs expire after 15 minutes. No preview warning is shown. Once `page_version` is set, the viewer uses only versioned burned redacted full images and thumbnails. Publication writes every pair, updates the version, then deletes prior page versions and renders. Existing signed URLs expire independently; deleting renders removes their origin copies. OCR artifacts remain internal.
+While a document is processing and has no published page version, the protected viewer issues single-file GET-only signed URLs for private render/thumbnail pairs only while Postgres status is `reading` or `redacting`. The browser loads them directly from Blob; URLs expire after 15 minutes. No preview warning is shown. Once `page_version` is set, the viewer uses only versioned burned redacted full images and thumbnails. Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible until a reviewer accepts or rejects them. Both decisions republish from encrypted review sources before recording the state change. Publication writes every pair, updates the version, then deletes prior page versions and renders. Existing signed URLs expire independently; deleting renders removes their origin copies. OCR artifacts remain internal.
 
 ## Considered options
 

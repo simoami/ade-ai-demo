@@ -1,7 +1,7 @@
 import sharp from 'sharp'
 import type { RedactionRegion } from './redaction-types.ts'
 
-/** Burns every candidate polygon into an opaque PNG without changing pixel dimensions. */
+/** Burns the supplied polygons into an opaque PNG without changing pixel dimensions. */
 export async function burnRedactions<
   Region extends Pick<RedactionRegion, 'points'>,
 >(image: Uint8Array, regions: Region[]): Promise<Buffer> {

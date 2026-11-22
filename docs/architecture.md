@@ -5,7 +5,7 @@ Clinical record ingestion: a clinician uploads a scanned or digital record, the 
 ## Principles
 
 1. **Evals drive the work.** Every model-backed stage gets a dataset and scorers before its prompt is written. See [Evaluation](#evaluation).
-2. **Fail closed on privacy.** Third parties other than the OCR model never see unconfirmed identifiers. The protected viewer temporarily shows unredacted renders only while status is `reading` or `redacting`, through single-file signed URLs valid for 15 minutes. After redaction, it shows burned redacted pixels only.
+2. **Fail closed on privacy.** Third parties other than the OCR model never see unconfirmed identifiers. The protected viewer temporarily shows unredacted renders only while status is `reading` or `redacting`, through single-file signed URLs valid for 15 minutes. Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain visible with outlines until a reviewer decides.
 3. **Everything cites its source.** Observations, redactions and note chunks carry page, block ID and box, so the UI can outline them and reviewers can verify them.
 4. **Deterministic pipeline, agents only where judgment helps.** The pipeline is a durable workflow. The two agents (observation review and chart Q&A) use narrow tools.
 5. **Replay-safe writes.** Deterministic IDs and upserts, so a retried step never duplicates data.
@@ -98,7 +98,7 @@ summary; demographics hashes identifiers inside the step, links a strong or
 partial match and stores a non-identifying `proposed_patient`; identifier
 detection stores encrypted spans in `identifiers.json.enc`, reused on retry.
 One durable redaction step reviews figure blocks, places
-redactions from those spans and burns every candidate, including those needing review. Before
+redactions from those spans and burns only applied regions. Candidates needing review remain visible with outlines. Before
 publication, it checkpoints encrypted burned PNGs, encrypted unredacted review
 sources (`redaction/source/<page>.png.enc`) and a validated manifest under
 `redaction/`; retries reuse them even after renders are deleted. It atomically
@@ -156,7 +156,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
 5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
 6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review. Reducto returns only axis-aligned boxes, so a redaction takes its angle from Tesseract line baselines, or else from the page skew (the median angle between neighbouring OCR words); observation outlines use the same page skew. OCR providers that return word polygons (Azure Document Intelligence, AWS Textract, Google Document AI) would remove both estimates.
-7. **Redact.** All placed candidates are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` in the database. `ocr.redacted.json` is pending.
+7. **Redact.** Only applied redactions are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` and outlined without burning. `ocr.redacted.json` is pending.
 8. **Observations.** Structured extraction over tables, lists and narrative, with code normalization and date-aware deduplication preferring table over list over narrative. Confidence below 0.7 is flagged; other observations start unchecked. The reviewer confirms, corrects or rejects them.
 9. **Note index.** Clinical and consent text blocks are identifier-masked, chunked, embedded and stored with their source regions. Unsupported documents are not indexed. Synthetic sample seeding also writes masked note chunks.
 
@@ -180,8 +180,8 @@ cleanup. The returned count is the number of document rows deleted.
 
 After processing, the run waits on a single review hook in a loop. The UI resumes it with typed actions: `redaction.update`, `observation.resolve`, `patient.link`, `discard`, `markReviewed`. Each action writes a review event and runs one idempotent refresh step.
 
-- **Approved redaction.** Candidates are already burned during processing. Approval changes their review state.
-- **Rejected candidate.** The page is republished from the encrypted review source with the remaining masks. Observation and note suppression IDs for the rejected redaction are cleared. Note text retains identifier masking.
+- **Approved redaction.** Acceptance republishes every page from the encrypted review sources, burning only applied and accepted redactions before recording the decision.
+- **Rejected candidate.** The page is republished from the encrypted review source with only applied and accepted masks before recording the decision. Observation and note suppression IDs for the rejected redaction are cleared. Note text retains identifier masking.
 - **Mark as reviewed** is enabled when nothing blocks it: no flagged or unchecked observations, no redactions needing review, no identity mismatch. It creates the patient if needed, locks the document, and deletes the review-only artifacts.
 - **Discard** (duplicate upload, wrong patient) deletes the review-only artifacts and the document's derived data.
 

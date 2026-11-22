@@ -105,6 +105,7 @@ and derives AE seriousness in code. Clinical and consent documents then index
 identifier-masked OCR blocks with `embeddingModel` into `note_chunks` (1536 dimensions),
 replacing rows atomically with document/page/index UUID v5 IDs. Keep chunk text
 and embeddings inside the durable step; return counts only.
+Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible. Accepting or rejecting a redaction republishes pages from encrypted review sources before recording the decision.
 The redaction step checkpoints encrypted burned pages, encrypted unredacted review
 sources and a manifest before publication so retries can finish after render deletion.
 Redaction and observation rows are replaced atomically using UUID v5 IDs. Rendering scratch directories are
