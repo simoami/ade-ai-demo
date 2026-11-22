@@ -20,6 +20,7 @@ catalog:
   next-themes: 0.4.6
   react: 19.3.1
   react-dom: 19.3.1
+  react-zoom-pan-pinch: 4.2.0
   "@types/react": ^19
   "@types/react-dom": ^19
   "@types/node": ^26
