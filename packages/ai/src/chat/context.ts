@@ -33,6 +33,8 @@ export const observationQuerySchema = scopeSchema.extend({
     .optional(),
   outOfRangeOnly: z.boolean().optional(),
   name: z.string().trim().min(1).max(200).optional(),
+  // False when the results only inform a written answer, such as a summary note.
+  display: z.boolean().optional(),
 })
 
 /** Explicit record scope wins; otherwise use the page's scope. */
@@ -50,7 +52,7 @@ export function defaultScope(
 
 /** Tool output is already visible; prose only adds brief, grounded highlights. */
 export const toolPresentationInstructions =
-  'Tool results are rendered to the user as cards, charts or checklists. Do not restate rows, values or tables already shown. Add at most 1–3 short sentences highlighting out-of-range, serious, unverified results or a notable trend, with citations only for clinical values or note claims you mention. Summary counts, truncation and the option to show more are already displayed with the cards, so never restate counts or mention truncation. For broad observation requests, name only what is clinically notable, such as out-of-range or serious results, or say nothing when nothing stands out.'
+  'Tool results are rendered to the user as cards, charts or checklists. Do not restate rows, values or tables already shown. Add at most 1–3 short sentences highlighting out-of-range, serious, unverified results or a notable trend, with citations only for clinical values or note claims you mention. Summary counts, truncation and the option to show more are already displayed with the cards, so never restate counts or mention truncation. For broad observation requests, name only what is clinically notable, such as out-of-range or serious results, or say nothing when nothing stands out. For a summary or note about a patient or document, call tools with display false and write one cohesive clinical paragraph covering history, medications, notable events and abnormal results, with page links.'
 
 /** Ground answers in cited, redacted records and forbid identifier reconstruction. */
 export function chatInstructions(context: PageContext) {

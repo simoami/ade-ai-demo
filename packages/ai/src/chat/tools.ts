@@ -162,7 +162,7 @@ export function chatTools(context: PageContext) {
       description:
         'Summarize all matching active observations and show at most 20 cards: latest per kind and name, prioritized by abnormal and unverified results. A name filter returns the latest 20 matching results chronologically. Optional patient, document, kind, name and abnormal lab filters.',
       inputSchema: observationQuerySchema,
-      execute: async (input) =>
+      execute: async ({ display: _, ...input }) =>
         observationQueryResult(
           await readObservations({ ...input, ...defaultScope(input, context) }),
           Boolean(input.name)

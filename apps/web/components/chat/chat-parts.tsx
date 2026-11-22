@@ -50,7 +50,9 @@ export function ChatPart({
 
   switch (part.type) {
     case 'tool-queryObservations':
-      return <ObservationResults result={part.output} context={context} />
+      return part.input.display === false ? null : (
+        <ObservationResults result={part.output} context={context} />
+      )
     case 'tool-observationTrend':
       return <ObservationTrend {...part.output} />
     case 'tool-reviewStatus': {
