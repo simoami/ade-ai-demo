@@ -438,14 +438,18 @@ export async function seedSamples() {
           continue
         }
         const polygons = masks
-          .filter((mask) => mask.page === page + 1)
+          .filter(
+            (mask) =>
+              mask.page === page + 1 &&
+              (mask.state === 'applied' || mask.state === 'accepted')
+          )
           .map(
             ({ points }) =>
               `<polygon points="${points.map(([x, y]) => `${x * width},${y * height}`).join(' ')}" fill="#000"/>`
           )
           .join('')
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${polygons}</svg>`
-        // Burn masks before resizing so the Blob holds only redacted pixels.
+        // Burn applied and accepted masks before resizing.
         const { data, info } = await sharp(
           await sharp(file)
             .composite([{ input: Buffer.from(svg) }])

@@ -103,7 +103,7 @@ async function apply(action: ReviewAction, state = reviewState()) {
   return { ...h, result }
 }
 
-test('accepts a flagged redaction without re-burning pages', async () => {
+test('accepts a flagged redaction by re-burning from encrypted sources', async () => {
   const { result, writes, calls } = await apply({
     type: 'redaction.update',
     redactionId: flaggedRedaction,
@@ -119,7 +119,11 @@ test('accepts a flagged redaction without re-burning pages', async () => {
       redaction: { id: flaggedRedaction, state: 'accepted' },
     },
   ])
-  assert.deepEqual(calls, [])
+  assert.deepEqual(calls, [
+    'burn:source-1:1',
+    'burn:source-2:1',
+    'publish:burned-source-1,burned-source-2',
+  ])
 })
 
 test('re-burns every page from encrypted sources without the rejected redaction, then restores its observations', async () => {
@@ -158,25 +162,97 @@ test('keeps previously rejected redactions out of a re-burn', async () => {
   assert.deepEqual(calls.slice(0, 2), ['burn:source-1:0', 'burn:source-2:0'])
 })
 
-test('fails without recording a rejection when a review source is missing', async () => {
-  const h = harness(reviewState())
-  const storage = h.deps.storage
-  assert.ok(storage)
-  h.deps.storage = { ...storage, get: async () => null }
-  await assert.rejects(
-    applyReviewAction(
+test('burns only applied and accepted redactions after either decision', async () => {
+  for (const status of ['accepted', 'rejected'] as const) {
+    const state = reviewState()
+    const accepted = {
+      id: 'accepted',
+      page: 1,
+      points: square,
+      state: 'accepted' as const,
+    }
+    state.redactions.push(
+      accepted,
+      { id: 'pending', page: 1, points: square, state: 'needsReview' },
+      { id: 'rejected', page: 1, points: square, state: 'rejected' }
+    )
+    const h = harness(state)
+    const burned: unknown[] = []
+    h.deps.burn = async (_image, regions) => {
+      burned.push(regions)
+      return Buffer.from('burned')
+    }
+    h.deps.publish = async () => {
+      assert.deepEqual(h.writes, [])
+      return 2
+    }
+
+    await applyReviewAction(
       documentId,
       {
         type: 'redaction.update',
         redactionId: flaggedRedaction,
-        status: 'rejected',
+        status,
       },
       h.deps
-    ),
-    /Missing document artifact/
-  )
-  assert.deepEqual(h.writes, [])
+    )
+
+    assert.deepEqual(burned, [
+      status === 'accepted'
+        ? [{ ...state.redactions[0], state: 'accepted' }, accepted]
+        : [accepted],
+      [state.redactions[1]],
+    ])
+    assert.equal(h.writes.length, 1)
+  }
 })
+
+for (const status of ['accepted', 'rejected'] as const) {
+  test(`retries ${status} decisions after publication fails without recording the decision`, async () => {
+    const h = harness(reviewState())
+    const action = {
+      type: 'redaction.update',
+      redactionId: flaggedRedaction,
+      status,
+    } as const
+    h.deps.publish = async () => {
+      throw new Error('Publication failed')
+    }
+
+    await assert.rejects(
+      applyReviewAction(documentId, action, h.deps),
+      /Publication failed/
+    )
+    assert.equal(h.writes.length, 0)
+
+    h.deps.publish = async () => 2
+    await applyReviewAction(documentId, action, h.deps)
+    assert.equal(h.writes[0]?.redaction?.state, status)
+    assert.equal(h.calls.filter((call) => call.startsWith('burn:')).length, 4)
+  })
+}
+
+for (const status of ['accepted', 'rejected'] as const) {
+  test(`fails without recording ${status} when a review source is missing`, async () => {
+    const h = harness(reviewState())
+    const storage = h.deps.storage
+    assert.ok(storage)
+    h.deps.storage = { ...storage, get: async () => null }
+    await assert.rejects(
+      applyReviewAction(
+        documentId,
+        {
+          type: 'redaction.update',
+          redactionId: flaggedRedaction,
+          status,
+        },
+        h.deps
+      ),
+      /Missing document artifact/
+    )
+    assert.deepEqual(h.writes, [])
+  })
+}
 
 test('refuses to reverse a rejected redaction and ignores repeated decisions', async () => {
   const state = reviewState()

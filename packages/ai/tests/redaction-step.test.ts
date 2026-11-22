@@ -29,7 +29,7 @@ const region: RedactionRegion = {
   source: 'text',
 }
 
-async function harness() {
+async function harness(placed: RedactionRegion[] = [region]) {
   const image = await sharp({
     create: { width: 10, height: 10, channels: 3, background: 'white' },
   })
@@ -122,7 +122,7 @@ async function harness() {
       assert.equal(height, 10)
       assert.equal(spans.length, pageNumber === 1 ? 1 : 0)
       events.push(`place:${pageNumber}`)
-      return pageNumber === 1 ? [region] : []
+      return pageNumber === 1 ? placed : []
     },
     burn: async (_image, regions) => {
       events.push(`burn:${regions.length}`)
@@ -134,7 +134,7 @@ async function harness() {
     },
     publish: async (_id, images) => {
       assert.deepEqual(images, [burned, burned])
-      assert.equal(replacements.at(-1)?.length, 1)
+      assert.equal(replacements.at(-1)?.length, placed.length)
       assert.ok(blobs.has(`documents/${documentId}/redaction/ready.json.enc`))
       events.push('publish')
       blobs.delete(`documents/${documentId}/render/1.png`)
@@ -156,7 +156,7 @@ test('places stored spans on all pages, reviews only figures, keeps encrypted so
   assert.deepEqual(h.events, [
     'status:redacting',
     'place:1',
-    'burn:1',
+    'burn:0',
     'pictures:2',
     'place:2',
     'burn:0',
@@ -177,6 +177,30 @@ test('places stored spans on all pages, reviews only figures, keeps encrypted so
   )
   const { source: _source, ...expected } = region
   assert.deepEqual(row, { ...expected, id: row?.id, documentId })
+})
+
+test('burns only applied regions while persisting candidates needing review', async () => {
+  const applied: RedactionRegion = { ...region, state: 'applied' }
+  const h = await harness([region, applied])
+  const burn = h.deps.burn
+  assert.ok(burn)
+  const burnedRegions: RedactionRegion[][] = []
+  h.deps.burn = async (image, regions) => {
+    burnedRegions.push(regions)
+    return burn(image, regions)
+  }
+
+  assert.deepEqual(await redactDocument(documentId, 2, h.deps), {
+    pageCount: 2,
+    spanCount: 1,
+    appliedCount: 1,
+    needsReviewCount: 1,
+  })
+  assert.deepEqual(burnedRegions, [[applied], []])
+  assert.deepEqual(
+    h.replacements[0]?.map(({ state }) => state),
+    ['needsReview', 'applied']
+  )
 })
 
 test('retries from encrypted burned pages after publication deleted renders and replaces identical rows', async () => {

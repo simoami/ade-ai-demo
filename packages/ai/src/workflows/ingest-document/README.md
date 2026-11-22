@@ -13,7 +13,7 @@ non-identifying `proposed_patient`. Detection stores encrypted spans in
 `identifiers.json.enc` and reuses them on retry.
 
 The redaction step places redactions from those spans, reviews figures and burns
-every candidate. It checkpoints encrypted burned PNGs, encrypted unredacted
+only applied regions; candidates needing review remain visible with outlines. It checkpoints encrypted burned PNGs, encrypted unredacted
 review sources under `redaction/source/` and a manifest before replacing
 redaction rows atomically and publishing page pairs. A retry reuses the
 checkpoint after render deletion; publication can increment the page version

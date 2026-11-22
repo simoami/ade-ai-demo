@@ -62,9 +62,7 @@ export type ReviewWrite = {
   restoreRedactionId?: string
 }
 
-type Plan =
-  | { refusal: ReviewRefusal }
-  | { write: ReviewWrite | null; reburn: boolean }
+type Plan = { refusal: ReviewRefusal } | { write: ReviewWrite | null }
 
 type Dependencies = {
   load: (documentId: string) => Promise<ReviewState | undefined>
@@ -138,9 +136,9 @@ export async function applyReviewAction(
   const plan = await planAction(documentId, state, action, deps)
   if ('refusal' in plan) return plan
 
-  // Publish before recording the rejection so a retry still sees the old state and re-burns.
-  if (plan.reburn && action.type === 'redaction.update')
-    await reburnPages(documentId, state, action.redactionId, deps)
+  // Publish before recording the decision so a retry still sees the old state and re-burns.
+  if (plan.write?.redaction)
+    await reburnPages(documentId, state, plan.write.redaction, deps)
   if (plan.write) await deps.write(documentId, plan.write)
 
   return { applied: plan.write !== null }
@@ -157,14 +155,14 @@ async function planAction(
     terminal &&
     state.status === (action.type === 'discard' ? 'discarded' : 'reviewed')
   )
-    return { write: null, reburn: false }
+    return { write: null }
   if (
     state.status !== 'needsReview' &&
     !(action.type === 'discard' && state.status === 'unsupported')
   )
     return { refusal: 'notReviewable' }
 
-  const unchanged = { write: null, reburn: false }
+  const unchanged = { write: null }
   switch (action.type) {
     case 'redaction.update': {
       const redaction = state.redactions.find(
@@ -186,7 +184,6 @@ async function planAction(
           redaction: { id: redaction.id, state: action.status },
           ...(rejected ? { restoreRedactionId: redaction.id } : {}),
         },
-        reburn: rejected,
       }
     }
     case 'observation.update': {
@@ -209,7 +206,6 @@ async function planAction(
           },
           observation: { id: observation.id, reviewStatus },
         },
-        reburn: false,
       }
     }
     case 'patient.link': {
@@ -226,7 +222,6 @@ async function planAction(
           },
           document: { patientId: action.patientId, identityMismatch: false },
         },
-        reburn: false,
       }
     }
     case 'patient.create': {
@@ -251,7 +246,6 @@ async function planAction(
           },
           document: { patientId, identityMismatch: false },
         },
-        reburn: false,
       }
     }
     case 'markReviewed': {
@@ -271,7 +265,6 @@ async function planAction(
           event: { action: action.type, payload: {} },
           document: { status: 'reviewed', reviewedAt: new Date() },
         },
-        reburn: false,
       }
     }
     case 'discard':
@@ -280,7 +273,6 @@ async function planAction(
           event: { action: action.type, payload: {} },
           document: { status: 'discarded' },
         },
-        reburn: false,
       }
   }
 }
@@ -297,13 +289,15 @@ function createdPatientId(documentId: string) {
 async function reburnPages(
   documentId: string,
   state: ReviewState,
-  rejectedId: string,
+  change: Pick<RedactionRow, 'id' | 'state'>,
   deps: Dependencies
 ) {
   const key = deps.key()
-  const kept = state.redactions.filter(
-    ({ id, state }) => state !== 'rejected' && id !== rejectedId
-  )
+  const kept = state.redactions
+    .map((redaction) =>
+      redaction.id === change.id ? { ...redaction, ...change } : redaction
+    )
+    .filter(({ state }) => state === 'applied' || state === 'accepted')
   const pages: Buffer[] = []
   for (let page = 1; page <= state.pageCount; page++) {
     const source = await readEncrypted(

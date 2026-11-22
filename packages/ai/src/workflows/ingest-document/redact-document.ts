@@ -94,7 +94,7 @@ const defaults: Dependencies = {
   update: updateDocument,
 }
 
-/** Burns every detected candidate, keeping encrypted unredacted sources for review, and checkpoints pixels before replay-safe persistence and publication. */
+/** Burns applied redactions, keeping encrypted unredacted sources for review, and checkpoints pixels before replay-safe persistence and publication. */
 export async function redactDocument(
   documentId: string,
   pageCount: number,
@@ -146,7 +146,7 @@ export async function redactDocument(
           throw new Error('Redaction page mismatch')
 
         regions.push(...placed)
-        // Rejecting a redaction re-burns from these sources after publication deletes renders.
+        // Review decisions re-burn from these sources after publication deletes renders.
         await writeEncrypted(
           `${base}/source/${pageNumber}.png.enc`,
           image,
@@ -155,7 +155,10 @@ export async function redactDocument(
         )
         await writeEncrypted(
           `${base}/${pageNumber}.png.enc`,
-          await deps.burn(image, placed),
+          await deps.burn(
+            image,
+            placed.filter(({ state }) => state === 'applied')
+          ),
           deps,
           key
         )
