@@ -192,7 +192,10 @@ test('instructions include the stable rule forbidding restating tool results', (
     /Do not restate rows, values or tables already shown/
   )
   assert.match(toolPresentationInstructions, /at most 1–3 short sentences/)
-  assert.match(toolPresentationInstructions, /never restate counts or mention truncation/)
+  assert.match(
+    toolPresentationInstructions,
+    /never restate counts or mention truncation/
+  )
   assert.ok(
     chatInstructions({ page: 'documents' }).includes(
       toolPresentationInstructions
@@ -310,4 +313,15 @@ test('handles empty, undated and rejected observations deterministically without
   assert.equal(result.summary.total, 2)
   assert.equal(result.observations[0]?.id, 'a')
   assert.equal(rows[0]?.id, 'z')
+})
+
+test('note answers synthesize retrieved evidence with page links instead of chunk dumps', () => {
+  const instructions = chatInstructions({
+    page: 'document',
+    documentId: 'synthetic-document',
+  })
+
+  assert.match(instructions, /synthesize the retrieved text in 1–4 sentences/)
+  assert.ok(instructions.includes('[page N](/documents/<documentId>?page=N)'))
+  assert.match(instructions, /Never paste chunks/)
 })

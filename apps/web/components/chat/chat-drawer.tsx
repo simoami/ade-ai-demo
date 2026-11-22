@@ -18,7 +18,7 @@ import { DefaultChatTransport } from 'ai'
 import { MessageSquare, X } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { ChatPart } from '#components/chat/chat-parts'
+import { ChatPart, ChatSources } from '#components/chat/chat-parts'
 
 const transport = new DefaultChatTransport<ChatMessage>({ api: '/api/chat' })
 
@@ -188,6 +188,7 @@ function Conversation({ context }: { context: PageContext }) {
                 role={message.role}
               />
             ))}
+            <ChatSources parts={message.parts} context={context} />
           </article>
         ))}
         {Boolean(busy) && (

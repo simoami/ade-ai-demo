@@ -5,6 +5,7 @@ import type { OcrPage } from '#stages/ocr/ocr-result'
 import {
   buildNoteChunks,
   indexDocumentNotes,
+  isSearchableNoteBlock,
 } from '#workflows/ingest-document/index-notes'
 
 const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
@@ -160,4 +161,87 @@ test('replaces the index only after successful embedding and records covering no
     { message: 'Note indexing failed' }
   )
   assert.equal(writes, 1)
+})
+
+test('filters page furniture and placeholder-only text, preserving clinical headings and lists', () => {
+  const block = { id: 'synthetic', box, continues: null }
+  for (const kind of ['header', 'footer'] as const) {
+    assert.equal(
+      isSearchableNoteBlock({
+        ...block,
+        kind,
+        text: 'Synthetic page furniture',
+      }),
+      false
+    )
+  }
+  for (const text of [
+    ' ',
+    '[REDACTED] [REDACTED]',
+    ' : [REDACTED] - ',
+    '1',
+    'Page 2',
+    '2 of 3',
+    '2 / 3',
+  ]) {
+    assert.equal(
+      isSearchableNoteBlock({ ...block, kind: 'other', text }),
+      false
+    )
+  }
+  for (const kind of ['heading', 'paragraph', 'list', 'table'] as const) {
+    assert.equal(
+      isSearchableNoteBlock({
+        ...block,
+        kind,
+        text: 'Assessment: stable [REDACTED]',
+      }),
+      true
+    )
+  }
+})
+
+test('does not embed masked-only blocks or page furniture', async () => {
+  const blocks = [
+    {
+      id: 'name',
+      kind: 'paragraph' as const,
+      text: 'Synthetic Person',
+      box,
+      continues: null,
+    },
+    {
+      id: 'header',
+      kind: 'header' as const,
+      text: 'Patient: Synthetic Person',
+      box,
+      continues: null,
+    },
+    {
+      id: 'footer',
+      kind: 'footer' as const,
+      text: 'SYNTHETIC - NOT A PATIENT RECORD',
+      box,
+      continues: null,
+    },
+    {
+      id: 'page',
+      kind: 'other' as const,
+      text: 'Page 1',
+      box,
+      continues: null,
+    },
+  ]
+
+  assert.deepEqual(
+    await buildNoteChunks(
+      documentId,
+      [{ blocks, usage: { latencyMs: 0 } }],
+      [{ page: 1, blockId: 'name', start: 0, end: 16 }],
+      async () => {
+        throw new Error('must not embed')
+      }
+    ),
+    []
+  )
 })

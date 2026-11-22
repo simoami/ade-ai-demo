@@ -4,11 +4,13 @@ import type { ChatMessage, PageContext } from '@repo/ai/chat'
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import { isToolUIPart } from 'ai'
+import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Streamdown } from 'streamdown'
 import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
+import { noteSources } from '#lib/chat-sources'
 
 type Part = ChatMessage['parts'][number]
 
@@ -90,28 +92,76 @@ export function ChatPart({
         </ul>
       )
     case 'tool-searchNotes':
-      return (
-        <ul className="space-y-2">
-          {part.output.chunks.map((chunk) => (
-            <li
-              key={`${chunk.documentId}-${chunk.page}-${JSON.stringify(chunk.box)}`}
-              className="rounded-lg border p-3"
-            >
-              <p className="whitespace-pre-wrap">{chunk.text}</p>
-              <Link
-                href={`/documents/${encodeURIComponent(chunk.documentId)}?page=${chunk.page}`}
-                className="text-primary underline"
-              >
-                {chunk.documentId} · page {chunk.page}
-              </Link>
-            </li>
-          ))}
-          {part.output.chunks.length === 0 && <li>No matching notes found.</li>}
-        </ul>
-      )
+      return null
     default:
       return null
   }
+}
+
+/** Show deduplicated note citations after the answer, with optional bounded excerpts. */
+export function ChatSources({
+  parts,
+  context,
+}: {
+  parts: ChatMessage['parts']
+  context: PageContext
+}) {
+  const [expanded, setExpanded] = useState<string | null>(null)
+  const results = parts.filter(
+    (part) =>
+      part.type === 'tool-searchNotes' && part.state === 'output-available'
+  )
+  const sources = noteSources(
+    results.flatMap((part) => part.output.chunks),
+    context
+  )
+  if (!results.length) return null
+  if (!sources.length)
+    return (
+      <p className="text-xs text-muted-foreground">No matching notes found.</p>
+    )
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+        <span>Sources</span>
+        {sources.map((source) => (
+          <Badge
+            key={source.key}
+            variant="outline"
+            className="h-auto gap-0 p-0"
+          >
+            <Button
+              variant="ghost"
+              size="xs"
+              className="rounded-full"
+              aria-expanded={expanded === source.key}
+              onClick={() =>
+                setExpanded(expanded === source.key ? null : source.key)
+              }
+            >
+              {source.label}
+              <ChevronDown />
+            </Button>
+            <Link
+              href={source.href}
+              aria-label={`Open ${source.label}`}
+              className="rounded-full p-1 text-primary hover:bg-muted"
+            >
+              <ArrowUpRight className="size-3" />
+            </Link>
+          </Badge>
+        ))}
+      </div>
+      {sources
+        .filter((source) => source.key === expanded)
+        .map((source) => (
+          <p key={source.key} className="text-xs text-muted-foreground">
+            {source.excerpt}
+          </p>
+        ))}
+    </div>
+  )
 }
 
 function ObservationResults({

@@ -3,10 +3,11 @@ import { embedMany } from 'ai'
 import { z } from 'zod'
 import { embeddingModel } from '#models'
 import {
+  identifierPlaceholder,
   type MaskedSpans,
   maskIdentifiers,
 } from '#stages/extract/mask-identifiers'
-import type { OcrPage } from '#stages/ocr/ocr-result'
+import type { Block, OcrPage } from '#stages/ocr/ocr-result'
 import { documentScopedId } from './deterministic-id.ts'
 import {
   artifactDefaults,
@@ -31,6 +32,16 @@ async function embed(values: string[]) {
   return result.embeddings
 }
 
+/** Exclude page furniture and masked blocks without searchable content. */
+export function isSearchableNoteBlock(block: Block): boolean {
+  return (
+    block.kind !== 'header' &&
+    block.kind !== 'footer' &&
+    !/^(?:page\s+)?\d+(?:\s*(?:of|\/)\s*\d+)?$/i.test(block.text.trim()) &&
+    /[\p{L}\p{N}]/u.test(block.text.replaceAll(identifierPlaceholder, ''))
+  )
+}
+
 /** Builds bounded chunks from identifier-masked blocks; embeddings and text never enter workflow history. */
 export async function buildNoteChunks(
   documentId: string,
@@ -40,9 +51,8 @@ export async function buildNoteChunks(
 ): Promise<Chunk[]> {
   const chunks = maskIdentifiers(pages, spans).flatMap((page, pageIndex) => {
     let index = 0
-    return page.blocks.flatMap((block) => {
+    return page.blocks.filter(isSearchableNoteBlock).flatMap((block) => {
       const text = block.text.trim()
-      if (!text) return []
 
       // A character ceiling keeps even a dense OCR block within the embedding model's token limit.
       return Array.from(
@@ -53,6 +63,8 @@ export async function buildNoteChunks(
           text: text.slice(part * 2000, (part + 1) * 2000),
           source: [{ page: pageIndex + 1, blockId: block.id, box: block.box }],
         })
+      ).filter((chunk) =>
+        /[\p{L}\p{N}]/u.test(chunk.text.replaceAll(identifierPlaceholder, ''))
       )
     })
   })

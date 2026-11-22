@@ -113,7 +113,8 @@ fall back to the block box. On skewed pages the row is selected in the deskewed 
 stored as a rotated polygon. Redaction coverage uses the axis-aligned source box.
 Consent documents go to `needsReview`; others to `unsupported`.
 Clinical and consent documents then run a durable note-indexing step. It masks
-identifier spans, drops figures, splits text blocks at 2,000 characters, embeds
+identifier spans, drops figures, headers, footers, standalone page numbers and
+placeholder-only text, splits text blocks at 2,000 characters, embeds
 with `text-embedding-3-small` (1536 dimensions), and atomically replaces
 `note_chunks` with document/page/index UUID v5 IDs and page/block/box sources.
 Only counts enter workflow history. Text identifier redactions are already
@@ -158,7 +159,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
 6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review. Reducto returns only axis-aligned boxes, so a redaction takes its angle from Tesseract line baselines, or else from the page skew (the median angle between neighbouring OCR words); observation outlines use the same page skew. OCR providers that return word polygons (Azure Document Intelligence, AWS Textract, Google Document AI) would remove both estimates.
 7. **Redact.** Only applied redactions are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` and outlined without burning. `ocr.redacted.json` is pending.
 8. **Observations.** Structured extraction over tables, lists and narrative, with code normalization and date-aware deduplication preferring table over list over narrative. Confidence below 0.7 is flagged; other observations start unchecked. The reviewer confirms, corrects or rejects them.
-9. **Note index.** Clinical and consent text blocks are identifier-masked, chunked, embedded and stored with their source regions. Unsupported documents are not indexed. Synthetic sample seeding also writes masked note chunks.
+9. **Note index.** Clinical and consent text blocks are identifier-masked, filtered to exclude page furniture and placeholder-only text, chunked, embedded and stored with their source regions. Unsupported documents are not indexed. Synthetic sample seeding also writes masked note chunks.
 
 Entity enrichment is not implemented.
 
