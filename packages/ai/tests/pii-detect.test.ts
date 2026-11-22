@@ -255,3 +255,49 @@ test('returns validated picture decisions from structured model output', async (
   )
   assert.equal(generate.mock.callCount(), 1)
 })
+
+test('drops contained spans regardless of category or model order', () => {
+  const outer = { ...span, start: 5, end: 15 }
+  const inner = { ...span, start: 10, end: 11, category: 'phone' }
+  for (const spans of [
+    [inner, outer],
+    [outer, inner],
+    [outer, outer],
+  ])
+    assert.deepEqual(validateIdentifierOutput({ spans }, ocr, 1), [
+      { ...outer, page: 1 },
+    ])
+})
+
+test('merges overlapping spans using the longest original span category', () => {
+  const spans = [
+    { ...span, start: 5, end: 11, category: 'name' },
+    { ...span, start: 10, end: 20, category: 'phone' },
+    { ...span, start: 19, end: 30, category: 'address' },
+  ]
+  assert.deepEqual(validateIdentifierOutput({ spans }, ocr, 2), [
+    { ...spans[2], start: 5, page: 2 },
+  ])
+})
+
+test('keeps adjacent spans and overlapping offsets in separate blocks', () => {
+  const spans = [{ ...span, start: 5, end: 10 }, span]
+  assert.deepEqual(
+    validateIdentifierOutput({ spans }, ocr, 1),
+    spans.map((span) => ({ ...span, page: 1 }))
+  )
+  const secondBlock = { ...span, blockId: 'p1-b3' }
+  const pages = {
+    ...ocr,
+    blocks: [
+      ...ocr.blocks,
+      ...ocr.blocks
+        .filter((block) => block.kind !== 'figure')
+        .map((block) => ({ ...block, id: 'p1-b3' })),
+    ],
+  }
+  assert.equal(
+    validateIdentifierOutput({ spans: [span, secondBlock] }, pages, 1).length,
+    2
+  )
+})

@@ -59,7 +59,7 @@ export const pictureSchema = z.object({
   ),
 })
 
-/** Rejects invalid model offsets without including document text in errors. */
+/** Validates offsets without exposing text and normalizes overlapping spans per page and block. */
 export function validateIdentifierOutput(
   output: unknown,
   ocr: OcrPage,
@@ -68,7 +68,7 @@ export function validateIdentifierOutput(
   const parsed = identifierSchema.safeParse(output)
   if (!parsed.success) throw new Error('Invalid identifier schema')
 
-  return parsed.data.spans.map((span) => {
+  const spans = parsed.data.spans.map((span) => {
     const block = ocr.blocks.find(
       (block) => block.id === span.blockId && block.kind !== 'figure'
     )
@@ -82,6 +82,34 @@ export function validateIdentifierOutput(
 
     return { ...span, page }
   })
+  const normalized: IdentifierSpan[] = []
+  let longest = 0
+  for (const span of spans.sort(
+    (a, b) =>
+      a.blockId.localeCompare(b.blockId) || a.start - b.start || b.end - a.end
+  )) {
+    const previous = normalized.at(-1)
+    if (
+      previous &&
+      previous.blockId === span.blockId &&
+      span.start < previous.end
+    ) {
+      if (span.end <= previous.end) continue
+
+      const length = span.end - span.start
+      if (length > longest) {
+        previous.category = span.category
+        previous.confidence = span.confidence
+        longest = length
+      }
+      previous.end = span.end
+    } else {
+      normalized.push({ ...span })
+      longest = span.end - span.start
+    }
+  }
+
+  return normalized
 }
 
 /** Requires exactly one policy-consistent verdict for every figure and valid page boxes. */

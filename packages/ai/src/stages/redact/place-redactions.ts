@@ -3,6 +3,7 @@ import { dirname } from 'node:path'
 import sharp from 'sharp'
 import { createWorker, OEM, PSM, type Worker } from 'tesseract.js'
 import type { Box, OcrPage } from '#stages/ocr/ocr-result'
+import { dedupeRegions } from './dedupe-regions.ts'
 import type {
   IdentifierSpan,
   PictureFinding,
@@ -339,7 +340,7 @@ export async function placeRedactions(
           source: 'picture',
         })
     }
-    return regions
+    return dedupeRegions(regions)
   } finally {
     await worker?.terminate()
   }

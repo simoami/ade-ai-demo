@@ -45,10 +45,11 @@ const observation = {
   kind: 'lab',
   name: 'Glucose',
   value: '133',
+  valueNumeric: 133 as number | null,
   unit: 'mg/dL',
   effectiveDate: '2026-02-10',
   dateSource: 'document',
-  sourceFormat: 'table',
+  sourceFormat: 'table' as const,
   details: {
     referenceRange: '70-99',
     flag: 'H',
@@ -148,13 +149,13 @@ test('rejects invalid output without disclosing model content', () => {
   })
 })
 
-test('keeps one observation per name and date, preferring table over list over narrative', () => {
+test('keeps one matching dated observation, preferring table over list over narrative', () => {
   const item = (
     id: string,
     name: string,
     effectiveDate: string | null,
     sourceFormat: 'table' | 'list' | 'narrative'
-  ) => ({ id, name, effectiveDate, sourceFormat })
+  ) => ({ ...observation, id, name, effectiveDate, sourceFormat })
   const kept = dedupeObservations([
     item('narrative', 'Glucose', '2026-02-10', 'narrative'),
     item('list', 'glucose ', '2026-02-10', 'list'),
@@ -218,4 +219,59 @@ test('sanitizes provider failures', async (context) => {
   await assert.rejects(extractObservations([page], []), {
     message: 'Observation extraction failed on page 1',
   })
+})
+
+test('keeps distinct systolic and diastolic observations sharing a row box', () => {
+  const systolic = {
+    ...observation,
+    kind: 'vital',
+    name: 'Systolic blood pressure',
+    value: '120',
+    valueNumeric: 120,
+    unit: 'mmHg',
+    box,
+  }
+  const diastolic = {
+    ...systolic,
+    name: 'Diastolic blood pressure',
+    value: '80',
+    valueNumeric: 80,
+  }
+  assert.deepEqual(dedupeObservations([systolic, diastolic]), [
+    systolic,
+    diastolic,
+  ])
+})
+
+test('keeps different kinds and values with the same name and date', () => {
+  const observations = [
+    observation,
+    { ...observation, kind: 'vital' },
+    { ...observation, value: '140', valueNumeric: 140 },
+    { ...observation, value: 'positive', valueNumeric: null },
+  ]
+  assert.deepEqual(dedupeObservations(observations), observations)
+  assert.deepEqual(
+    dedupeObservations([
+      { ...observation, blockId: 'narrative', sourceFormat: 'narrative' },
+      observation,
+    ]),
+    [observation]
+  )
+})
+
+test('treats differently formatted restatements of one reading as duplicates', () => {
+  assert.deepEqual(
+    dedupeObservations([
+      {
+        ...observation,
+        value: '133.0 mg/dL',
+        unit: null,
+        blockId: 'narrative',
+        sourceFormat: 'narrative',
+      },
+      observation,
+    ]),
+    [observation]
+  )
 })

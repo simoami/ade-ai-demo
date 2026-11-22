@@ -443,7 +443,8 @@ test('places picture verdicts and printed identifiers and rejects invalid spans'
       },
     ]
   )
-  assert.equal(regions.length, 2)
+  assert.equal(regions.length, 1)
+  assert.equal(regions[0]?.category, 'face')
   assert.ok(regions.every((region) => region.state === 'needsReview'))
   await assert.rejects(
     placeRedactions({ ...page, ocr }, [{ ...span, end: 100 }], []),
