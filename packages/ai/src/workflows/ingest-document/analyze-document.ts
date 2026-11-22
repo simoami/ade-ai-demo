@@ -5,8 +5,10 @@ import { matchPatient } from '#stages/demographics/match-patient'
 import {
   type Demographics,
   hashDemographics,
+  readDemographics,
 } from '#stages/demographics/read-demographics'
 import type { OcrPage } from '#stages/ocr/ocr-result'
+import { detectIdentifiers } from '#stages/pii/detect-identifiers'
 import type { IdentifierSpan } from '#stages/redact/redaction-types'
 import {
   type ArtifactDependencies,
@@ -37,14 +39,10 @@ const defaults: Dependencies = {
     (await import('#stages/classify/classify-document')).classifyDocument(
       pages
     ),
-  readDemographics: async (pages) =>
-    (await import('#stages/demographics/read-demographics')).readDemographics(
-      pages
-    ),
+  readDemographics,
   findPatients: findPatientCandidates,
   match: matchPatient,
-  detect: async (pages) =>
-    (await import('#stages/pii/detect-identifiers')).detectIdentifiers(pages),
+  detect: detectIdentifiers,
   hashKey: () => readPatientHashKey(),
   now: () => new Date(),
 }
