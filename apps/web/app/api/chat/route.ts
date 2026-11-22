@@ -63,8 +63,15 @@ export async function POST(request: Request) {
       tools,
       stopWhen: isStepCount(5),
       abortSignal: request.signal,
-      onError: () => {
-        log.error({ chatId }, 'Chat failed')
+      // Messages may carry document content, so only the error type is logged.
+      onError: ({ error }) => {
+        log.error(
+          {
+            chatId,
+            errorType: error instanceof Error ? error.name : typeof error,
+          },
+          'Chat failed'
+        )
       },
     })
 
