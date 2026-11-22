@@ -29,12 +29,12 @@ export function ChatPart({
       <Streamdown
         skipHtml
         controls={false}
-        className="text-sm leading-7 break-words [&_li]:leading-7 [&_p]:leading-7 [&_a]:text-primary [&_a]:underline [&_table]:text-xs [&_th]:bg-muted [&_th]:p-2 [&_td]:p-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm"
+        className="text-sm leading-7 wrap-break-word [&_li]:leading-7 [&_p]:leading-7 [&_a]:text-primary [&_a]:underline [&_table]:text-xs [&_th]:bg-muted [&_th]:p-2 [&_td]:p-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm"
       >
         {part.text}
       </Streamdown>
     ) : (
-      <p className="whitespace-pre-wrap break-words text-sm">{part.text}</p>
+      <p className="whitespace-pre-wrap wrap-break-word text-sm">{part.text}</p>
     )
   }
 
