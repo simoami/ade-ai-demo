@@ -2,8 +2,8 @@ import type { Box, observations } from '@repo/db'
 import type { ExtractedObservation } from '#stages/extract/extract-observations'
 import type { MaskedSpans } from '#stages/extract/mask-identifiers'
 import { observationBox } from '#stages/extract/observation-box'
-import { pageSkew } from '#stages/extract/page-skew'
 import type { OcrPage } from '#stages/ocr/ocr-result'
+import { pageSkew } from '#stages/ocr/page-skew'
 import { documentScopedId } from './deterministic-id.ts'
 import {
   type ArtifactDependencies,

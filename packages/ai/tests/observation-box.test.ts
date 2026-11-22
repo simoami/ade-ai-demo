@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { observationBox } from '#stages/extract/observation-box'
-import { pageSkew } from '#stages/extract/page-skew'
 import type { Block, Word } from '#stages/ocr/ocr-result'
+import { pageSkew } from '#stages/ocr/page-skew'
 
 const block: Block = {
   id: 'table',

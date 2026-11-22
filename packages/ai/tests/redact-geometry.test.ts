@@ -471,7 +471,7 @@ test('places picture verdicts and printed identifiers and rejects invalid spans'
   )
 })
 
-test('places one polygon per line and follows tilted word alignment', async () => {
+test('places one polygon per line and follows the page skew', async () => {
   const words = [
     {
       text: 'Ada',
@@ -494,6 +494,17 @@ test('places one polygon per line and follows tilted word alignment', async () =
       end: 18,
       box: { x: 0.1, y: 0.4, width: 0.15, height: 0.08 },
     },
+    // Another block on the same tilt gives the page enough neighbour pairs to measure skew.
+    ...[0, 1, 2, 3].map((index) => ({
+      text: 'word',
+      blockId: 'other',
+      box: {
+        x: 0.1 + index * 0.145,
+        y: 0.7 + index * 0.02,
+        width: 0.1,
+        height: 0.08,
+      },
+    })),
   ]
   const page = {
     pageNumber: 1,
@@ -524,4 +535,12 @@ test('places one polygon per line and follows tilted word alignment', async () =
   assert.ok(points?.[0] && points[1])
   assert.ok(points[1][1] > points[0][1])
   assert.ok(regions.every((region) => region.state === 'applied'))
+
+  const [single] = await placeRedactions(
+    page,
+    [{ ...span, start: 12, end: 18, category: 'address' }],
+    []
+  )
+  const [first, second] = single?.points ?? []
+  assert.ok(first && second && second[1] > first[1])
 })

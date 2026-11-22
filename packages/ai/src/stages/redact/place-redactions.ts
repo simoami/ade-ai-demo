@@ -3,6 +3,7 @@ import { dirname } from 'node:path'
 import sharp from 'sharp'
 import { createWorker, OEM, PSM, type Worker } from 'tesseract.js'
 import type { Box, OcrPage } from '#stages/ocr/ocr-result'
+import { pageSkew } from '#stages/ocr/page-skew'
 import { dedupeRegions } from './dedupe-regions.ts'
 import type {
   IdentifierSpan,
@@ -12,7 +13,8 @@ import type {
 
 type Point = [number, number]
 
-type Piece = { box: Box; angle: number; fallback: boolean }
+// Only Tesseract symbols carry a measured baseline angle; Reducto word and glyph boxes are axis-aligned.
+type Piece = { box: Box; angle: number | null; fallback: boolean }
 
 function corners(box: Box): Point[] {
   return [
@@ -31,28 +33,18 @@ function bounds(points: Point[]): Box {
   return { x, y, width: Math.max(...xs) - x, height: Math.max(...ys) - y }
 }
 
-function polygon(pieces: Piece[], width: number, height: number): Point[] {
-  const ordered = [...pieces].sort((a, b) => a.box.x - b.box.x)
-  const first = ordered[0]
-  const last = ordered.at(-1)
-  const alignmentAngle =
-    first && last && first !== last
-      ? Math.atan2(
-          (last.box.y +
-            last.box.height / 2 -
-            first.box.y -
-            first.box.height / 2) *
-            height,
-          (last.box.x +
-            last.box.width / 2 -
-            first.box.x -
-            first.box.width / 2) *
-            width
-        )
-      : 0
-  const angle = pieces.some((piece) => piece.angle !== 0)
-    ? pieces.reduce((sum, piece) => sum + piece.angle, 0) / pieces.length
-    : alignmentAngle
+function polygon(
+  pieces: Piece[],
+  width: number,
+  height: number,
+  skew: number
+): Point[] {
+  const measured = pieces.flatMap(({ angle }) =>
+    angle === null ? [] : [angle]
+  )
+  const angle = measured.length
+    ? measured.reduce((sum, value) => sum + value, 0) / measured.length
+    : skew
   const c = Math.cos(angle)
   const s = Math.sin(angle)
   const points = pieces
@@ -96,6 +88,8 @@ export async function placeRedactions(
     height <= 0
   )
     throw new Error('Invalid redaction page dimensions')
+
+  const skew = pageSkew(page.ocr.words, width / height)
 
   async function characters(
     box: Box,
@@ -184,7 +178,7 @@ export async function placeRedactions(
           width: (box.width + 2) / width,
           height: (box.height + 2) / height,
         },
-        angle: 0,
+        angle: null,
         fallback: false,
       }))
     }
@@ -245,7 +239,7 @@ export async function placeRedactions(
           .slice(Math.max(span.start, start), Math.min(span.end, end))
           .replace(/\s/g, '')
         if (span.start <= start && span.end >= end)
-          pieces.push({ box: word.box, angle: 0, fallback: false })
+          pieces.push({ box: word.box, angle: null, fallback: false })
         else {
           const matched = await characters(
             word.box,
@@ -256,7 +250,7 @@ export async function placeRedactions(
           pieces.push(
             ...(matched?.length
               ? matched
-              : [{ box: word.box, angle: 0, fallback: true }])
+              : [{ box: word.box, angle: null, fallback: true }])
           )
         }
       }
@@ -266,7 +260,7 @@ export async function placeRedactions(
       ) {
         pieces.splice(0, pieces.length, {
           box: block.box,
-          angle: 0,
+          angle: null,
           fallback: true,
         })
       }
@@ -286,7 +280,7 @@ export async function placeRedactions(
         else lines.push([piece])
       }
       for (const line of lines) {
-        const points = polygon(line, width, height)
+        const points = polygon(line, width, height, skew)
         regions.push({
           page: page.pageNumber,
           blockId: block.id,
