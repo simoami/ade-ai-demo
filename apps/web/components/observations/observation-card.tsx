@@ -234,35 +234,51 @@ function ReviewState({ state }: { state: ObservationView['state'] }) {
   )
 }
 
-/** Plots the value against its reference bounds, padded so out-of-range values stay visible. */
+/** Plots the value against one or both reference bounds, padded so out-of-range values stay visible. */
 function RangeBar({ observation }: { observation: ObservationView }) {
   const { rangeLow: low, rangeHigh: high } = observation.details
   const value = observation.valueNumeric
   const flag = observationFlag(observation)
-  if (low == null || high == null || value === null || high <= low || !flag)
-    return null
+  if (value === null || !flag || (low == null && high == null)) return null
+  if (low != null && high != null && high <= low) return null
 
-  const padding = (high - low) / 4
-  const start = Math.min(low, value) - padding
-  const span = Math.max(high, value) + padding - start
-  const percent = (point: number) => `${((point - start) / span) * 100}%`
+  const points = [low, high, value].filter((point) => point != null)
+  const spread =
+    Math.max(...points) - Math.min(...points) || Math.abs(value) || 1
+  const start = Math.min(...points) - spread / 3
+  const span = Math.max(...points) + spread / 3 - start
+  const percent = (point: number) => ((point - start) / span) * 100
+  const normalStart = low == null ? 0 : percent(low)
+  const normalEnd = high == null ? 100 : percent(high)
 
   return (
     <div
       role="img"
-      aria-label={`${observation.value} is ${flag}; reference ${low}–${high}`}
-      className="relative mt-1 h-1.5 rounded-full bg-muted"
+      aria-label={`${observation.value} is ${flag}; reference ${referenceRange(observation)}`}
+      className="relative mt-1.5 mb-0.5 h-1.5 rounded-full bg-muted"
     >
       <span
-        className="absolute inset-y-0 rounded-full bg-success-muted"
-        style={{ left: percent(low), right: `calc(100% - ${percent(high)})` }}
+        className="absolute inset-y-0 bg-success-muted"
+        style={{
+          left: `${normalStart}%`,
+          width: `${normalEnd - normalStart}%`,
+        }}
       />
+      {[low, high].map((bound) =>
+        bound == null ? null : (
+          <span
+            key={bound}
+            className="absolute -inset-y-1 w-px bg-success"
+            style={{ left: `${percent(bound)}%` }}
+          />
+        )
+      )}
       <span
         className={cn(
           'absolute top-1/2 size-2.5 -translate-1/2 rounded-full border-2 border-card',
           flagTones[flag].marker
         )}
-        style={{ left: percent(value) }}
+        style={{ left: `${percent(value)}%` }}
       />
     </div>
   )
