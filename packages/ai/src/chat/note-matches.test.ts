@@ -14,9 +14,9 @@ test('returns at most four chunks ordered by relevance', () => {
 test('drops weak and invalid matches while retaining the similarity threshold', () => {
   assert.deepEqual(
     selectNoteMatches(
-      [0.7, 0.701, 1, NaN, Infinity].map((distance) => ({ distance }))
+      [0.85, 0.851, 1, NaN, Infinity].map((distance) => ({ distance }))
     ),
-    [{ distance: 0.7 }]
+    [{ distance: 0.85 }]
   )
   assert.deepEqual(selectNoteMatches([]), [])
 })
