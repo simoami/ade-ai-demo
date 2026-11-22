@@ -11,7 +11,12 @@ import { getCoverScale } from '#lib/page-zoom'
 import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
 
-const zoomSteps = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3]
+const minZoom = 0.5
+
+const maxZoom = 3
+
+// Steps are fractions of the cover scale, so 100% means the page fills the viewer.
+const zoomStep = 0.25
 
 type Outline = {
   id: string
@@ -67,23 +72,6 @@ export function PageViewer({
     }
   }, [cover, page, viewport.width, viewport.height])
 
-  function changeZoom(direction: 'in' | 'out') {
-    const next =
-      direction === 'in'
-        ? zoomSteps.find((step) => step > zoom + 0.001)
-        : [...zoomSteps].reverse().find((step) => step < zoom - 0.001)
-    const area = viewportRef.current?.getBoundingClientRect()
-
-    if (next === undefined || !area) return
-
-    void transformRef.current?.zoomToPoint(
-      cover * next,
-      area.left + area.width / 2,
-      area.top + area.height / 2,
-      150
-    )
-  }
-
   if (images.length === 0) {
     return (
       <section
@@ -105,8 +93,8 @@ export function PageViewer({
             variant="ghost"
             size="icon-sm"
             aria-label="Zoom out"
-            disabled={zoom <= 0.501}
-            onClick={() => changeZoom('out')}
+            disabled={zoom <= minZoom + 0.001}
+            onClick={() => void transformRef.current?.zoomOut(cover * zoomStep)}
           >
             <ZoomOut />
           </Button>
@@ -123,8 +111,8 @@ export function PageViewer({
             variant="ghost"
             size="icon-sm"
             aria-label="Zoom in"
-            disabled={zoom >= 2.999}
-            onClick={() => changeZoom('in')}
+            disabled={zoom >= maxZoom - 0.001}
+            onClick={() => void transformRef.current?.zoomIn(cover * zoomStep)}
           >
             <ZoomIn />
           </Button>
@@ -163,18 +151,16 @@ export function PageViewer({
             key={page}
             ref={transformRef}
             initialScale={cover}
-            minScale={cover * 0.5}
-            maxScale={cover * 3}
+            minScale={cover * minZoom}
+            maxScale={cover * maxZoom}
             centerOnInit
-            centerZoomedOut
             wheel={{
               activationKeys: (keys) =>
                 keys.includes('Control') || keys.includes('Meta'),
             }}
             trackPadPanning={{ disabled: false }}
             keyboard={{ disabled: false }}
-            doubleClick={{ disabled: true }}
-            zoomAnimation={{ disabled: true }}
+            doubleClick={{ mode: 'zoomIn', step: cover * zoomStep * 2 }}
             onInit={({ state }) => setZoom(state.scale / cover)}
             onTransform={(_, { scale }) => setZoom(scale / cover)}
           >
