@@ -137,7 +137,7 @@ upload ─► render pages ─► OCR ─┬─► classify ──────�
                                └─► PII detection ─────┘          └► note index ─► enrichment ─────┴─► in_review
 ```
 
-1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: one PDF, or up to 30 PNG or JPEG images that become the pages of one document in the order selected; 30 pages, 20 MB. The route creates the document and starts the run. Uploading from a patient's page fixes the target patient.
+1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: up to 10 PDF, PNG or JPEG files per selection, 20 MB per file. Each file becomes a separate document, with uploads running at most three at a time. The route creates one document and starts one run per file. Uploading from a patient's page fixes the target patient.
 2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. The protected viewer uses these unredacted renders as page images and thumbnails during `reading` and `redacting`, using `render/<page>.png` and `render/<page>-thumb.webp` pairs. The viewer and page strip use each page’s pixel proportions. Runs in a normal step.
 3. **OCR.** An `OcrProvider` returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page), figure blocks for pictures and signatures, and word boxes where the provider has them. Providers are compared in [`docs/evals.md`](evals.md). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
 4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.

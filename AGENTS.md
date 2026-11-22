@@ -94,7 +94,7 @@ Migration 0002 adds the nullable version and 0003 adds `documents.proposed_patie
 and the `observation.update` and `patient.create` review actions; migrate and reseed each deployment branch.
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
-Postgres (`DATABASE_URL`). The workflow accepts uploaded PDFs or ordered
+Postgres (`DATABASE_URL`). Web uploads accept up to 10 PDF, PNG or JPEG files per selection, 20 MB per file; each file starts its own document. The workflow accepts uploaded PDFs or ordered
 PNG/JPEG images and runs rendering and Reducto OCR, then classification, demographics
 (hashed with `PATIENT_HASH_KEY` inside the step) and identifier detection as parallel steps,
 then picture review and redaction. Clinical documents are extracted (`extracting`, then

@@ -1,48 +1,62 @@
 import { startResultSchema } from '@repo/ai/review-action'
-import { uploadError } from './upload.ts'
+import { uploadError } from '#lib/upload'
 
-type UploadFile = (
-  file: File,
-  progress: (percentage: number) => void
-) => Promise<string>
+type UploadResult = { fileName: string } & (
+  | { documentId: string; failed: false }
+  | { failed: true }
+)
 
-/** Uploads validated pages in order, then starts one document using the returned private pathnames. */
-export async function uploadDocument(
+/** Uploads each file as its own document, one after another, and reports per-file outcomes. */
+export async function uploadDocuments(
   files: File[],
-  uploadFile: UploadFile,
+  uploadFile: (
+    file: File,
+    progress: (percentage: number) => void
+  ) => Promise<string>,
   onProgress: (percentage: number) => void,
   send: typeof fetch = fetch
-): Promise<string> {
+): Promise<UploadResult[]> {
   const invalid = uploadError(files)
   if (invalid) throw new Error(invalid)
 
-  const first = files[0]
-  if (!first) throw new Error('Choose a file to upload.')
+  const results: UploadResult[] = []
 
-  const pathnames: string[] = []
-  const totalBytes = files.reduce((sum, file) => sum + file.size, 0)
-  let uploadedBytes = 0
-  for (const file of files) {
-    const pathname = await uploadFile(file, (percentage) => {
-      onProgress(
-        Math.round(
-          ((uploadedBytes +
-            (file.size * Math.min(100, Math.max(0, percentage))) / 100) /
-            Math.max(totalBytes, 1)) *
-            100
-        )
+  for (const [index, file] of files.entries()) {
+    try {
+      const pathname = await uploadFile(file, (percentage) =>
+        onProgress(Math.round((index * 100 + percentage) / files.length))
       )
-    })
-    pathnames.push(pathname)
-    uploadedBytes += file.size
+      const response = await send('/api/documents', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ fileName: file.name, pathnames: [pathname] }),
+      })
+      if (!response.ok) throw new Error('Document could not be started')
+
+      const { documentId } = startResultSchema.parse(await response.json())
+      results.push({ fileName: file.name, documentId, failed: false })
+    } catch {
+      results.push({ fileName: file.name, failed: true })
+    }
   }
 
-  const response = await send('/api/documents', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ fileName: first.name, pathnames }),
-  })
-  if (!response.ok) throw new Error('Document could not be started')
+  return results
+}
 
-  return startResultSchema.parse(await response.json()).documentId
+/** Opens a document only when the selection contained one successful file. */
+export function uploadDestination(
+  results: readonly UploadResult[]
+): string | null {
+  const first = results[0]
+  return results.length === 1 && first && !first.failed
+    ? `/documents/${first.documentId}`
+    : null
+}
+
+/** Summarizes completed uploads and names failed files without exposing service errors. */
+export function uploadSummary(results: readonly UploadResult[]): string {
+  const failed = results.filter((result) => result.failed)
+  return failed.length
+    ? `Uploaded ${results.length - failed.length} of ${results.length}; ${failed.length} failed: ${failed.map((result) => result.fileName).join(', ')}. Please try again.`
+    : `${results.length} documents uploading`
 }

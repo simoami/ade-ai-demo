@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { uploadDocument } from './upload-flow.ts'
+import {
+  uploadDestination,
+  uploadDocuments,
+  uploadSummary,
+} from '#lib/upload-flow'
 
 const id = 'f38ac619-f99c-4b98-b4f6-0dc2f892c30c'
 
@@ -9,76 +13,116 @@ const files = [
   new File(['page'], 'b.jpg', { type: 'image/jpeg' }),
 ]
 
-test('uploads pages in order and starts one document with returned pathnames', async () => {
-  const names: string[] = []
+test('starts one document per file with one returned pathname and overall progress', async () => {
+  const bodies: unknown[] = []
   const progress: number[] = []
-  const result = await uploadDocument(
+  const results = await uploadDocuments(
     files,
     async (file, report) => {
-      names.push(file.name)
       report(50)
       report(100)
-      return `uploads/${file.name}-random`
+      return `uploads/${file.name}`
     },
     (value) => progress.push(value),
     async (url, init) => {
       assert.equal(url, '/api/documents')
       assert.equal(init?.method, 'POST')
-      assert.deepEqual(JSON.parse(String(init?.body)), {
-        fileName: 'a.png',
-        pathnames: ['uploads/a.png-random', 'uploads/b.jpg-random'],
-      })
+      bodies.push(JSON.parse(String(init?.body)))
       return Response.json({ documentId: id, runId: 'run' })
     }
   )
-  assert.equal(result, id)
-  assert.deepEqual(names, ['a.png', 'b.jpg'])
-  assert.deepEqual(progress, [25, 50, 75, 100])
+  assert.deepEqual(
+    bodies,
+    files.map((file) => ({
+      fileName: file.name,
+      pathnames: [`uploads/${file.name}`],
+    }))
+  )
+  assert.equal(results.filter((result) => !result.failed).length, 2)
+  assert.equal(progress[0], 25)
+  assert.equal(progress.at(-1), 100)
+  assert.ok(
+    progress.every((value, index) => value >= (progress[index - 1] ?? 0))
+  )
+  assert.equal(uploadSummary(results), '2 documents uploading')
 })
 
-test('rejects invalid selections before upload or document creation', async () => {
+test('rejects invalid selections before invoking upload', async () => {
   await assert.rejects(
-    uploadDocument(
+    uploadDocuments(
       [],
-      async () => {
-        throw new Error('must not upload')
-      },
+      async () => assert.fail('must not upload'),
       () => {}
     ),
     /Choose a file/
   )
 })
 
-test('does not start a document when a blob upload fails', async () => {
-  let started = false
-  await assert.rejects(
-    uploadDocument(
-      files,
-      async () => {
-        throw new Error('upload failed')
-      },
-      () => {},
-      async () => {
-        started = true
-        return Response.json({})
-      }
-    )
+test('continues after a failed upload and reports only the failed filename', async () => {
+  let starts = 0
+  const results = await uploadDocuments(
+    files,
+    async (file) => {
+      if (file.name === 'a.png') throw new Error('private service details')
+      return 'uploads/b.jpg'
+    },
+    () => {},
+    async () => {
+      starts++
+      return Response.json({ documentId: id, runId: 'run' })
+    }
   )
-  assert.equal(started, false)
+  assert.equal(starts, 1)
+  assert.equal(
+    uploadSummary(results),
+    'Uploaded 1 of 2; 1 failed: a.png. Please try again.'
+  )
+  assert.equal(uploadDestination(results), null)
 })
 
-test('rejects failed or malformed start responses', async () => {
+test('reports failed and malformed document starts as file failures', async () => {
   for (const response of [
     new Response('private error', { status: 503 }),
     Response.json({ documentId: 'bad' }),
   ]) {
-    await assert.rejects(
-      uploadDocument(
-        files,
-        async () => 'uploads/a',
-        () => {},
-        async () => response
-      )
+    const results = await uploadDocuments(
+      files.slice(0, 1),
+      async () => 'uploads/a',
+      () => {},
+      async () => response
     )
+    assert.equal(
+      uploadSummary(results),
+      'Uploaded 0 of 1; 1 failed: a.png. Please try again.'
+    )
+    assert.equal(uploadDestination(results), null)
   }
+})
+
+test('navigates only for one successful file', () => {
+  const success = { fileName: 'a.png', documentId: id, failed: false as const }
+  assert.equal(uploadDestination([success]), `/documents/${id}`)
+  assert.equal(uploadDestination([success, success]), null)
+  assert.equal(uploadDestination([{ fileName: 'a.png', failed: true }]), null)
+  assert.equal(uploadDestination([]), null)
+})
+
+test('starts one document per file and reports overall progress', async () => {
+  let starts = 0
+  const progress: number[] = []
+  const results = await uploadDocuments(
+    Array(10).fill(files[0]),
+    async (_, report) => {
+      report(100)
+      return 'uploads/a'
+    },
+    (percentage) => progress.push(percentage),
+    async () => {
+      starts++
+      return Response.json({ documentId: id, runId: 'run' })
+    }
+  )
+  assert.equal(starts, 10)
+  assert.equal(results.length, 10)
+  assert.equal(progress.at(-1), 100)
 })

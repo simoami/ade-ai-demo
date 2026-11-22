@@ -1,21 +1,22 @@
-const maxPages = 30
+const maxFiles = 10
 
 const maxBytes = 20 * 1024 * 1024
 
-const imageTypes = ['image/png', 'image/jpeg']
+const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg']
 
-type Selected = { type: string; size: number }
+type Selected = { name: string; type: string; size: number }
 
-/** Checks a selection against the upload rule: one PDF, or up to 30 PNG or JPEG pages, 20 MB in total. */
+/** Checks file types, the per-file size limit and the selection count. */
 export function uploadError(files: readonly Selected[]): string | null {
   if (files.length === 0) return 'Choose a file to upload.'
+  if (files.length > maxFiles) return `Choose at most ${maxFiles} files.`
 
-  const isPdf = files.length === 1 && files[0]?.type === 'application/pdf'
-  const areImages = files.every((file) => imageTypes.includes(file.type))
-  if (!isPdf && !areImages)
-    return 'Choose one PDF, or PNG and JPEG images only.'
-  if (files.length > maxPages) return `Choose at most ${maxPages} images.`
+  for (const file of files) {
+    if (!allowedTypes.includes(file.type))
+      return `${file.name}: unsupported file type (${file.type || 'unknown'}). Choose PDF, PNG or JPEG.`
+    if (file.size > maxBytes)
+      return `${file.name} exceeds the 20 MB file limit.`
+  }
 
-  const total = files.reduce((sum, file) => sum + file.size, 0)
-  return total > maxBytes ? 'Uploads are limited to 20 MB in total.' : null
+  return null
 }

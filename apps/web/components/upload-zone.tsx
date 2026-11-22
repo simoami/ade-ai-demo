@@ -7,7 +7,11 @@ import { CloudUpload } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useId, useRef, useState } from 'react'
 import { uploadError } from '#lib/upload'
-import { uploadDocument } from '#lib/upload-flow'
+import {
+  uploadDestination,
+  uploadDocuments,
+  uploadSummary,
+} from '#lib/upload-flow'
 
 /** Drop zone that validates a selection against the upload rule before it is sent. */
 export function UploadZone() {
@@ -32,7 +36,7 @@ export function UploadZone() {
     setUploading(true)
     setMessage({ error: false, text: 'Uploading: 0%' })
     try {
-      const documentId = await uploadDocument(
+      const results = await uploadDocuments(
         list,
         async (file, progress) => {
           const blob = await upload(`uploads/${file.name}`, file, {
@@ -51,7 +55,16 @@ export function UploadZone() {
                 : `Uploading: ${percentage}%`,
           })
       )
-      router.push(`/documents/${documentId}`)
+      const destination = uploadDestination(results)
+      if (destination) {
+        router.push(destination)
+      } else {
+        setMessage({
+          error: results.some((result) => result.failed),
+          text: uploadSummary(results),
+        })
+        router.refresh()
+      }
     } catch {
       setMessage({
         error: true,
@@ -85,18 +98,20 @@ export function UploadZone() {
       <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-primary">
         <CloudUpload className="size-5" />
       </span>
-      <div className="flex flex-col gap-1 [&>strong]:text-xs [&>span]:text-[10px] [&>span]:text-muted-foreground min-w-48 flex-1">
+      <div className="flex flex-col gap-1 [&>strong]:text-xs min-w-48 flex-1">
         <strong>Drop files to start a review</strong>
         <span className="text-xs text-muted-foreground">
-          One PDF, or up to 30 PNG or JPEG images that become its pages in
-          order. 20 MB in total.
+          Up to 10 PDF, PNG or JPEG files. Each file becomes a separate
+          document. 20 MB per file.
         </span>
         {message !== undefined && (
           <span
-            role="status"
+            role={message.error ? 'alert' : 'status'}
             className={cn(
-              'mt-1 text-xs',
-              message.error ? 'text-destructive' : 'text-accent-foreground'
+              'mt-2 rounded-md border px-3 py-2 text-sm font-medium',
+              message.error
+                ? 'border-destructive/40 bg-destructive/10 text-destructive'
+                : 'border-primary/30 bg-accent text-accent-foreground'
             )}
           >
             {message.text}

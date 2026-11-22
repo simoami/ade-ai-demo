@@ -1,20 +1,34 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { uploadError } from './upload.ts'
+import { uploadError } from '#lib/upload'
 
-const pdf = { type: 'application/pdf', size: 1000 }
+const pdf = {
+  name: 'record.pdf',
+  type: 'application/pdf',
+  size: 20 * 1024 * 1024,
+}
 
-const png = { type: 'image/png', size: 1000 }
+const png = { name: 'scan.png', type: 'image/png', size: pdf.size }
 
-test('accepts one PDF or up to 30 images', () => {
+test('accepts PDFs, PNGs and JPEGs in mixed selections with per-file limits', () => {
   assert.equal(uploadError([pdf]), null)
-  assert.equal(uploadError(Array(30).fill(png)), null)
+  assert.equal(uploadError([pdf, png, { ...png, type: 'image/jpeg' }]), null)
+  assert.equal(uploadError(Array(10).fill(pdf)), null)
 })
 
-test('rejects mixed, oversized, empty and too-long selections', () => {
-  assert.match(uploadError([pdf, png]) ?? '', /one PDF/)
-  assert.match(uploadError([pdf, pdf]) ?? '', /one PDF/)
-  assert.match(uploadError(Array(31).fill(png)) ?? '', /at most 30/)
-  assert.match(uploadError([{ ...pdf, size: 21 * 1024 * 1024 }]) ?? '', /20 MB/)
+test('names unsupported files and their types, including missing types', () => {
+  assert.match(
+    uploadError([{ ...pdf, type: 'text/plain' }]) ?? '',
+    /record.pdf.*text\/plain/
+  )
+  assert.match(uploadError([{ ...png, type: '' }]) ?? '', /scan.png.*unknown/)
+})
+
+test('rejects oversized files, empty selections and more than ten files', () => {
+  assert.match(
+    uploadError([pdf, { ...png, size: png.size + 1 }]) ?? '',
+    /scan.png.*20 MB/
+  )
   assert.match(uploadError([]) ?? '', /Choose a file/)
+  assert.match(uploadError(Array(11).fill(png)) ?? '', /at most 10 files/)
 })

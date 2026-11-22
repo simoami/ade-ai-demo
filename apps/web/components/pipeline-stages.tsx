@@ -17,7 +17,7 @@ import { useState } from 'react'
 const stages = [
   {
     label: 'Upload',
-    caption: 'One PDF or up to 30 page images',
+    caption: 'One document per file, up to 10 files',
     icon: Upload,
   },
   {
