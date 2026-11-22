@@ -12,7 +12,9 @@ import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
 
 // The library clamps the centered position to the page edges.
-const selectionZoom = 1.5
+const SELECTION_ZOOM = 1.5
+
+const ZOOM_TO_ELEMENT_DURATION = 200
 
 const selectedOutlineId = (id: string) => `page-outline-${id}`
 
@@ -21,6 +23,7 @@ type Outline = {
   box: Box
   points?: Redaction['points']
   tone: 'review' | 'selected'
+  spotlight?: boolean
 }
 
 /** Shows page images at their original proportions with source outlines. */
@@ -72,15 +75,34 @@ export function PageViewer({
 
   const selectedId = outlines.find(({ tone }) => tone === 'selected')?.id
 
+  const shapes = outlines.map(({ id, box, points, tone, spotlight }) => {
+    const corners = points ?? [
+      [box.x, box.y],
+      [box.x + box.width, box.y],
+      [box.x + box.width, box.y + box.height],
+      [box.x, box.y + box.height],
+    ]
+    const polygon = outsetOutline(
+      corners.map(([x, y]): [number, number] => [
+        x * pageSize.width,
+        y * pageSize.height,
+      ])
+    ).map(([x, y]) => `${x},${y}`)
+
+    return { id, tone, spotlight, polygon }
+  })
+
+  const spotlight = shapes.find((shape) => shape.spotlight)
+
   // Runs after the page is centered, so a selection elsewhere on the page is brought into view.
   useEffect(() => {
     if (!selectedId || viewport.width === 0 || viewport.height === 0) return
 
-    void transformRef.current?.zoomToElement(
-      selectedOutlineId(selectedId),
-      selectionZoom,
-      300
-    )
+    // Without a fixed scale the library fits the target, capped here so small targets stop at 150%.
+    void transformRef.current?.zoomToElement(selectedOutlineId(selectedId), {
+      maxScale: SELECTION_ZOOM,
+      animationTime: ZOOM_TO_ELEMENT_DURATION,
+    })
   }, [selectedId, viewport.width, viewport.height])
 
   function stepZoom(direction: 'in' | 'out') {
@@ -215,22 +237,15 @@ export function PageViewer({
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 size-full overflow-visible"
                 >
-                  {outlines.map(({ id, box, points, tone }) => {
-                    const polygon = points ?? [
-                      [box.x, box.y],
-                      [box.x + box.width, box.y],
-                      [box.x + box.width, box.y + box.height],
-                      [box.x, box.y + box.height],
-                    ]
-                    const padded = outsetOutline(
-                      polygon.map(([x, y]): [number, number] => [
-                        x * pageSize.width,
-                        y * pageSize.height,
-                      ])
-                    )
-                    const coordinates = padded
-                      .map(([x, y]) => `${x},${y}`)
-                      .join(' ')
+                  {spotlight && (
+                    <path
+                      d={`M0 0H${pageSize.width}V${pageSize.height}H0Z M${spotlight.polygon.join(' L')}Z`}
+                      fillRule="evenodd"
+                      className="fill-black/15 animate-in fade-in duration-200"
+                    />
+                  )}
+                  {shapes.map(({ id, polygon, tone }) => {
+                    const coordinates = polygon.join(' ')
 
                     return (
                       <g

@@ -97,6 +97,8 @@ export function ReviewWorkspace({
       points: 'points' in item ? item.points : undefined,
       tone:
         item.id === selected?.id ? ('selected' as const) : ('review' as const),
+      // A selected observation dims the rest of the page; redactions are already visible as burned boxes.
+      spotlight: item.id === selected?.id && !('points' in item),
     }))
 
   function select(item: ReviewItem) {
