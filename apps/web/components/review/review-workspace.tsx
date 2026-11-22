@@ -294,7 +294,7 @@ export function ReviewWorkspace({
             {tab === 'general' && (
               <div className="flex flex-col gap-6">
                 <section className="flex flex-col gap-3">
-                  <h2 className="text-sm font-semibold">Patient match</h2>
+                  <h2 className="text-sm font-semibold">Patient identity</h2>
                   <PatientPanel
                     document={document}
                     patients={patients}
