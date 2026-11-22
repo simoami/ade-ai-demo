@@ -78,7 +78,8 @@ export function PageViewer({
 
     void transformRef.current?.zoomToElement(
       selectedOutlineId(selectedId),
-      selectionZoom
+      selectionZoom,
+      300
     )
   }, [selectedId, viewport.width, viewport.height])
 
