@@ -9,7 +9,7 @@ import {
   UserSquare,
   X,
 } from 'lucide-react'
-import { ObservationSummary } from '#components/observations/observation-card'
+import { ObservationCard } from '#components/observations/observation-card'
 import { groupObservations, type ObservationView } from '#lib/observations'
 import type { redactionIconKind } from '#lib/review'
 
@@ -34,7 +34,7 @@ const redactionIcons = {
   picture: Image,
 }
 
-/** Groups clinical rows by kind while keeping flagged items visible across pages. */
+/** Groups clinical cards by kind while keeping flagged items visible across pages. */
 export function ReviewItems({
   items,
   page,
@@ -58,7 +58,8 @@ export function ReviewItems({
   const clinical = [...flagged, ...onPage].flatMap((item) =>
     item.observation ? [{ ...item, kind: item.observation.kind }] : []
   )
-  const groups = items.some((item) => item.observation)
+  const clinicalList = items.some((item) => item.observation)
+  const groups = clinicalList
     ? groupObservations(clinical).map((group) => ({
         title: `${group.title} · ${group.observations.length}`,
         items: group.observations,
@@ -76,26 +77,20 @@ export function ReviewItems({
         <p className="text-xs text-muted-foreground">Nothing on this page.</p>
       )}
       {groups.map((group) => (
-        <ItemGroup key={group.title} title={group.title}>
+        <ItemGroup
+          key={group.title}
+          title={group.title}
+          separateCards={clinicalList}
+        >
           {group.items.length === 0 && (
             <li className="px-3 py-2 text-xs text-muted-foreground">
               Nothing else on this page.
             </li>
           )}
-          {group.items.map((item) => (
-            <Row
-              key={item.id}
-              item={item}
-              selected={item.id === selectedId}
-              onSelect={onSelect}
-            >
-              {item.state === 'needsReview' && !readOnly ? (
-                <div
-                  className={cn(
-                    'flex shrink-0 gap-1',
-                    item.observation && 'flex-col'
-                  )}
-                >
+          {group.items.map((item) => {
+            const actions =
+              item.state === 'needsReview' && !readOnly ? (
+                <div key={item.id} className="flex shrink-0 gap-1">
                   <Button
                     variant="outline"
                     size="sm"
@@ -113,22 +108,40 @@ export function ReviewItems({
                     Reject
                   </Button>
                 </div>
-              ) : (
-                (item.state === 'accepted' || item.state === 'rejected') && (
-                  <span
-                    className={cn(
-                      'text-xs',
-                      item.state === 'rejected'
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
-                    )}
-                  >
-                    {item.state === 'accepted' ? 'Accepted' : 'Rejected'}
-                  </span>
-                )
-              )}
-            </Row>
-          ))}
+              ) : undefined
+
+            return item.observation ? (
+              <li key={item.id}>
+                <ObservationCard
+                  observation={item.observation}
+                  actions={actions}
+                  selected={item.id === selectedId}
+                  onSelect={() => onSelect(item)}
+                />
+              </li>
+            ) : (
+              <Row
+                key={item.id}
+                item={item}
+                selected={item.id === selectedId}
+                onSelect={onSelect}
+              >
+                {actions ??
+                  ((item.state === 'accepted' || item.state === 'rejected') && (
+                    <span
+                      className={cn(
+                        'text-xs',
+                        item.state === 'rejected'
+                          ? 'text-destructive'
+                          : 'text-muted-foreground'
+                      )}
+                    >
+                      {item.state === 'accepted' ? 'Accepted' : 'Rejected'}
+                    </span>
+                  ))}
+              </Row>
+            )
+          })}
         </ItemGroup>
       ))}
     </div>
@@ -138,8 +151,10 @@ export function ReviewItems({
 function ItemGroup({
   title,
   children,
+  separateCards,
 }: {
   title: string
+  separateCards: boolean
   children: React.ReactNode
 }) {
   return (
@@ -147,7 +162,15 @@ function ItemGroup({
       <h3 className="pb-1.5 text-xs font-medium text-muted-foreground">
         {title}
       </h3>
-      <ul className="flex flex-col divide-y rounded-md border">{children}</ul>
+      <ul
+        className={
+          separateCards
+            ? 'flex flex-col gap-2'
+            : 'flex flex-col divide-y rounded-md border'
+        }
+      >
+        {children}
+      </ul>
     </section>
   )
 }
@@ -183,23 +206,14 @@ function Row({
             className="size-4 shrink-0 text-muted-foreground"
           />
         ) : null}
-        {item.observation ? (
-          <span className="flex min-w-0 flex-col gap-1">
-            <ObservationSummary observation={item.observation} />
-            <span className="text-xs text-muted-foreground">
-              Page {item.page}
-            </span>
+        <span className="flex min-w-0 flex-col items-start">
+          <span className="max-w-full truncate text-sm font-medium">
+            {item.label}
           </span>
-        ) : (
-          <span className="flex min-w-0 flex-col items-start">
-            <span className="max-w-full truncate text-sm font-medium">
-              {item.label}
-            </span>
-            <span className="max-w-full truncate text-xs text-muted-foreground">
-              {item.detail}
-            </span>
+          <span className="max-w-full truncate text-xs text-muted-foreground">
+            {item.detail}
           </span>
-        )}
+        </span>
       </button>
       {children}
     </li>
