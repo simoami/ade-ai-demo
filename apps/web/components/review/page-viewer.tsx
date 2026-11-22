@@ -32,24 +32,28 @@ export function PageViewer({
   page,
   onPage,
   outlines,
+  onDeselect,
 }: {
   images: PageImage[]
   page: number
   onPage: (page: number) => void
   outlines: Outline[]
+  onDeselect: () => void
 }) {
   const [zoom, setZoom] = useState(1)
   const [viewport, setViewport] = useState({ width: 0, height: 0 })
   const viewportRef = useRef<HTMLElement>(null)
   const transformRef = useRef<ReactZoomPanPinchRef>(null)
+  const pressRef = useRef<{ x: number; y: number } | null>(null)
   const image = images[page - 1]
   const cover =
     image && viewport.width > 0 && viewport.height > 0
       ? getCoverScale(viewport, image)
       : 1
+  // Overlay units stay fixed while zooming, so the library transforms the overlay with the image.
   const pageSize = {
-    width: (image?.width ?? 1) * cover * zoom,
-    height: (image?.height ?? 1) * cover * zoom,
+    width: (image?.width ?? 1) * cover,
+    height: (image?.height ?? 1) * cover,
   }
 
   useEffect(() => {
@@ -104,6 +108,18 @@ export function PageViewer({
       animationTime: ZOOM_TO_ELEMENT_DURATION,
     })
   }, [selectedId, viewport.width, viewport.height])
+
+  useEffect(() => {
+    if (!selectedId) return
+
+    const clear = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onDeselect()
+    }
+
+    window.addEventListener('keydown', clear)
+
+    return () => window.removeEventListener('keydown', clear)
+  }, [selectedId, onDeselect])
 
   function stepZoom(direction: 'in' | 'out') {
     const viewer = transformRef.current
@@ -189,10 +205,37 @@ export function PageViewer({
         </div>
       </div>
 
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Escape clears the selection from the keyboard. */}
       <section
         ref={viewportRef}
         aria-label="Document page"
         className="min-h-0 min-w-0 flex-1 overflow-hidden"
+        onPointerDownCapture={(event) => {
+          pressRef.current = { x: event.clientX, y: event.clientY }
+        }}
+        onClick={(event) => {
+          const press = pressRef.current
+
+          if (!selectedId || !press) return
+          // A drag pans the page; only a plain click clears the selection.
+          if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > 4)
+            return
+
+          const target = document
+            .getElementById(selectedOutlineId(selectedId))
+            ?.getBoundingClientRect()
+
+          if (
+            target &&
+            event.clientX >= target.left &&
+            event.clientX <= target.right &&
+            event.clientY >= target.top &&
+            event.clientY <= target.bottom
+          )
+            return
+
+          onDeselect()
+        }}
       >
         {image && viewport.width > 0 && viewport.height > 0 && (
           <TransformWrapper
@@ -259,10 +302,15 @@ export function PageViewer({
                         strokeWidth={1.25}
                         strokeLinejoin="round"
                       >
-                        <polygon points={coordinates} stroke="white" />
+                        <polygon
+                          points={coordinates}
+                          stroke="white"
+                          vectorEffect="non-scaling-stroke"
+                        />
                         <polygon
                           points={coordinates}
                           stroke="black"
+                          vectorEffect="non-scaling-stroke"
                           strokeDasharray={tone === 'selected' ? '5 5' : '4 6'}
                           className="animate-marching-ants motion-reduce:animate-none"
                         />

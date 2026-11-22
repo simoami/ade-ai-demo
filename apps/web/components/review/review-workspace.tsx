@@ -18,7 +18,7 @@ import { ArrowLeft, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ProcessingRefresh } from '#components/processing-refresh'
 import { StatusBadge } from '#components/status-badge'
 import { formatDate } from '#lib/format'
@@ -100,6 +100,8 @@ export function ReviewWorkspace({
       // A selected observation dims the rest of the page; redactions are already visible as burned boxes.
       spotlight: item.id === selected?.id && !('points' in item),
     }))
+
+  const deselect = useCallback(() => setSelected(null), [])
 
   function select(item: ReviewItem) {
     setSelected(item)
@@ -253,6 +255,7 @@ export function ReviewWorkspace({
           page={page}
           onPage={setPage}
           outlines={outlines}
+          onDeselect={deselect}
         />
 
         <aside className="flex min-h-0 flex-col border-l bg-card">
