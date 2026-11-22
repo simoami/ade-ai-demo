@@ -15,7 +15,7 @@
     "format": "biome format --write .",
     "check:agent": "node scripts/check-agent.mjs",
     "check": "biome check .",
-    "test": "node --experimental-strip-types --test lib/*.test.ts lib/server/*.test.ts 'app/api/**/*.test.ts'"
+    "test": "node --experimental-strip-types --test lib/*.test.ts lib/server/*.test.ts 'app/api/**/*.test.ts' 'components/review/*.test.ts'"
   },
   "dependencies": {
     "@opentelemetry/api": "catalog:",
@@ -33,6 +33,7 @@
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-zoom-pan-pinch": "catalog:",
     "zod": "^4.6.7"
   },
   "devDependencies": {
