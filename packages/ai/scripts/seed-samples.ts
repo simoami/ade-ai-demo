@@ -253,7 +253,7 @@ function fixtureObservationBox(
   return tiltedRegion(
     observationBox(block, words, { ...observation, valueNumeric: null }),
     rotation
-  ).box
+  )
 }
 
 /** Builds replay-safe review rows, preserving sample flags, figure masks and extraction status. */
@@ -326,7 +326,7 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
           {
             page: n,
             blockId: observation.blockId,
-            box: fixtureObservationBox(block, page.rotation, observation),
+            ...fixtureObservationBox(block, page.rotation, observation),
           },
         ],
         reviewStatus:

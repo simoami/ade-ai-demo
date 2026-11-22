@@ -13,10 +13,9 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { connection } from 'next/server'
 import { cache } from 'react'
 import { isTerminalDocument, recordTags } from '#lib/cache-policy'
-import { observationState, patientFieldMatches } from '#lib/record-mapping'
+import { observationSummary, patientFieldMatches } from '#lib/record-mapping'
 import type {
   DocumentSummary,
-  Observation,
   Patient,
   ReviewDocument,
 } from '#lib/records-types'
@@ -26,8 +25,6 @@ import { documentPages } from '#lib/server/document-pages'
 type DocumentRow = typeof documents.$inferSelect
 
 type PatientRow = typeof patients.$inferSelect
-
-type ObservationRow = typeof observations.$inferSelect
 
 function patientSummary(row: PatientRow): Patient {
   return {
@@ -47,23 +44,6 @@ function documentSummary(row: DocumentRow): DocumentSummary {
     pages: row.pageDimensions.length,
     status: row.status,
     uploadedAt: row.createdAt.toISOString(),
-  }
-}
-
-function observationSummary(row: ObservationRow): Observation {
-  const source = row.source[0]
-  if (!source) throw new Error('Observation source is missing')
-
-  return {
-    id: row.id,
-    page: source.page,
-    kind: row.kind,
-    name: row.name,
-    value: row.value,
-    unit: row.unit ?? '',
-    date: row.effectiveDate ?? '',
-    box: source.box,
-    state: observationState(row.reviewStatus),
   }
 }
 

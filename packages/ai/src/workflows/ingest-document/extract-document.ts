@@ -2,6 +2,7 @@ import type { Box, observations } from '@repo/db'
 import type { ExtractedObservation } from '#stages/extract/extract-observations'
 import type { MaskedSpans } from '#stages/extract/mask-identifiers'
 import { observationBox } from '#stages/extract/observation-box'
+import { pageSkew } from '#stages/extract/page-skew'
 import type { OcrPage } from '#stages/ocr/ocr-result'
 import { documentScopedId } from './deterministic-id.ts'
 import {
@@ -11,12 +12,18 @@ import {
   readOcr,
 } from './document-artifacts.ts'
 import {
+  findDocument,
   listRedactions,
   replaceObservations,
   updateDocument,
 } from './document-store.ts'
 
 type Dependencies = ArtifactDependencies & {
+  find: (
+    documentId: string
+  ) => Promise<
+    { pageDimensions: { width: number; height: number }[] } | undefined
+  >
   update: typeof updateDocument
   extract: (
     pages: OcrPage[],
@@ -28,6 +35,7 @@ type Dependencies = ArtifactDependencies & {
 
 const defaults: Dependencies = {
   ...artifactDefaults,
+  find: findDocument,
   update: updateDocument,
   extract: async (pages, masked) =>
     (await import('#stages/extract/extract-observations')).extractObservations(
@@ -65,6 +73,21 @@ export async function extractDocumentObservations(
   try {
     await deps.update(documentId, { status: 'extracting' })
     const pages = await readOcr(documentId, deps)
+    const document = await deps.find(documentId)
+    const geometry = pages.map((page, index) => {
+      const dimensions = document?.pageDimensions[index]
+      if (
+        !dimensions ||
+        !Number.isFinite(dimensions.width) ||
+        !Number.isFinite(dimensions.height) ||
+        dimensions.width <= 0 ||
+        dimensions.height <= 0
+      )
+        throw new Error('Missing page dimensions')
+
+      const aspectRatio = dimensions.width / dimensions.height
+      return { aspectRatio, angle: pageSkew(page.words, aspectRatio) }
+    })
     const extracted = await deps.extract(
       pages,
       await readIdentifierSpans(documentId, deps)
@@ -87,10 +110,11 @@ export async function extractDocumentObservations(
       // Undated restatements in one block share an ID; the first is kept.
       if (rows.has(id)) continue
 
-      const box = observationBox(
+      const { points, ...box } = observationBox(
         block,
         pages[observation.page - 1]?.words,
-        observation
+        observation,
+        geometry[observation.page - 1]
       )
 
       rows.set(id, {
@@ -107,7 +131,14 @@ export async function extractDocumentObservations(
         effectiveDate: observation.effectiveDate,
         dateSource: observation.dateSource,
         sourceFormat: observation.sourceFormat,
-        source: [{ page: observation.page, blockId: block.id, box }],
+        source: [
+          {
+            page: observation.page,
+            blockId: block.id,
+            box,
+            ...(points ? { points } : {}),
+          },
+        ],
         reviewStatus:
           observation.confidence < flagBelow ? 'flagged' : 'unchecked',
         details: observation.details,

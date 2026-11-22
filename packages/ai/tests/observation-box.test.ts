@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { observationBox } from '#stages/extract/observation-box'
+import { pageSkew } from '#stages/extract/page-skew'
 import type { Block, Word } from '#stages/ocr/ocr-result'
 
 const block: Block = {
@@ -96,5 +97,157 @@ test('clips row geometry to the block and falls back for wholly outside words', 
       observation
     ),
     block.box
+  )
+})
+
+const aspectRatio = 612 / 792
+
+function tiltedTable(degrees: number): Word[] {
+  const angle = (degrees * Math.PI) / 180
+  return ['Glucose', 'Sodium', 'Potassium'].flatMap((name, row) =>
+    [
+      name,
+      'synthetic',
+      'cell',
+      'cell',
+      'cell',
+      'cell',
+      'cell',
+      'cell',
+      '140',
+      'units',
+    ].map((text, column) => {
+      const x = 0.1 + column * 0.075
+      const y = 0.2 + row * 0.018
+      const corners = [
+        [x, y],
+        [x + 0.045, y],
+        [x + 0.045, y + 0.008],
+        [x, y + 0.008],
+      ].map(([px = 0, py = 0]) => [
+        (px * aspectRatio * Math.cos(angle) - py * Math.sin(angle)) /
+          aspectRatio,
+        px * aspectRatio * Math.sin(angle) + py * Math.cos(angle),
+      ])
+      const xs = corners.map(([px = 0]) => px)
+      const ys = corners.map(([, py = 0]) => py)
+      return {
+        text,
+        blockId: block.id,
+        box: {
+          x: Math.min(...xs),
+          y: Math.min(...ys),
+          width: Math.max(...xs) - Math.min(...xs),
+          height: Math.max(...ys) - Math.min(...ys),
+        },
+      }
+    })
+  )
+}
+
+test('estimates pixel-proportional skew on positive, negative and untilted tables', () => {
+  for (const degrees of [2.5, -3, 0]) {
+    assert.ok(
+      Math.abs(
+        pageSkew(tiltedTable(degrees), aspectRatio) - (degrees * Math.PI) / 180
+      ) < 1e-12
+    )
+  }
+})
+
+test('requires three same-block overlapping pairs and ignores angles above ten degrees', () => {
+  assert.equal(pageSkew(undefined, aspectRatio), 0)
+  assert.equal(pageSkew(tiltedTable(2.5).slice(0, 3), aspectRatio), 0)
+  assert.equal(
+    pageSkew(
+      tiltedTable(2.5).map((word, index) => ({
+        ...word,
+        blockId: String(index),
+      })),
+      aspectRatio
+    ),
+    0
+  )
+  const steep = Array.from({ length: 5 }, (_, index) => ({
+    text: 'synthetic',
+    blockId: block.id,
+    box: {
+      x: 0.1 + index * 0.05,
+      y: 0.1 + index * 0.02,
+      width: 0.03,
+      height: 0.03,
+    },
+  }))
+  assert.equal(pageSkew(steep, aspectRatio), 0)
+  assert.equal(
+    pageSkew(
+      steep.map((word) => ({ ...word, blockId: undefined })),
+      aspectRatio
+    ),
+    0
+  )
+})
+
+test('selects only its tilted row across drift greater than word height and encloses every word', () => {
+  const words = tiltedTable(2.5)
+  const angle = pageSkew(words, aspectRatio)
+  const wideBlock = {
+    ...block,
+    box: { x: 0.01, y: 0.1, width: 0.95, height: 0.6 },
+  }
+  const result = observationBox(
+    wideBlock,
+    words,
+    { name: 'Sodium', value: '140', valueNumeric: 140 },
+    { angle, aspectRatio }
+  )
+  assert.ok(result.points)
+  assert.equal(result.points.length, 4)
+  const deskew = ([x, y]: [number, number]) => [
+    x * aspectRatio * Math.cos(angle) + y * Math.sin(angle),
+    -x * aspectRatio * Math.sin(angle) + y * Math.cos(angle),
+  ]
+  const polygon = result.points.map(deskew)
+  const left = polygon[0]?.[0] ?? NaN
+  const top = polygon[0]?.[1] ?? NaN
+  const right = polygon[2]?.[0] ?? NaN
+  const bottom = polygon[2]?.[1] ?? NaN
+  assert.ok(Math.abs((polygon[1]?.[1] ?? NaN) - top) < 1e-12)
+  assert.ok(Math.abs((polygon[3]?.[0] ?? NaN) - left) < 1e-12)
+  assert.ok((result.points[1]?.[1] ?? 0) - (result.points[0]?.[1] ?? 0) > 0.008)
+  for (const [index, word] of words.entries()) {
+    const { x, y, width, height } = word.box
+    if (index >= 10 && index < 20) {
+      for (const point of [
+        [x, y],
+        [x + width, y],
+        [x + width, y + height],
+        [x, y + height],
+      ] as [number, number][]) {
+        const [px = NaN, py = NaN] = deskew(point)
+        assert.ok(
+          px >= left - 1e-12 &&
+            px <= right + 1e-12 &&
+            py >= top - 1e-12 &&
+            py <= bottom + 1e-12
+        )
+      }
+    } else {
+      const [, py = NaN] = deskew([x + width / 2, y + height / 2])
+      assert.ok(py < top || py > bottom)
+    }
+  }
+  for (const [x, y] of result.points) {
+    assert.ok(x >= result.x - 1e-12 && x <= result.x + result.width + 1e-12)
+    assert.ok(y >= result.y - 1e-12 && y <= result.y + result.height + 1e-12)
+  }
+  assert.deepEqual(
+    observationBox(
+      wideBlock,
+      undefined,
+      { name: 'Sodium', value: '140', valueNumeric: 140 },
+      { angle, aspectRatio }
+    ),
+    wideBlock.box
   )
 })
