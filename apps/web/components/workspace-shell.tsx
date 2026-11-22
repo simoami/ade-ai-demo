@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 import Link from 'next/link'
 import { Suspense, useId } from 'react'
 import { AppNav } from '#components/app-nav'
+import { ChatDrawer } from '#components/chat/chat-drawer'
 import { DemoAdmin } from '#components/demo-admin'
 import { ThemeToggle } from '#components/theme-toggle'
 import { WorkspaceBreadcrumb } from '#components/workspace-breadcrumb'
@@ -67,6 +68,9 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           </Suspense>
           <div className="flex items-center gap-1">
             <DemoAdmin samplesId={samplesId} />
+            <Suspense fallback={null}>
+              <ChatDrawer />
+            </Suspense>
             <ThemeToggle />
           </div>
         </header>

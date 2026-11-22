@@ -4,6 +4,7 @@ import type { EmbeddingModel, LanguageModel } from 'ai'
 /** Direct OpenAI language models used by the pipeline and agent. */
 export const models = {
   pipeline: openai('gpt-6.1-sol'),
+  chat: openai('gpt-6.1-sol'),
   fast: openai('gpt-6-luna'),
 } satisfies Record<string, LanguageModel>
 
