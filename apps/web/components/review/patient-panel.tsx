@@ -156,11 +156,15 @@ export function PatientPanel({
                     setPicking(false)
                   }}
                 >
-                  <div className="w-full flex gap-1">
+                  <div className="w-full flex items-center gap-1">
+                    <Avatar size="sm">
+                      <AvatarFallback className="bg-accent text-[9px] font-semibold text-accent-foreground">
+                        {candidate.initials}
+                      </AvatarFallback>
+                    </Avatar>
                     <span className="font-medium">{candidate.id}</span>
                     <span className="text-muted-foreground">
-                      {candidate.initials} · {candidate.sex} ·{' '}
-                      {candidate.birthYear ?? 'Unknown'}
+                      {candidate.sex} · {candidate.birthYear ?? 'Unknown'}
                     </span>
                   </div>
                   {candidateFields !== undefined && (
