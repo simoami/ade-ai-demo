@@ -269,7 +269,8 @@ function RangeBar({ observation }: { observation: ObservationView }) {
           <span
             key={bound}
             className="absolute -inset-y-1 w-px bg-success"
-            style={{ left: `${percent(bound)}%` }}
+            // Snap to a whole pixel so 1px markers don't blur at fractional offsets.
+            style={{ left: `round(${percent(bound)}%, 1px)` }}
           />
         )
       )}
