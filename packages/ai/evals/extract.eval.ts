@@ -36,7 +36,7 @@ const data = await Promise.all(
     )
     if (
       fixture.split !== 'development' ||
-      fixture.datasetVersion !== 'synthetic-v3' ||
+      fixture.datasetVersion !== 'synthetic-v5' ||
       fixture.documentClass !== 'clinical'
     )
       throw new Error('Invalid extraction development fixture')
@@ -75,7 +75,7 @@ const data = await Promise.all(
 const metadata = {
   promptVersion: PROMPT_VERSION,
   model: models.pipeline.modelId,
-  datasetVersion: 'synthetic-v3',
+  datasetVersion: 'synthetic-v5',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
     encoding: 'utf8',
   }).trim(),

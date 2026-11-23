@@ -1,6 +1,6 @@
 {
   "id": "skin-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7315,
   "split": "held-out",
   "documentClass": "clinical",

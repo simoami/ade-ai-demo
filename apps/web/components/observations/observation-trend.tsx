@@ -3,6 +3,8 @@
 import { Card } from '@repo/ui/components/card'
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@repo/ui/components/chart'
@@ -30,7 +32,9 @@ export function ObservationTrend({
   unit: string | null
   points: {
     date: string
-    value: number
+    value: number | null
+    systolic?: number | null
+    diastolic?: number | null
     flag?: string | null
     documentId: string
     page: number
@@ -39,6 +43,13 @@ export function ObservationTrend({
   rangeHigh: number | null
 }) {
   const latest = points.at(-1)
+  const bloodPressure = points.some(
+    (point) => point.systolic != null || point.diastolic != null
+  )
+  const reading = (point: (typeof points)[number]) =>
+    bloodPressure
+      ? `${point.systolic ?? '—'}/${point.diastolic ?? '—'}`
+      : point.value
 
   return (
     <Card render={<figure />} className="min-w-0 rounded-md p-3">
@@ -46,13 +57,15 @@ export function ObservationTrend({
         <span className="font-medium">{name}</span>
         {latest && (
           <span className="text-xs text-muted-foreground">
-            Latest {latest.value} {unit}
+            Latest {reading(latest)} {unit}
           </span>
         )}
       </figcaption>
       <ChartContainer
         className="h-44 w-full"
         config={{
+          systolic: { label: 'Systolic', color: 'var(--chart-1)' },
+          diastolic: { label: 'Diastolic', color: 'var(--chart-2)' },
           value: {
             label: unit ? `Result (${unit})` : 'Result',
             color: 'var(--chart-1)',
@@ -103,6 +116,7 @@ export function ObservationTrend({
               ifOverflow="extendDomain"
             />
           )}
+          {bloodPressure && <ChartLegend content={<ChartLegendContent />} />}
           <ChartTooltip
             content={
               <ChartTooltipContent
@@ -110,14 +124,19 @@ export function ObservationTrend({
               />
             }
           />
-          <Line
-            dataKey="value"
-            type="linear"
-            stroke="var(--color-value)"
-            strokeWidth={2}
-            dot={{ r: 2 }}
-            isAnimationActive={false}
-          />
+          {(bloodPressure ? ['systolic', 'diastolic'] : ['value']).map(
+            (key) => (
+              <Line
+                key={key}
+                dataKey={key}
+                type="linear"
+                stroke={`var(--color-${key})`}
+                strokeWidth={2}
+                dot={{ r: 2 }}
+                isAnimationActive={false}
+              />
+            )
+          )}
         </LineChart>
       </ChartContainer>
       {(rangeLow !== null || rangeHigh !== null) && (
@@ -140,7 +159,7 @@ export function ObservationTrend({
                 className="underline underline-offset-2"
                 href={`/documents/${point.documentId}?page=${point.page}`}
               >
-                {formatDate(point.date)} · {point.value} {unit}
+                {formatDate(point.date)} · {reading(point)} {unit}
                 {point.flag ? ` · ${point.flag}` : ''} · page {point.page}
               </Link>
             </li>

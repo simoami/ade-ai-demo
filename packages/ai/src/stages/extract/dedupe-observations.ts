@@ -7,6 +7,7 @@ type Deduplicable = {
   valueNumeric: number | null
   effectiveDate: string | null
   sourceFormat: keyof typeof formatRank
+  details?: { code?: string | null; components?: { code: string }[] | null }
 }
 
 /** Deduplicates dated observations by kind, name and value, preferring table over list over narrative; undated observations are kept. */
@@ -18,10 +19,14 @@ export function dedupeObservations<T extends Deduplicable>(
     if (observation.effectiveDate === null) continue
     const key = JSON.stringify([
       observation.kind,
-      observation.name.trim().toLowerCase(),
+      observation.details?.code ?? observation.name.trim().toLowerCase(),
       // Restatements format the same reading differently ("2.8", "2.80 g/dL"), so numbers compare parsed.
       observation.valueNumeric ?? observation.value.trim().toLowerCase(),
       observation.effectiveDate,
+      // Equal-valued SBP and DBP are complementary components, not duplicate statements.
+      observation.details?.components
+        ?.map((component) => component.code)
+        .sort(),
     ])
     const current = kept.get(key)
     if (

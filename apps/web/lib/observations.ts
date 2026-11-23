@@ -46,8 +46,9 @@ export function observationTrends(observations: ObservationView[]) {
     if (
       !['lab', 'vital'].includes(observation.kind) ||
       observation.state === 'rejected' ||
-      observation.valueNumeric === null ||
-      !Number.isFinite(observation.valueNumeric) ||
+      (!observation.details.components?.length &&
+        (observation.valueNumeric === null ||
+          !Number.isFinite(observation.valueNumeric))) ||
       !observation.date ||
       !Number.isFinite(Date.parse(observation.date))
     )
@@ -55,7 +56,7 @@ export function observationTrends(observations: ObservationView[]) {
 
     const key = JSON.stringify([
       observation.kind,
-      observation.name,
+      observation.details.code ?? observation.name,
       observation.unit,
     ])
     const rows = series.get(key) ?? []
@@ -80,7 +81,17 @@ export function observationTrends(observations: ObservationView[]) {
         rangeHigh: latest.details.rangeHigh ?? null,
         points: sorted.map((row) => ({
           date: row.date,
-          value: Number(row.valueNumeric),
+          value: row.valueNumeric,
+          ...(row.details.components?.length
+            ? {
+                systolic:
+                  row.details.components.find((part) => part.code === '8480-6')
+                    ?.value ?? null,
+                diastolic:
+                  row.details.components.find((part) => part.code === '8462-4')
+                    ?.value ?? null,
+              }
+            : {}),
           // Same convention as the assistant's trend, so unverified points read alike in both charts.
           flag:
             [

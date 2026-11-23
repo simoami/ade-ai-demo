@@ -1,6 +1,6 @@
 {
   "id": "clinical-followup",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7316,
   "split": "development",
   "documentClass": "clinical",
@@ -416,7 +416,7 @@
         "rangeHigh": 99,
         "flagNormalized": "high"
       },
-      "duplicateGroup": "Glucose-2026-03-10"
+      "duplicateGroup": "glucose-2026-03-10"
     },
     {
       "id": "o2",
@@ -434,7 +434,7 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-03-10"
+      "duplicateGroup": "sodium-2026-03-10"
     },
     {
       "id": "o3",
@@ -452,7 +452,7 @@
         "rangeHigh": 5.1,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Potassium-2026-03-10"
+      "duplicateGroup": "potassium-2026-03-10"
     },
     {
       "id": "o4",
@@ -470,7 +470,7 @@
         "rangeHigh": 107,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Chloride-2026-03-10"
+      "duplicateGroup": "chloride-2026-03-10"
     },
     {
       "id": "o5",
@@ -488,7 +488,7 @@
         "rangeHigh": 20,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "BUN-2026-03-10"
+      "duplicateGroup": "bun-2026-03-10"
     },
     {
       "id": "o6",
@@ -506,7 +506,7 @@
         "rangeHigh": 1.2,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Creatinine-2026-03-10"
+      "duplicateGroup": "creatinine-2026-03-10"
     },
     {
       "id": "o7",
@@ -524,7 +524,7 @@
         "rangeHigh": 11,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "WBC-2026-03-10"
+      "duplicateGroup": "wbc-2026-03-10"
     },
     {
       "id": "o8",
@@ -542,7 +542,7 @@
         "rangeHigh": 16,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Hemoglobin-2026-03-10"
+      "duplicateGroup": "hemoglobin-2026-03-10"
     },
     {
       "id": "o9",
@@ -560,7 +560,7 @@
         "rangeHigh": 400,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Platelets-2026-03-10"
+      "duplicateGroup": "platelets-2026-03-10"
     },
     {
       "id": "o10",
@@ -578,7 +578,7 @@
         "rangeHigh": 5.6,
         "flagNormalized": "high"
       },
-      "duplicateGroup": "HbA1c-2026-03-10"
+      "duplicateGroup": "hba1c-2026-03-10"
     },
     {
       "id": "o11",
@@ -596,13 +596,13 @@
         "rangeHigh": 99,
         "flagNormalized": "high"
       },
-      "duplicateGroup": "Glucose-2026-03-10"
+      "duplicateGroup": "glucose-2026-03-10"
     },
     {
       "id": "o12",
       "blockId": "p1-b6",
       "kind": "lab",
-      "name": "Sodium",
+      "name": "sodium",
       "value": "140",
       "unit": "mmol/L",
       "effectiveDate": "2026-03-10",
@@ -614,37 +614,41 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-03-10"
+      "duplicateGroup": "sodium-2026-03-10"
     },
     {
       "id": "o13",
       "blockId": "p1-b5",
       "kind": "vital",
-      "name": "Systolic blood pressure",
-      "value": "122",
+      "name": "SBP",
+      "value": "122/78",
       "unit": "mmHg",
       "effectiveDate": "2026-03-10",
       "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Systolic blood pressure-2026-03-10"
+      "details": {
+        "code": "85354-9",
+        "components": [
+          {
+            "code": "8480-6",
+            "name": "Systolic blood pressure",
+            "value": 122,
+            "unit": "mmHg"
+          },
+          {
+            "code": "8462-4",
+            "name": "Diastolic blood pressure",
+            "value": 78,
+            "unit": "mmHg"
+          }
+        ]
+      },
+      "duplicateGroup": "sbp-2026-03-10"
     },
     {
       "id": "o14",
-      "blockId": "p1-b5",
-      "kind": "vital",
-      "name": "Diastolic blood pressure",
-      "value": "78",
-      "unit": "mmHg",
-      "effectiveDate": "2026-03-10",
-      "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Diastolic blood pressure-2026-03-10"
-    },
-    {
-      "id": "o15",
       "blockId": "p1-b6",
       "kind": "medical-history",
-      "name": "Hypertension",
+      "name": "hypertension",
       "value": "present",
       "unit": null,
       "effectiveDate": "2026-03-10",
@@ -653,13 +657,13 @@
         "startDate": "2020-01-01",
         "ongoing": true
       },
-      "duplicateGroup": "Hypertension-2026-03-10"
+      "duplicateGroup": "hypertension-2026-03-10"
     },
     {
-      "id": "o16",
+      "id": "o15",
       "blockId": "p1-b6",
       "kind": "medication",
-      "name": "Metformin",
+      "name": "metformin",
       "value": "500 mg",
       "unit": "mg",
       "effectiveDate": "2026-03-10",
@@ -670,13 +674,13 @@
         "route": "oral",
         "frequency": "twice daily"
       },
-      "duplicateGroup": "Metformin-2026-03-10"
+      "duplicateGroup": "metformin-2026-03-10"
     },
     {
-      "id": "o17",
+      "id": "o16",
       "blockId": "p1-b6",
       "kind": "adverse-event",
-      "name": "Dehydration",
+      "name": "dehydration",
       "value": "severe",
       "unit": null,
       "effectiveDate": "2026-03-02",
@@ -689,10 +693,10 @@
         "outcome": "recovered",
         "ongoing": false
       },
-      "duplicateGroup": "Dehydration-2026-03-02"
+      "duplicateGroup": "dehydration-2026-03-02"
     },
     {
-      "id": "o18",
+      "id": "o17",
       "blockId": "p1-b5",
       "kind": "vital",
       "name": "Pulse",
@@ -700,14 +704,16 @@
       "unit": "beats/min",
       "effectiveDate": "2026-03-10",
       "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Pulse-2026-03-10"
+      "details": {
+        "code": "8867-4"
+      },
+      "duplicateGroup": "pulse-2026-03-10"
     },
     {
-      "id": "o19",
+      "id": "o18",
       "blockId": "p1-b5",
       "kind": "symptom",
-      "name": "Fatigue",
+      "name": "fatigue",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-03-01",
@@ -716,13 +722,13 @@
         "startDate": "2026-03-01",
         "ongoing": true
       },
-      "duplicateGroup": "Fatigue-2026-03-01"
+      "duplicateGroup": "fatigue-2026-03-01"
     },
     {
-      "id": "o20",
+      "id": "o19",
       "blockId": "p1-b6",
       "kind": "adverse-event",
-      "name": "Nausea",
+      "name": "nausea",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-02-01",
@@ -733,7 +739,7 @@
         "seriousness": "non-serious",
         "serious": false
       },
-      "duplicateGroup": "Nausea-2026-02-01"
+      "duplicateGroup": "nausea-2026-02-01"
     }
   ]
 }

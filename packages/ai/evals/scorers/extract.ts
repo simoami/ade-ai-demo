@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'node:util'
 import type { Expected } from '#evals/fixtures/expected'
 import type { ExtractedObservation } from '#stages/extract/extract-observations'
 
@@ -68,7 +69,12 @@ export function scoreObservations(
         if (actual.kind === truth.kind) fieldsMatched++
         for (const [field, value] of Object.entries(truth.details)) {
           fields++
-          if (actual.details[field as keyof Actual['details']] === value)
+          if (
+            isDeepStrictEqual(
+              actual.details[field as keyof Actual['details']],
+              value
+            )
+          )
             fieldsMatched++
         }
         if (normalize(actual.unit) === normalize(truth.unit)) unitMatched++

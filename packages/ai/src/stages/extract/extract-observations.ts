@@ -6,12 +6,15 @@ import { models } from '#models'
 import type { OcrPage } from '#stages/ocr/ocr-result'
 import { dedupeObservations } from './dedupe-observations.ts'
 import { type MaskedSpans, maskIdentifiers } from './mask-identifiers.ts'
-import { normalizeObservation } from './normalize-observation.ts'
+import {
+  combineBloodPressure,
+  normalizeObservation,
+} from './normalize-observation.ts'
 import { buildExtractionPrompt, extractionPrompt } from './prompt.ts'
 
 const log = logger.getSubLogger({ name: 'extract' })
 
-const isoDate = z.iso.date()
+const ISO_DATE = z.iso.date()
 
 /** Structured extraction output; strict model schemas need every key, so absent values are null. */
 export const observationOutputSchema = z.object({
@@ -29,14 +32,25 @@ export const observationOutputSchema = z.object({
       name: z.string().trim().min(1),
       value: z.string().trim().min(1),
       unit: z.string().trim().min(1).nullable(),
-      effectiveDate: isoDate.nullable(),
+      effectiveDate: ISO_DATE.nullable(),
       dateSource: z.enum(['explicit', 'document']).nullable(),
       sourceFormat: z.enum(['table', 'list', 'narrative']),
       details: z.object({
+        code: z.string().nullable(),
+        components: z
+          .array(
+            z.object({
+              code: z.string(),
+              name: z.string(),
+              value: z.number(),
+              unit: z.string(),
+            })
+          )
+          .nullable(),
         referenceRange: z.string().nullable(),
         flag: z.string().nullable(),
-        startDate: isoDate.nullable(),
-        endDate: isoDate.nullable(),
+        startDate: ISO_DATE.nullable(),
+        endDate: ISO_DATE.nullable(),
         seriousness: z.string().nullable(),
         outcome: z
           .enum([
@@ -76,7 +90,7 @@ export function validateObservationOutput(
   const parsed = observationOutputSchema.safeParse(output)
   if (!parsed.success) throw new Error('Invalid observation schema')
 
-  return parsed.data.observations.flatMap((observation) => {
+  return parsed.data.observations.map((observation) => {
     if (
       !ocr.blocks.some(
         (block) => block.id === observation.blockId && block.kind !== 'figure'
@@ -92,9 +106,7 @@ export function validateObservationOutput(
     return normalizeObservation({
       ...observation,
       page,
-      valueNumeric: /^-?\d+(\.\d+)?$/.test(observation.value)
-        ? Number(observation.value)
-        : null,
+      valueNumeric: null,
       details: Object.fromEntries(
         Object.entries(observation.details).filter((entry) => entry[1] !== null)
       ),
@@ -129,7 +141,9 @@ export async function extractObservations(
   )
 
   const extracted = perPage.flat()
-  const observations = dedupeObservations(extracted)
+  const observations = dedupeObservations(
+    combineBloodPressure(dedupeObservations(extracted))
+  )
   log.info(
     {
       pageCount: pages.length,

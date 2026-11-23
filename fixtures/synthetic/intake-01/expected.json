@@ -1,6 +1,6 @@
 {
   "id": "intake-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7311,
   "split": "development",
   "documentClass": "clinical",

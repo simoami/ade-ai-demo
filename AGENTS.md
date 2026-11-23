@@ -109,8 +109,10 @@ and embeddings inside the durable step; return counts only. The review hook is
 created before the final status is written, so review opens only once notes are
 indexed and actions can be delivered. Clinical documents are extracted (`extracting`, then
 `needsReview`), consent documents go to `needsReview` and others to `unsupported`.
-Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
-and derives AE seriousness in code.
+Extraction keeps observation names as printed and assigns vital LOINC codes from the prompt's short list.
+BP is one panel with coded systolic and diastolic components; complementary readings on the same date combine within a document.
+Trends group by code when present, otherwise exact name, keeping units separate and using the latest printed label.
+Lab bounds/flags and AE seriousness are derived in code.
 Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible. Accepting or rejecting a redaction republishes pages from encrypted review sources before recording the decision.
 The redaction step checkpoints encrypted burned pages, encrypted unredacted review
 sources and a manifest before publication so retries can finish after render deletion.

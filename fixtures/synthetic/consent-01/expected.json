@@ -1,6 +1,6 @@
 {
   "id": "consent-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7306,
   "split": "development",
   "documentClass": "consent",

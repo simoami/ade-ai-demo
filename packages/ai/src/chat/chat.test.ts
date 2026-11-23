@@ -122,8 +122,12 @@ test('trend queries drop undated rows before the limit and sort undated results 
   assert.ok(trend)
   const compiled = dialect.sqlToQuery(trend)
   assert.match(compiled.sql, /effective_date.* is not null/)
-  assert.match(compiled.sql, /lower\(.*"name"\) = lower\(\$\d\)/)
+  assert.match(compiled.sql, /"name" = \$\d/)
   assert.deepEqual(compiled.params, ['pt-1', 'Glucose'])
+  const filter = trendFilters('pt-1', 'BP', '85354-9')
+  assert.ok(filter)
+  assert.deepEqual(dialect.sqlToQuery(filter).params, ['pt-1', '85354-9'])
+  assert.match(dialect.sqlToQuery(filter).sql, /->>'code'/)
 
   const [byDate] = newestFirst
   assert.ok(byDate)
@@ -341,4 +345,106 @@ test('note answers synthesize retrieved evidence with page links instead of chun
   assert.match(instructions, /synthesize the retrieved text in 1–4 sentences/)
   assert.ok(instructions.includes('[page N](/documents/<documentId>?page=N)'))
   assert.match(instructions, /Never paste chunks/)
+})
+
+test('trends BP panels together or selects the requested numeric component', () => {
+  const view = observationViews([row])[0]
+  assert.ok(view)
+  const panel: ObservationView = {
+    ...view,
+    kind: 'vital',
+    name: 'BP',
+    value: '128/78',
+    valueNumeric: null,
+    unit: 'mmHg',
+    details: {
+      code: '85354-9',
+      components: [
+        {
+          code: '8480-6',
+          name: 'Systolic blood pressure',
+          value: 128,
+          unit: 'mmHg',
+        },
+        {
+          code: '8462-4',
+          name: 'Diastolic blood pressure',
+          value: 78,
+          unit: 'mmHg',
+        },
+      ],
+    },
+  }
+  assert.deepEqual(
+    observationTrendResult('BP', [panel], '85354-9').points.map((point) => [
+      point.value,
+      point.systolic,
+      point.diastolic,
+    ]),
+    [[null, 128, 78]]
+  )
+  assert.equal(
+    observationTrendResult('BP', [panel], '85354-9', '8480-6').points[0]?.value,
+    128
+  )
+  assert.equal(
+    observationTrendResult('BP', [panel], '85354-9', '8462-4').points[0]?.value,
+    78
+  )
+  assert.deepEqual(
+    observationTrendResult(
+      'BP',
+      [
+        {
+          ...panel,
+          details: {
+            code: '85354-9',
+            components: panel.details.components?.slice(0, 1),
+          },
+        },
+      ],
+      '85354-9',
+      '8462-4'
+    ).points,
+    []
+  )
+})
+
+test('groups vital trends by code and uses the latest printed label and unit', () => {
+  const view = observationViews([row])[0]
+  assert.ok(view)
+  const pulse: ObservationView = {
+    ...view,
+    kind: 'vital',
+    name: 'Pulse',
+    valueNumeric: 76,
+    unit: 'beats/min',
+    details: { code: '8867-4' },
+  }
+  const later = {
+    ...pulse,
+    name: 'Heart rate',
+    date: '2026-02-01',
+    id: 'later',
+    valueNumeric: 80,
+  }
+  const result = observationTrendResult('Pulse', [pulse, later])
+  assert.equal(result.name, 'Heart rate')
+  assert.deepEqual(
+    result.points.map((point) => point.value),
+    [76, 80]
+  )
+  assert.equal(observationTrendResult('pulse', [pulse]).points.length, 0)
+  assert.equal(
+    observationTrendResult('Pulse', [pulse, { ...later, unit: 'bpm' }]).points
+      .length,
+    1
+  )
+  assert.equal(
+    observationTrendResult('Pulse', [
+      pulse,
+      { ...later, details: { code: '9279-1' } },
+    ]).points.length,
+    1
+  )
 })

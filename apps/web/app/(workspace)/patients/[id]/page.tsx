@@ -48,18 +48,11 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
           </p>
         </div>
       </header>
-      <div className="mt-[17px] mb-[21px] grid grid-cols-2 gap-3 lg:grid-cols-4 [&>div]:flex [&>div]:min-h-[91px] [&>div]:flex-col [&>div]:gap-2 [&>div]:p-3.5 [&_span]:text-[9.5px] [&_span]:text-muted-foreground [&_strong]:text-base [&_strong]:font-semibold [&_small]:text-[9px] [&_small]:text-muted-foreground">
+      <div className="mt-[17px] mb-[21px] grid grid-cols-1 gap-3 sm:grid-cols-3 [&>div]:flex [&>div]:min-h-[91px] [&>div]:flex-col [&>div]:gap-2 [&>div]:p-3.5 [&_span]:text-[9.5px] [&_span]:text-muted-foreground [&_strong]:text-base [&_strong]:font-semibold [&_small]:text-[9px] [&_small]:text-muted-foreground">
         <Card>
           <span>Documents</span>
           <strong>{linked.length}</strong>
           <small>Linked patient records</small>
-        </Card>
-        <Card>
-          <span>Total pages</span>
-          <strong>
-            {linked.reduce((count, document) => count + document.pages, 0)}
-          </strong>
-          <small>Across linked documents</small>
         </Card>
         <Card>
           <span>Observations</span>

@@ -132,3 +132,49 @@ test('scores new kind details and penalizes missing or incorrect fields', () => 
     0.25
   )
 })
+
+test('scores component values structurally and penalizes incorrect BP components', () => {
+  const panel = truth('bp', 'list', {
+    kind: 'vital',
+    name: 'Blood pressure',
+    value: '128/78',
+    unit: 'mmHg',
+    details: {
+      code: '85354-9',
+      components: [
+        {
+          code: '8480-6',
+          name: 'Systolic blood pressure',
+          value: 128,
+          unit: 'mmHg',
+        },
+        {
+          code: '8462-4',
+          name: 'Diastolic blood pressure',
+          value: 78,
+          unit: 'mmHg',
+        },
+      ],
+    },
+  })
+  const correct = { ...panel, details: structuredClone(panel.details) }
+  const incorrect = {
+    ...panel,
+    details: {
+      ...panel.details,
+      components: panel.details.components?.map((component) => ({
+        ...component,
+        value: 0,
+      })),
+    },
+  }
+  assert.equal(
+    scoreObservations([{ expected: [panel], actual: [correct] }]).fieldAccuracy,
+    1
+  )
+  assert.equal(
+    scoreObservations([{ expected: [panel], actual: [incorrect] }])
+      .fieldAccuracy,
+    2 / 3
+  )
+})

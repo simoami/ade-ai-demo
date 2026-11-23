@@ -98,40 +98,58 @@ async function readObservations(where: ReturnType<typeof and>, limit?: number) {
 /** Build a chronological trend using the most recent result's unit and reference range. */
 export function observationTrendResult(
   name: string,
-  observations: ObservationView[]
+  observations: ObservationView[],
+  code?: string,
+  componentCode?: string
 ) {
-  const rows = observations.filter(
-    (row) =>
-      row.name.toLowerCase() === name.toLowerCase() &&
-      row.valueNumeric !== null &&
-      row.date
+  const matched = observations.find((row) =>
+    code ? row.details.code === code : row.name === name
   )
+  const groupCode = code ?? matched?.details.code
+  const rows = observations
+    .filter(
+      (row) =>
+        (groupCode ? row.details.code === groupCode : row.name === name) &&
+        row.state !== 'rejected' &&
+        row.date &&
+        (componentCode
+          ? row.details.components?.some((part) => part.code === componentCode)
+          : row.valueNumeric !== null || row.details.components?.length)
+    )
+    .sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id))
   const first = rows[0]
   const points = rows
     .filter((row) => row.unit === first?.unit)
-    .flatMap((row) =>
-      row.valueNumeric === null
-        ? []
-        : [
-            {
-              date: row.date,
-              value: row.valueNumeric,
-              flag:
-                [
-                  row.details.flagNormalized ?? row.details.flag,
-                  row.state === 'accepted' ? null : 'unverified',
-                ]
-                  .filter(Boolean)
-                  .join('; ') || null,
-              documentId: row.documentId,
-              page: row.page,
-            },
-          ]
-    )
+    .map((row) => ({
+      date: row.date,
+      value: componentCode
+        ? (row.details.components?.find((part) => part.code === componentCode)
+            ?.value ?? null)
+        : row.valueNumeric,
+      ...(!componentCode && row.details.components?.length
+        ? {
+            systolic:
+              row.details.components.find((part) => part.code === '8480-6')
+                ?.value ?? null,
+            diastolic:
+              row.details.components.find((part) => part.code === '8462-4')
+                ?.value ?? null,
+          }
+        : {}),
+      flag:
+        [
+          row.details.flagNormalized ?? row.details.flag,
+          row.state === 'accepted' ? null : 'unverified',
+        ]
+          .filter(Boolean)
+          .join('; ') || null,
+      documentId: row.documentId,
+      page: row.page,
+    }))
     .sort((a, b) => a.date.localeCompare(b.date))
 
   return {
-    name,
+    name: first?.name ?? name,
     unit: first?.unit || null,
     rangeLow: first?.details.rangeLow ?? null,
     rangeHigh: first?.details.rangeHigh ?? null,
@@ -156,16 +174,28 @@ export function chatTools(context: PageContext) {
     }),
     observationTrend: tool({
       description:
-        'Get up to 100 numeric observations for an exact test name and patient, using one unit. Unverified points have an unverified flag. Requires the patient ID, available from listDocuments when viewing a document.',
+        'Get up to 100 dated numeric observations, grouped by LOINC code when available, otherwise exact printed name, using one unit. Supply code for vitals. BP panel code 85354-9 returns two series; component 8480-6 or 8462-4 selects systolic or diastolic. Unverified points have an unverified flag. Requires the patient ID, available from listDocuments when viewing a document.',
       inputSchema: z.object({
         patientId: scopeSchema.shape.patientId.unwrap(),
         name: z.string().trim().min(1).max(200),
+        code: z
+          .string()
+          .regex(/^\d+-\d$/)
+          .optional(),
+        component: z.enum(['8480-6', '8462-4']).optional(),
       }),
-      execute: async ({ patientId, name }) => {
-        return observationTrendResult(
-          name,
-          await readObservations(trendFilters(patientId, name), 100)
+      execute: async ({ patientId, name, code, component }) => {
+        let rows = await readObservations(
+          trendFilters(patientId, name, code),
+          100
         )
+        const groupCode = code ?? rows[0]?.details.code
+        if (!code && groupCode)
+          rows = await readObservations(
+            trendFilters(patientId, name, groupCode),
+            100
+          )
+        return observationTrendResult(name, rows, groupCode, component)
       },
     }),
     reviewStatus: tool({

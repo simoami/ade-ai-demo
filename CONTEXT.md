@@ -50,8 +50,11 @@ A document whose identifiers only partly match its linked patient. It must be re
 ## Clinical data
 
 **Observation**:
-One clinical fact stated in a document (a lab result, vital sign, symptom, or adverse event), with its value, date, and source region.
+One clinical fact stated in a document (a lab result, vital sign, symptom, or adverse event), with its printed name, value, date, and source region. Vital observations carry a LOINC code when recognized; trends group matching codes across printed labels, keeping units separate.
 _Avoid_: Finding, fact, data point
+
+**Observation component**:
+A named numeric part of one observation, with its code and unit. Blood pressure is one panel observation with systolic and diastolic components; each component can be queried or trended.
 
 **Removed observation**:
 An observation hidden because a redaction covers it. It returns if that redaction is rejected.

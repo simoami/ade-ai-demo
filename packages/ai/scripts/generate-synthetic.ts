@@ -12,7 +12,7 @@ import { drawPictureForm } from './synthetic-pictures.ts'
 const log = logger.getSubLogger({ name: 'synthetic-generator' })
 
 /** Version changes whenever generated content or geometry changes. */
-export const DATASET_VERSION = 'synthetic-v3'
+export const DATASET_VERSION = 'synthetic-v5'
 
 /** Fixture list; `scan` is the base scan severity (0 mild to 1 worst) for the scanned variant. */
 export const fixtureSpecs = [
@@ -635,7 +635,7 @@ export async function generateFixture(
           effectiveDate,
           sourceFormat,
           details,
-          duplicateGroup: `${name}-${effectiveDate}`,
+          duplicateGroup: `${name.toLowerCase()}-${effectiveDate}`,
         })
       }
       for (const [name, value, unit, referenceRange, flag] of labs)
@@ -647,36 +647,51 @@ export async function generateFixture(
           flagNormalized: flag === 'H' ? 'high' : 'normal',
         })
       for (const [name, value, unit, referenceRange, flag] of panel.slice(0, 2))
-        observation(note, 'lab', name, value, unit, 'narrative', {
-          referenceRange,
-          flag,
-          rangeLow: Number(referenceRange.split('-')[0]),
-          rangeHigh: Number(referenceRange.split('-')[1]),
-          flagNormalized: flag === 'H' ? 'high' : 'normal',
-        })
+        observation(
+          note,
+          'lab',
+          name === 'Sodium' ? 'sodium' : name,
+          value,
+          unit,
+          'narrative',
+          {
+            referenceRange,
+            flag,
+            rangeLow: Number(referenceRange.split('-')[0]),
+            rangeHigh: Number(referenceRange.split('-')[1]),
+            flagNormalized: flag === 'H' ? 'high' : 'normal',
+          }
+        )
       observation(
         list,
         'vital',
-        'Systolic blood pressure',
-        followup ? '122' : '128',
+        followup ? 'SBP' : 'BP',
+        followup ? '122/78' : '128/82',
         'mmHg',
         'list',
-        {}
-      )
-      observation(
-        list,
-        'vital',
-        'Diastolic blood pressure',
-        followup ? '78' : '82',
-        'mmHg',
-        'list',
-        {}
+        {
+          code: '85354-9',
+          components: [
+            {
+              code: '8480-6',
+              name: 'Systolic blood pressure',
+              value: followup ? 122 : 128,
+              unit: 'mmHg',
+            },
+            {
+              code: '8462-4',
+              name: 'Diastolic blood pressure',
+              value: followup ? 78 : 82,
+              unit: 'mmHg',
+            },
+          ],
+        }
       )
       if (followup) {
         observation(
           note,
           'medical-history',
-          'Hypertension',
+          'hypertension',
           'present',
           null,
           'narrative',
@@ -685,7 +700,7 @@ export async function generateFixture(
         observation(
           note,
           'medication',
-          'Metformin',
+          'metformin',
           '500 mg',
           'mg',
           'narrative',
@@ -699,7 +714,7 @@ export async function generateFixture(
         observation(
           note,
           'adverse-event',
-          'Dehydration',
+          'dehydration',
           'severe',
           null,
           'narrative',
@@ -714,11 +729,13 @@ export async function generateFixture(
           '2026-03-02'
         )
       }
-      observation(list, 'vital', 'Pulse', '76', 'beats/min', 'list', {})
+      observation(list, 'vital', 'Pulse', '76', 'beats/min', 'list', {
+        code: '8867-4',
+      })
       observation(
         list,
         'symptom',
-        'Fatigue',
+        'fatigue',
         'mild',
         null,
         'list',
@@ -728,7 +745,7 @@ export async function generateFixture(
       observation(
         note,
         'adverse-event',
-        'Nausea',
+        'nausea',
         'mild',
         null,
         'narrative',

@@ -86,11 +86,43 @@ test('outlines a stacked label and its combined value without neighbouring field
       field('128/78', 0.1, 0.2),
       field('76', 0.4, 0.2),
     ],
-    { name: 'Systolic blood pressure', value: '128', valueNumeric: 128 }
+    { name: 'Blood pressure', value: '128/78', valueNumeric: null }
   )
   assert.equal(actual.x, 0.1)
   assert.equal(actual.y, 0.15)
   assert.ok(Math.abs(actual.width - 0.17) < 1e-12)
+  assert.ok(Math.abs(actual.height - 0.07) < 1e-12)
+})
+
+test('matches an abbreviated printed label above its value', () => {
+  const actual = observationBox(
+    block,
+    [
+      {
+        text: 'BP',
+        blockId: block.id,
+        box: { x: 0.1, y: 0.15, width: 0.08, height: 0.02 },
+      },
+      {
+        text: '128/78',
+        blockId: block.id,
+        box: { x: 0.1, y: 0.2, width: 0.08, height: 0.02 },
+      },
+      {
+        text: 'BMI',
+        blockId: block.id,
+        box: { x: 0.4, y: 0.15, width: 0.08, height: 0.02 },
+      },
+      {
+        text: '24',
+        blockId: block.id,
+        box: { x: 0.4, y: 0.2, width: 0.08, height: 0.02 },
+      },
+    ],
+    { name: 'BP', value: '128/78', valueNumeric: null }
+  )
+  assert.equal(actual.x, 0.1)
+  assert.ok(Math.abs(actual.width - 0.08) < 1e-12)
   assert.ok(Math.abs(actual.height - 0.07) < 1e-12)
 })
 

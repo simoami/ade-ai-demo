@@ -63,7 +63,7 @@ test('preserves the birth year while masking the ISO month and day', async () =>
 
 test('maps six fixtures to the existing counts, review flags, and figure handling', async () => {
   const cases = [
-    ['clinical-20', 'needsReview', 200, 258, 2, 3],
+    ['clinical-20', 'needsReview', 200, 238, 2, 3],
     ['intake-01', 'needsReview', 12, 0, 0, 0],
     ['referral-01', 'extracting', 17, 0, 1, 0],
     ['consent-01', 'reviewed', 10, 0, 0, 0],
@@ -241,7 +241,9 @@ test('links the follow-up to the same synthetic identity and includes normalized
   assert.ok(
     facts.some(
       (fact) =>
-        fact.name === 'Systolic blood pressure' && fact.valueNumeric === '122'
+        fact.name === 'SBP' &&
+        fact.valueNumeric === null &&
+        fact.details?.components?.[0]?.value === 122
     )
   )
   assert.ok(

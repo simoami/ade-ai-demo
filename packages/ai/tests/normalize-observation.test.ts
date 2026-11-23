@@ -1,69 +1,109 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import type { ObservationDetails } from '@repo/db'
+import { dedupeObservations } from '#stages/extract/dedupe-observations'
 import {
+  combineBloodPressure,
   normalizeLabDetails,
   normalizeObservation,
   normalizeSeriousness,
 } from '#stages/extract/normalize-observation'
-import { documentScopedId } from '#workflows/ingest-document/deterministic-id'
 
 const observation = {
   kind: 'vital',
   name: 'BP',
   value: '120/70',
   valueNumeric: null,
-  unit: null,
-  details: {},
+  unit: 'mmHg',
+  details: {
+    code: '85354-9',
+    components: [
+      {
+        code: '8480-6',
+        name: 'Systolic blood pressure',
+        value: 120,
+        unit: 'mmHg',
+      },
+      {
+        code: '8462-4',
+        name: 'Diastolic blood pressure',
+        value: 70,
+        unit: 'mmHg',
+      },
+    ],
+  } as ObservationDetails,
+  effectiveDate: '2026-03-10',
+  sourceFormat: 'list' as const,
 }
 
-test('splits combined BP and canonicalizes separately printed SBP and DBP to identical readings', () => {
-  const combined = normalizeObservation(observation)
-  const separate = [
-    ...normalizeObservation({
-      ...observation,
-      name: 'SBP',
-      value: '120',
-      valueNumeric: 120,
-    }),
-    ...normalizeObservation({
-      ...observation,
-      name: 'BP diastolic',
-      value: '70',
-      valueNumeric: 70,
-    }),
-  ]
-  assert.deepEqual(combined, separate)
-  const ids = combined.map(({ name }) =>
-    documentScopedId(
-      'f5947cf9-48ef-4354-8c39-c1bba1444319',
-      `observation:1:b1:${name}:2026-03-10`
-    )
+test('preserves printed labels and coded components without a scalar BP value', () => {
+  assert.deepEqual(normalizeObservation(observation), observation)
+  for (const name of ['BMI', 'Body Mass Index', 'BP', 'Pulse']) {
+    assert.equal(normalizeObservation({ ...observation, name }).name, name)
+  }
+  const lone = normalizeObservation({
+    ...observation,
+    name: 'SBP',
+    value: '120',
+    details: {
+      code: '85354-9',
+      flag: 'H',
+      components: observation.details.components?.slice(0, 1),
+    },
+  })
+  assert.equal(lone.name, 'SBP')
+  assert.equal(lone.valueNumeric, null)
+  assert.equal(lone.details.flag, 'H')
+  assert.equal(lone.details.components?.length, 1)
+})
+
+test('pairs same-date BP components by code while retaining the first label and flags', () => {
+  const systolic = {
+    ...observation,
+    name: 'SBP',
+    value: '120',
+    details: {
+      code: '85354-9',
+      flag: 'H',
+      components: observation.details.components?.slice(0, 1),
+    },
+  }
+  const diastolic = {
+    ...observation,
+    name: 'DBP',
+    value: '70',
+    details: {
+      code: '85354-9',
+      flag: '*',
+      components: observation.details.components?.slice(1),
+    },
+  }
+  const [panel] = combineBloodPressure(
+    dedupeObservations([systolic, systolic, diastolic])
   )
-  assert.equal(new Set(ids).size, 2)
+  assert.equal(panel?.name, 'SBP')
+  assert.equal(panel?.value, '120/70')
+  assert.deepEqual(panel?.details.components, observation.details.components)
+  assert.equal(panel?.details.flag, 'H; *')
+  assert.equal(systolic.value, '120')
   assert.deepEqual(
-    ids,
-    separate.map(({ name }) =>
-      documentScopedId(
-        'f5947cf9-48ef-4354-8c39-c1bba1444319',
-        `observation:1:b1:${name}:2026-03-10`
-      )
-    )
+    combineBloodPressure([diastolic, systolic])[0]?.details.components,
+    observation.details.components
   )
-  for (const name of ['Systolic BP', 'BP systolic', 'systolic blood pressure'])
-    assert.equal(
-      normalizeObservation({
-        ...observation,
-        name,
-        value: '120',
-        valueNumeric: 120,
-      })[0]?.name,
-      'Systolic blood pressure'
-    )
   assert.equal(
-    normalizeObservation({ ...observation, name: 'Pulse', value: '70' })[0]
-      ?.name,
-    'Pulse'
+    combineBloodPressure([
+      systolic,
+      { ...diastolic, effectiveDate: '2026-03-11' },
+    ]).length,
+    2
   )
+  assert.equal(
+    combineBloodPressure(
+      [systolic, diastolic].map((row) => ({ ...row, effectiveDate: null }))
+    ).length,
+    2
+  )
+  assert.equal(combineBloodPressure([systolic, systolic]).length, 2)
 })
 
 test('parses lab intervals and one-sided ranges and derives or preserves printed flags', () => {
@@ -105,9 +145,11 @@ test('derives serious independently of severity and parses medication doses', ()
     normalizeObservation({
       ...observation,
       kind: 'medication',
+      unit: null,
+      details: {},
       name: 'Metformin',
       value: '500 mg',
-    })[0]?.valueNumeric,
+    }).valueNumeric,
     500
   )
 })

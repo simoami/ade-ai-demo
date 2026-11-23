@@ -156,3 +156,80 @@ test('excludes unusable points and keeps kind, name and unit series separate', (
     1
   )
 })
+
+test('builds both BP component series from panel observations and retains partial readings', () => {
+  const panel: ObservationView = {
+    ...observation,
+    kind: 'vital',
+    name: 'Blood pressure',
+    value: '128/78',
+    valueNumeric: null,
+    unit: 'mmHg',
+    details: {
+      code: '85354-9',
+      components: [
+        {
+          code: '8480-6',
+          name: 'Systolic blood pressure',
+          value: 128,
+          unit: 'mmHg',
+        },
+        {
+          code: '8462-4',
+          name: 'Diastolic blood pressure',
+          value: 78,
+          unit: 'mmHg',
+        },
+      ],
+    },
+  }
+  const [trend] = observationTrends([
+    panel,
+    {
+      ...panel,
+      id: 'bp2',
+      date: '2026-02-02',
+      details: {
+        code: '85354-9',
+        components: panel.details.components?.slice(0, 1),
+      },
+    },
+  ])
+  assert.equal(trend?.name, 'Blood pressure')
+  assert.equal(trend?.points[0]?.systolic, 128)
+  assert.equal(trend?.points[0]?.diastolic, 78)
+  assert.equal(trend?.points[1]?.diastolic, null)
+  assert.equal(trend?.points[0]?.value, null)
+})
+
+test('groups coded vitals across printed labels while keeping units and uncoded labels separate', () => {
+  const bmi: ObservationView = {
+    ...observation,
+    kind: 'vital',
+    name: 'BMI',
+    unit: 'kg/m2',
+    valueNumeric: 24,
+    details: { code: '39156-5' },
+  }
+  const later = {
+    ...bmi,
+    name: 'Body Mass Index',
+    id: 'bmi2',
+    date: '2026-03-01',
+    valueNumeric: 25,
+  }
+  const [trend] = observationTrends([later, bmi])
+  assert.equal(trend?.name, 'Body Mass Index')
+  assert.deepEqual(
+    trend?.points.map((point) => point.value),
+    [24, 25]
+  )
+  assert.deepEqual(observationTrends([bmi, { ...later, unit: 'other' }]), [])
+  assert.deepEqual(
+    observationTrends([
+      { ...bmi, details: {} },
+      { ...later, details: {} },
+    ]),
+    []
+  )
+})

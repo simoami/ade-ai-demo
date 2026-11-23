@@ -101,7 +101,7 @@ const patients = [
 const data = fixtures
   .filter((fixture) => fixture.documentClass !== 'other')
   .map((fixture) => {
-    if (fixture.datasetVersion !== 'synthetic-v3')
+    if (fixture.datasetVersion !== 'synthetic-v5')
       throw new Error('Invalid demographics fixture')
     const hashes = hashDemographics(truth(fixture), key)
     return {
@@ -126,7 +126,7 @@ const data = fixtures
 const metadata = {
   promptVersion: PROMPT_VERSION,
   model: models.pipeline.modelId,
-  datasetVersion: 'synthetic-v3',
+  datasetVersion: 'synthetic-v5',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
     encoding: 'utf8',
   }).trim(),

@@ -23,11 +23,13 @@ export function observationFilters(
   )
 }
 
-/** Exact-name, dated rows for one patient; undated rows never reach the limit, so they cannot crowd out plottable points. */
-export function trendFilters(patientId: string, name: string) {
+/** Code or exact printed-name dated rows for one patient; undated rows never reach the limit, so they cannot crowd out plottable points. */
+export function trendFilters(patientId: string, name: string, code?: string) {
   return and(
     observationFilters({ patientId }),
-    sql`lower(${observations.name}) = lower(${name})`,
+    code
+      ? sql`${observations.details}->>'code' = ${code}`
+      : eq(observations.name, name),
     sql`${observations.effectiveDate} is not null`
   )
 }

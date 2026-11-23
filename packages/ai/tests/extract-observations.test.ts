@@ -51,6 +51,8 @@ const observation = {
   dateSource: 'document',
   sourceFormat: 'table' as const,
   details: {
+    code: null,
+    components: null,
     referenceRange: '70-99',
     flag: 'H',
     startDate: null,
@@ -231,28 +233,6 @@ test('sanitizes provider failures', async (context) => {
   })
 })
 
-test('keeps distinct systolic and diastolic observations sharing a row box', () => {
-  const systolic = {
-    ...observation,
-    kind: 'vital',
-    name: 'Systolic blood pressure',
-    value: '120',
-    valueNumeric: 120,
-    unit: 'mmHg',
-    box,
-  }
-  const diastolic = {
-    ...systolic,
-    name: 'Diastolic blood pressure',
-    value: '80',
-    valueNumeric: 80,
-  }
-  assert.deepEqual(dedupeObservations([systolic, diastolic]), [
-    systolic,
-    diastolic,
-  ])
-})
-
 test('keeps different kinds and values with the same name and date', () => {
   const observations = [
     observation,
@@ -287,44 +267,42 @@ test('treats differently formatted restatements of one reading as duplicates', (
 })
 
 test('normalizes both BP formats at the output boundary and validates new kind details', () => {
-  const combined = validateObservationOutput(
+  const [panel] = validateObservationOutput(
     {
       observations: [
         {
           ...observation,
           kind: 'vital',
-          name: 'Blood pressure',
+          name: 'BP',
           value: '120/70',
-          unit: null,
+          unit: 'mmHg',
+          details: {
+            ...observation.details,
+            code: '85354-9',
+            components: [
+              {
+                code: '8480-6',
+                name: 'Systolic blood pressure',
+                value: 120,
+                unit: 'mmHg',
+              },
+              {
+                code: '8462-4',
+                name: 'Diastolic blood pressure',
+                value: 70,
+                unit: 'mmHg',
+              },
+            ],
+          },
         },
       ],
     },
     page,
     1
   )
-  const separate = validateObservationOutput(
-    {
-      observations: [
-        {
-          ...observation,
-          kind: 'vital',
-          name: 'SBP',
-          value: '120',
-          unit: null,
-        },
-        {
-          ...observation,
-          kind: 'vital',
-          name: 'Diastolic BP',
-          value: '70',
-          unit: null,
-        },
-      ],
-    },
-    page,
-    1
-  )
-  assert.deepEqual(combined, separate)
+  assert.equal(panel?.name, 'BP')
+  assert.equal(panel?.details.code, '85354-9')
+  assert.equal(panel?.valueNumeric, null)
   const details = {
     ...observation.details,
     referenceRange: null,

@@ -1,21 +1,21 @@
 import { Card } from '@repo/ui/components/card'
 import { Skeleton } from '@repo/ui/components/skeleton'
 
-const cards = ['documents', 'pages', 'observations', 'review']
-const rows = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
+const STATS = ['documents', 'observations', 'review']
+const ROWS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
 
 // Ragged widths read as paragraphs; the short ones end a paragraph.
 const PAGE_LINES = ['w-full', 'w-11/12', 'w-full', 'w-3/5', 'w-full', 'w-5/6']
 
-/** Reserves the four-card statistics layout while live counts load. */
+/** Reserves the three-card statistics layout while live counts load. */
 export function StatsSkeleton() {
   return (
     <div
       aria-label="Loading statistics"
       role="status"
-      className="mb-4 grid grid-cols-2 gap-[13px] lg:grid-cols-4"
+      className="mb-4 grid grid-cols-1 gap-[13px] sm:grid-cols-3"
     >
-      {cards.map((card) => (
+      {STATS.map((card) => (
         <Card key={card} className="min-h-[91px] p-3.5">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="mt-3 h-6 w-12" />
@@ -40,12 +40,12 @@ export function TableSkeleton() {
       </div>
       <div className="h-[46px] border-b bg-muted/30" />
       <div className="h-[35px] border-b bg-muted/30" />
-      {rows.map((row) => (
+      {ROWS.map((row) => (
         <div
           key={row}
           className="grid h-[65px] grid-cols-6 items-center gap-6 border-b px-[18px]"
         >
-          {cards.map((cell) => (
+          {['documents', 'pages', 'observations', 'review'].map((cell) => (
             <Skeleton key={cell} className="h-3" />
           ))}
         </div>
@@ -90,7 +90,7 @@ export function PatientSkeleton() {
 export function PatientsSkeleton() {
   return (
     <Card role="status" aria-label="Loading patients" className="divide-y">
-      {rows.map((row) => (
+      {ROWS.map((row) => (
         <div key={row} className="flex h-14 items-center gap-3 px-4">
           <Skeleton className="size-8 rounded-full" />
           <Skeleton className="h-4 w-40" />

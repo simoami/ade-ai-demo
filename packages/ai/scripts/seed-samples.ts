@@ -322,13 +322,7 @@ export function sampleRows(sample: Sample, expected: Expected, key: string) {
     for (const observation of expected.observations) {
       const block = blocks.get(observation.blockId)
       if (!block) continue
-      const [normalized] = normalizeObservation({
-        ...observation,
-        valueNumeric: /^-?\d+(\.\d+)?$/.test(observation.value)
-          ? Number(observation.value)
-          : null,
-      })
-      if (!normalized) throw new Error('Missing normalized fixture observation')
+      const normalized = normalizeObservation(observation)
 
       facts.push({
         id: sampleId(`${sample.id}:${observation.id}`),

@@ -1,5 +1,5 @@
 import { Card } from '@repo/ui/components/card'
-import { AlertCircle, CheckCircle2, Inbox, Layers } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Inbox } from 'lucide-react'
 import type { DocumentSummary } from '#lib/records-types'
 
 /** Displays pipeline counts from the current document snapshot. */
@@ -31,16 +31,10 @@ export function DocumentStats({ documents }: { documents: DocumentSummary[] }) {
       detail: 'Completed document reviews',
       icon: CheckCircle2,
     },
-    {
-      label: 'Total pages',
-      value: documents.reduce((count, document) => count + document.pages, 0),
-      detail: `Across ${documents.length} documents`,
-      icon: Layers,
-    },
   ]
 
   return (
-    <div className="mb-4 grid grid-cols-2 gap-[13px] lg:grid-cols-4">
+    <div className="mb-4 grid grid-cols-1 gap-[13px] sm:grid-cols-3">
       {stats.map(({ label, value, detail, icon: Icon }) => (
         <Card
           className="min-h-[91px] px-[15px] py-[13px] [&>strong]:mt-2 [&>strong]:block [&>strong]:text-[22px] [&>strong]:leading-none [&>strong]:font-semibold"

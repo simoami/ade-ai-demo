@@ -39,6 +39,8 @@ export type SourceRegion = {
 
 /** Kind-specific details are validated by the extraction boundary before persistence. */
 export type ObservationDetails = {
+  code?: string
+  components?: { code: string; name: string; value: number; unit: string }[]
   referenceRange?: string
   flag?: string
   startDate?: string

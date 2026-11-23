@@ -1,6 +1,6 @@
 {
   "id": "clinical-06",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7305,
   "split": "held-out",
   "documentClass": "clinical",
@@ -895,7 +895,7 @@
         "rangeHigh": 99,
         "flagNormalized": "high"
       },
-      "duplicateGroup": "Glucose-2026-02-10"
+      "duplicateGroup": "glucose-2026-02-10"
     },
     {
       "id": "o2",
@@ -913,7 +913,7 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-02-10"
+      "duplicateGroup": "sodium-2026-02-10"
     },
     {
       "id": "o3",
@@ -931,13 +931,13 @@
         "rangeHigh": 99,
         "flagNormalized": "high"
       },
-      "duplicateGroup": "Glucose-2026-02-10"
+      "duplicateGroup": "glucose-2026-02-10"
     },
     {
       "id": "o4",
       "blockId": "p1-b5",
       "kind": "lab",
-      "name": "Sodium",
+      "name": "sodium",
       "value": "140",
       "unit": "mmol/L",
       "effectiveDate": "2026-02-10",
@@ -949,61 +949,67 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-02-10"
+      "duplicateGroup": "sodium-2026-02-10"
     },
     {
       "id": "o5",
       "blockId": "p1-b4",
       "kind": "vital",
-      "name": "Systolic blood pressure",
-      "value": "128",
+      "name": "BP",
+      "value": "128/82",
       "unit": "mmHg",
       "effectiveDate": "2026-02-10",
       "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Systolic blood pressure-2026-02-10"
+      "details": {
+        "code": "85354-9",
+        "components": [
+          {
+            "code": "8480-6",
+            "name": "Systolic blood pressure",
+            "value": 128,
+            "unit": "mmHg"
+          },
+          {
+            "code": "8462-4",
+            "name": "Diastolic blood pressure",
+            "value": 82,
+            "unit": "mmHg"
+          }
+        ]
+      },
+      "duplicateGroup": "bp-2026-02-10"
     },
     {
       "id": "o6",
       "blockId": "p1-b4",
       "kind": "vital",
-      "name": "Diastolic blood pressure",
-      "value": "82",
-      "unit": "mmHg",
-      "effectiveDate": "2026-02-10",
-      "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Diastolic blood pressure-2026-02-10"
-    },
-    {
-      "id": "o7",
-      "blockId": "p1-b4",
-      "kind": "vital",
       "name": "Pulse",
       "value": "76",
       "unit": "beats/min",
       "effectiveDate": "2026-02-10",
       "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Pulse-2026-02-10"
+      "details": {
+        "code": "8867-4"
+      },
+      "duplicateGroup": "pulse-2026-02-10"
     },
     {
-      "id": "o8",
+      "id": "o7",
       "blockId": "p1-b4",
       "kind": "symptom",
-      "name": "Fatigue",
+      "name": "fatigue",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-02-10",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Fatigue-2026-02-10"
+      "duplicateGroup": "fatigue-2026-02-10"
     },
     {
-      "id": "o9",
+      "id": "o8",
       "blockId": "p1-b5",
       "kind": "adverse-event",
-      "name": "Nausea",
+      "name": "nausea",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-02-01",
@@ -1014,30 +1020,30 @@
         "seriousness": "non-serious",
         "serious": false
       },
-      "duplicateGroup": "Nausea-2026-02-01"
+      "duplicateGroup": "nausea-2026-02-01"
+    },
+    {
+      "id": "o9",
+      "blockId": "p2-b7",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "129",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "table",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "glucose-2026-02-11"
     },
     {
       "id": "o10",
       "blockId": "p2-b7",
       "kind": "lab",
-      "name": "Glucose",
-      "value": "129",
-      "unit": "mg/dL",
-      "effectiveDate": "2026-02-11",
-      "sourceFormat": "table",
-      "details": {
-        "referenceRange": "70-99",
-        "flag": "H",
-        "rangeLow": 70,
-        "rangeHigh": 99,
-        "flagNormalized": "high"
-      },
-      "duplicateGroup": "Glucose-2026-02-11"
-    },
-    {
-      "id": "o11",
-      "blockId": "p2-b7",
-      "kind": "lab",
       "name": "Sodium",
       "value": "140",
       "unit": "mmol/L",
@@ -1050,31 +1056,31 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-02-11"
+      "duplicateGroup": "sodium-2026-02-11"
+    },
+    {
+      "id": "o11",
+      "blockId": "p2-b5",
+      "kind": "lab",
+      "name": "Glucose",
+      "value": "129",
+      "unit": "mg/dL",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "narrative",
+      "details": {
+        "referenceRange": "70-99",
+        "flag": "H",
+        "rangeLow": 70,
+        "rangeHigh": 99,
+        "flagNormalized": "high"
+      },
+      "duplicateGroup": "glucose-2026-02-11"
     },
     {
       "id": "o12",
       "blockId": "p2-b5",
       "kind": "lab",
-      "name": "Glucose",
-      "value": "129",
-      "unit": "mg/dL",
-      "effectiveDate": "2026-02-11",
-      "sourceFormat": "narrative",
-      "details": {
-        "referenceRange": "70-99",
-        "flag": "H",
-        "rangeLow": 70,
-        "rangeHigh": 99,
-        "flagNormalized": "high"
-      },
-      "duplicateGroup": "Glucose-2026-02-11"
-    },
-    {
-      "id": "o13",
-      "blockId": "p2-b5",
-      "kind": "lab",
-      "name": "Sodium",
+      "name": "sodium",
       "value": "140",
       "unit": "mmol/L",
       "effectiveDate": "2026-02-11",
@@ -1086,34 +1092,38 @@
         "rangeHigh": 145,
         "flagNormalized": "normal"
       },
-      "duplicateGroup": "Sodium-2026-02-11"
+      "duplicateGroup": "sodium-2026-02-11"
+    },
+    {
+      "id": "o13",
+      "blockId": "p2-b4",
+      "kind": "vital",
+      "name": "BP",
+      "value": "128/82",
+      "unit": "mmHg",
+      "effectiveDate": "2026-02-11",
+      "sourceFormat": "list",
+      "details": {
+        "code": "85354-9",
+        "components": [
+          {
+            "code": "8480-6",
+            "name": "Systolic blood pressure",
+            "value": 128,
+            "unit": "mmHg"
+          },
+          {
+            "code": "8462-4",
+            "name": "Diastolic blood pressure",
+            "value": 82,
+            "unit": "mmHg"
+          }
+        ]
+      },
+      "duplicateGroup": "bp-2026-02-11"
     },
     {
       "id": "o14",
-      "blockId": "p2-b4",
-      "kind": "vital",
-      "name": "Systolic blood pressure",
-      "value": "128",
-      "unit": "mmHg",
-      "effectiveDate": "2026-02-11",
-      "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Systolic blood pressure-2026-02-11"
-    },
-    {
-      "id": "o15",
-      "blockId": "p2-b4",
-      "kind": "vital",
-      "name": "Diastolic blood pressure",
-      "value": "82",
-      "unit": "mmHg",
-      "effectiveDate": "2026-02-11",
-      "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Diastolic blood pressure-2026-02-11"
-    },
-    {
-      "id": "o16",
       "blockId": "p2-b4",
       "kind": "vital",
       "name": "Pulse",
@@ -1121,26 +1131,28 @@
       "unit": "beats/min",
       "effectiveDate": "2026-02-11",
       "sourceFormat": "list",
-      "details": {},
-      "duplicateGroup": "Pulse-2026-02-11"
+      "details": {
+        "code": "8867-4"
+      },
+      "duplicateGroup": "pulse-2026-02-11"
     },
     {
-      "id": "o17",
+      "id": "o15",
       "blockId": "p2-b4",
       "kind": "symptom",
-      "name": "Fatigue",
+      "name": "fatigue",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-02-11",
       "sourceFormat": "list",
       "details": {},
-      "duplicateGroup": "Fatigue-2026-02-11"
+      "duplicateGroup": "fatigue-2026-02-11"
     },
     {
-      "id": "o18",
+      "id": "o16",
       "blockId": "p2-b5",
       "kind": "adverse-event",
-      "name": "Nausea",
+      "name": "nausea",
       "value": "mild",
       "unit": null,
       "effectiveDate": "2026-02-01",
@@ -1151,7 +1163,7 @@
         "seriousness": "non-serious",
         "serious": false
       },
-      "duplicateGroup": "Nausea-2026-02-01"
+      "duplicateGroup": "nausea-2026-02-01"
     }
   ]
 }

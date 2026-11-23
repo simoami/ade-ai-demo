@@ -68,11 +68,8 @@ export function observationBox(
         token.length > 1 && !/^(the|of|and|in|on|with|for)$/.test(token)
     )
   const nameTokens = allNameTokens.slice(0, 2)
-  // A combined reading such as "128/78" holds both blood pressure components, so each part can match.
   const values = blockWords.filter((word) =>
-    [word.text, ...word.text.split('/')].some((part) =>
-      valueTokens.has(normalize(part))
-    )
+    valueTokens.has(normalize(word.text))
   )
   const names = nameTokens.flatMap((token) =>
     blockWords.filter((word) => normalize(word.text) === token)

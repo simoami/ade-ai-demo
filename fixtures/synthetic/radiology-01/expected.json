@@ -1,6 +1,6 @@
 {
   "id": "radiology-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7314,
   "split": "development",
   "documentClass": "clinical",

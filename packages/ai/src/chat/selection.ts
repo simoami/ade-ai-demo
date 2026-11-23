@@ -43,7 +43,11 @@ export function observationQueryResult(rows: ObservationView[], named = false) {
   )
   const latest = new Map<string, ObservationView>()
   for (const row of newest) {
-    const key = JSON.stringify([row.kind, row.name.toLowerCase()])
+    const key = JSON.stringify([
+      row.kind,
+      row.details.code ?? row.name,
+      row.unit,
+    ])
     if (!latest.has(key)) latest.set(key, row)
   }
 

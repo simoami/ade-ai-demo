@@ -1,6 +1,6 @@
 {
   "id": "fax-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7308,
   "split": "development",
   "documentClass": "other",

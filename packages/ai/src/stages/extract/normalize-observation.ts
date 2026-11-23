@@ -77,75 +77,74 @@ type Observation = {
   kind: string
   name: string
   value: string
-  valueNumeric: number | null
   unit: string | null
   details: ObservationDetails
 }
 
-/** Normalizes labs, medication doses and both blood pressure formats before deduplication and UUID assignment. */
-export function normalizeObservation<T extends Observation>(
-  observation: T
-): T[] {
-  const { kind, name, value } = observation
-  const numeric = value.match(
+/** Preserves printed names and values while deriving numeric and kind-specific details. */
+export function normalizeObservation<T extends Observation>(observation: T) {
+  const numeric = observation.value.match(
     new RegExp(`^(${NUMBER})\\s*([a-zA-Zµμ%][a-zA-Zµμ/%.-]*)?$`)
   )
-  const valueNumeric =
-    kind === 'medication' && numeric
+  const valueNumeric = observation.details.components?.length
+    ? null
+    : numeric
       ? Number(numeric[1])
-      : observation.valueNumeric
+      : null
   const details =
-    kind === 'lab'
+    observation.kind === 'lab'
       ? normalizeLabDetails(observation.details, valueNumeric)
-      : kind === 'adverse-event'
+      : observation.kind === 'adverse-event'
         ? {
             ...observation.details,
             serious: normalizeSeriousness(observation.details.seriousness),
           }
         : observation.details
-  const normalized = {
+
+  return {
     ...observation,
     valueNumeric,
     details,
     unit:
-      kind === 'medication' && !observation.unit
-        ? (numeric?.[2] ?? null)
-        : observation.unit,
+      observation.unit ??
+      (observation.kind === 'medication' ? (numeric?.[2] ?? null) : null),
   }
-  if (kind !== 'vital') return [normalized]
+}
 
-  const combined = value.match(
-    /^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)(?:\s*mmHg)?$/i
-  )
-  if (combined && /\b(?:bp|blood pressure)\b/i.test(name)) {
-    return ['Systolic blood pressure', 'Diastolic blood pressure'].map(
-      (name, index) => ({
-        ...normalized,
-        name,
-        value: combined[index + 1] ?? '',
-        valueNumeric: Number(combined[index + 1]),
-        unit: 'mmHg',
-      })
-    )
+/** Pairs complementary BP components within one dated document, retaining the first printed label and citation. */
+export function combineBloodPressure<
+  T extends Observation & { effectiveDate: string | null },
+>(rows: T[]): T[] {
+  const result: T[] = []
+  for (const row of rows) {
+    const components = row.details.components
+    const previous =
+      row.details.code === '85354-9' &&
+      row.effectiveDate &&
+      components?.length === 1
+        ? result.find(
+            (candidate) =>
+              candidate.details.code === row.details.code &&
+              candidate.effectiveDate === row.effectiveDate &&
+              candidate.details.components?.length === 1 &&
+              candidate.details.components[0]?.code !== components[0]?.code
+          )
+        : undefined
+    if (!previous) {
+      result.push({ ...row, details: { ...row.details } })
+      continue
+    }
+
+    const merged = [
+      ...(previous.details.components ?? []),
+      ...(components ?? []),
+    ].sort((a, b) => b.code.localeCompare(a.code))
+    previous.value = merged.map((component) => component.value).join('/')
+    previous.details.components = merged
+    const flags = [
+      ...new Set([previous.details.flag, row.details.flag].filter(Boolean)),
+    ].join('; ')
+    if (flags) previous.details.flag = flags
   }
-
-  const component = /\b(?:sbp|systolic)\b/i.test(name)
-    ? 'Systolic'
-    : /\b(?:dbp|diastolic)\b/i.test(name)
-      ? 'Diastolic'
-      : null
-  return [
-    {
-      ...normalized,
-      ...(component
-        ? {
-            name: `${component} blood pressure`,
-            unit: 'mmHg',
-            ...(numeric
-              ? { value: numeric[1] ?? value, valueNumeric: Number(numeric[1]) }
-              : {}),
-          }
-        : {}),
-    },
-  ]
+  return result
 }

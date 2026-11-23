@@ -78,6 +78,17 @@ export const expectedSchema = z.object({
       effectiveDate: z.string(),
       sourceFormat: z.enum(['table', 'list', 'narrative']),
       details: z.object({
+        code: z.string().optional(),
+        components: z
+          .array(
+            z.object({
+              code: z.string(),
+              name: z.string(),
+              value: z.number(),
+              unit: z.string(),
+            })
+          )
+          .optional(),
         referenceRange: z.string().optional(),
         flag: z.string().optional(),
         startDate: z.string().optional(),

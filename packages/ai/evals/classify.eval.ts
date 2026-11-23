@@ -26,7 +26,7 @@ const data = await Promise.all(
       const fixture = expectedSchema.parse(
         JSON.parse(await readFile(new URL(`${id}/expected.json`, root), 'utf8'))
       )
-      if (fixture.id !== id || fixture.datasetVersion !== 'synthetic-v3')
+      if (fixture.id !== id || fixture.datasetVersion !== 'synthetic-v5')
         throw new Error('Invalid classification fixture')
       return {
         input: {
@@ -53,7 +53,7 @@ const data = await Promise.all(
 const metadata = {
   promptVersion: PROMPT_VERSION,
   model: models.fast.modelId,
-  datasetVersion: 'synthetic-v3',
+  datasetVersion: 'synthetic-v5',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
     encoding: 'utf8',
   }).trim(),

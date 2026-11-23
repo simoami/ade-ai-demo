@@ -1,6 +1,6 @@
 {
   "id": "referral-01",
-  "datasetVersion": "synthetic-v3",
+  "datasetVersion": "synthetic-v5",
   "seed": 7312,
   "split": "development",
   "documentClass": "clinical",

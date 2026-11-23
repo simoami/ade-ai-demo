@@ -135,7 +135,7 @@ const { embeddings } = await embedMany({
 })
 
 const metadata = {
-  datasetVersion: 'synthetic-v3',
+  datasetVersion: 'synthetic-v5',
   model:
     typeof embeddingModel === 'string'
       ? embeddingModel

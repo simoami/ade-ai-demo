@@ -160,6 +160,16 @@ function KindDetail({ observation }: { observation: ObservationView }) {
             </Badge>
           )}
           {range && <span className={muted}>Ref {range}</span>}
+          {details.components?.length ? (
+            <p className="w-full text-xs text-muted-foreground">
+              {details.components
+                .map(
+                  (component) =>
+                    `${component.name.replace(' blood pressure', '')} ${component.value}`
+                )
+                .join(' · ')}
+            </p>
+          ) : null}
         </div>
       )
     }
