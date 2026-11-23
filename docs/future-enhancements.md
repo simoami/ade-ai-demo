@@ -1,2 +1,4 @@
 - Split oversized OCR tables by rows with repeated column headers once normalized OCR preserves table structure.
 - Bound indivisible oversized sentences and their overlap without cutting words or losing clinical context.
+- Keep a redacted OCR artifact after review for downstream data-lake consumers.
+- Enrich note chunks with clinical entities (`clinical_entities`) and persist chat sessions (`chat_sessions`); both tables exist in the schema.
