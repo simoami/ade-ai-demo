@@ -71,97 +71,29 @@ Only the visible documents list or a processing document's own review route poll
 
 ## Pipeline
 
-One workflow run per document is owned by eve. Browser document requests go to
-Next.js `/api/documents` route handlers, which validate the shared contract and
-call a fixed `PIPELINE_SERVICE_ORIGIN` URL base with a 15-second timeout.
-On Vercel, root `vercel.ts` composes web and eve services and injects this URL
-through a private service binding. The project Root Directory is the repository
-root. Internal binding calls skip Deployment Protection; browser requests remain
-protected. The document channel has no public route. The eve channel
-at `/pipeline/documents` authenticates with HTTP Basic locally or Vercel OIDC
-on deployments, validates requests, then calls `start`, `getRun` or `resumeHook`.
-Unknown gateway errors return 503 with "Service unavailable". `withEve` handles
-public protocol routes; document calls use the binding. Local Next.js retains
-`eve/next` and an explicitly configured service origin.
+Each document gets one eve workflow run. The browser calls Next.js `/api/documents`, which validates the request and calls eve over a private Vercel service binding (`PIPELINE_SERVICE_ORIGIN`, 15-second timeout). The eve channel `/pipeline/documents` has no public route. It authenticates with HTTP Basic locally and Vercel OIDC on deployments, then starts, reads or resumes runs. Unknown errors return 503.
 
-`agent/tools/ingest-document.ts` registers the workflow from
-`src/workflows/ingest-document/ingest-document.workflow.ts`. Its steps call
-ordinary functions under `src/stages/render`, `src/stages/ocr`,
-`src/stages/pii`, `src/stages/redact`, `src/stages/classify`,
-`src/stages/demographics` and `src/stages/extract`. The channel
-creates a Postgres document and persists its run ID. The workflow reads private
-Blob originals, renders PNG pages, records dimensions, and runs Reducto r-1 OCR.
-It encrypts OCR JSON with AES-256-GCM (12-byte IV, 16-byte tag, ciphertext) using
-`DOCUMENT_ENCRYPTION_KEY`, then sets status to `redacting`. Three durable steps
-then run in parallel: classification stores the document class and consent
-summary; demographics hashes identifiers inside the step, links a strong or
-partial match and stores a non-identifying `proposed_patient`; identifier
-detection stores encrypted spans in `identifiers.json.enc`, reused on retry.
-One durable redaction step reviews figure blocks, places
-redactions from those spans and burns only applied regions. Candidates needing review remain visible with outlines. Before
-publication, it checkpoints encrypted burned PNGs, encrypted unredacted review
-sources (`redaction/source/<page>.png.enc`) and a validated manifest under
-`redaction/`; retries reuse them even after renders are deleted. It atomically
-replaces document redaction rows with UUID v5 IDs derived from document, page
-and index, and publishes burned pairs. A class step follows: clinical documents
-move to `extracting`, extraction reads identifier-masked OCR, and observation
-rows (UUID v5 from document, page, block, name and date; `flagged` below 0.7
-confidence; covering redactions recorded) replace the previous rows before
-`needsReview`. Observation source boxes cover the matching OCR row or narrative
-lines using unmasked word geometry, clipped to the block; missing words or matches
-fall back to the block box. On skewed pages the row is selected in the deskewed frame and
-stored as a rotated polygon. Redaction coverage uses the axis-aligned source box.
-Consent documents go to `needsReview`; others to `unsupported`.
-Clinical and consent documents then run a durable note-indexing step. It masks
-identifier spans, drops figures, headers, footers, standalone page numbers and
-placeholder-only text, splits text blocks at 2,000 characters, embeds
-with `text-embedding-3-small` (1536 dimensions), and atomically replaces
-`note_chunks` with document/page/index UUID v5 IDs and page/block/box sources.
-Only counts enter workflow history. Text identifier redactions are already
-masked; overlapping non-identifier redactions suppress chunks from search.
-Rejecting a redaction clears its suppression IDs without restoring identifiers.
-
-Extraction supports lab, vital, symptom, adverse-event, medical-history and
-medication kinds. Validation parses printed lab ranges and flags, splits combined
-BP and canonicalizes separate SBP/DBP readings to systolic/diastolic observations
-in mmHg, and derives serious booleans from printed AE seriousness. Dates,
-outcomes, ongoing status and medication route/frequency remain source-backed.
-The run then waits on the review hook and applies each action with
-`applyReviewAction`; a refused action leaves the loop waiting, and
-`markReviewed` or `discard` ends the run. After terminal review or discard, a durable step
-deletes originals and transient Blob artifacts, retaining only published redacted page pairs. The required original pathname
-remains historical metadata and is never fetched after cleanup. The web server signs full-image and thumbnail URLs
-for the browser to load directly from private Blob. Before publication, renders are exposed only during `reading`
-or `redacting`. Published pages take precedence in every status; encrypted OCR
-is never served. URLs expire after 15 minutes; reopening the review issues fresh URLs.
-`documents.page_version` is nullable until publication. The workflow serializes
-`publishRedactedPages(documentId, pages)` calls per document: write all
-`pages/<page>-v<version>.webp` and `pages/<page>-v<version>-thumb.webp` pairs,
-publish the incremented database version, then delete obsolete pages and renders.
-Cleanup failures propagate for retry. Both ingestion and synthetic seeding publish
-pages; each publication increments the version, including a retried publication.
-Milestone logs use `@repo/logger` and carry metadata only. Processing and review
-logs run in durable steps, outside workflow replay; request
-failures include only fixed paths, statuses and error types.
-Only the contract is exported to Next.js. The clinical processing design is:
+The workflow (`src/workflows/ingest-document`) runs durable steps that call plain stage functions under `src/stages`. Steps keep document content out of workflow history: they pass IDs and counts, encrypt OCR and identifier spans with `DOCUMENT_ENCRYPTION_KEY` (AES-256-GCM), and log metadata only. Row writes use UUID v5 IDs derived from the document and source, so retries replace rows instead of duplicating them.
 
 ```
-upload ─► render pages ─► OCR ─┬─► classify ──────────┐
-                               ├─► demographics ──────┼─► redact ─► observations ─► review agent ─┐
-                               └─► PII detection ─────┘          └► note index ─► enrichment ─────┴─► in_review
+upload ─► render ─► OCR ─┬─► classify ─────┐
+                         ├─► demographics ─┼─► redact ─► observations ─► note index ─► review
+                         └─► PII detection ┘
 ```
 
-1. **Upload.** The browser uploads directly to private Blob with a client token. Limits: up to 10 PDF, PNG or JPEG files per selection, 20 MB per file. Each file becomes a separate document, with uploads running at most three at a time. The route creates one document and starts one run per file. Uploading from a patient's page fixes the target patient.
-2. **Render.** pdfium (WASM) renders PDF pages; an uploaded PNG or JPEG becomes one page after Sharp applies its EXIF orientation. The protected viewer uses these unredacted renders as page images and thumbnails during `reading` and `redacting`, using `render/<page>.png` and `render/<page>-thumb.webp` pairs. The viewer and page strip use each page’s pixel proportions. Runs in a normal step.
-3. **OCR.** An `OcrProvider` returns typed blocks (text, kind, reading order, box, optional `continues` link to a block on a previous page), figure blocks for pictures and signatures, and word boxes where the provider has them. Providers are compared in [`docs/evals.md`](evals.md). Stored as encrypted `ocr.json` ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)).
-4. **Classify.** Clinical, consent, or other. Consent gets a summary and no extraction; other is marked unsupported.
-5. **Demographics.** A structured-output step (not an agent) reads identifiers, hashes them inside the step, and matches a patient: MRN, or last name, first name and date of birth, is a strong match and links automatically; a partial match links with an identity mismatch; no match proposes a new patient.
-6. **PII detection.** The model returns identifier spans per block, down to part of a token: in `01/15/1985` only `01/15` is an identifier, because the birth year is kept ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md) defines the scope). A picture pass gives the model the page image and the figure blocks: it classifies each picture (patient photo by its placement with the patient's name or date of birth, other face, signature, logo, medical image, clinical photo) and locates identifiers printed inside pictures. Tesseract always runs on the crop of every region holding an identifier and returns character boxes. A redaction is the union of the span's character boxes with at most one pixel of padding, clipped to its text line, so neighbouring characters and tightly spaced lines stay readable. If Tesseract cannot match the span's characters, the redaction falls back to the OCR word or block box and needs review. Reducto returns only axis-aligned boxes, so a redaction takes its angle from Tesseract line baselines, or else from the page skew (the median angle between neighbouring OCR words); observation outlines use the same page skew. OCR providers that return word polygons (Azure Document Intelligence, AWS Textract, Google Document AI) would remove both estimates.
-7. **Redact.** Only applied redactions are burned into versioned page/thumbnail pairs before publication deletes `render/*`. Candidates with low confidence, uncertain picture ownership or fallback geometry remain `needsReview` and outlined without burning. `ocr.redacted.json` is pending.
-8. **Observations.** Structured extraction over tables, lists and narrative, with code normalization and date-aware deduplication preferring table over list over narrative. Confidence below 0.7 is flagged; other observations start unchecked. The reviewer confirms, corrects or rejects them.
-9. **Note index.** Clinical and consent text blocks are identifier-masked, filtered to exclude page furniture and placeholder-only text, chunked, embedded and stored with their source regions. Unsupported documents are not indexed. Synthetic sample seeding also writes masked note chunks.
+1. **Upload.** The browser uploads up to 10 PDF, PNG or JPEG files (20 MB each) straight to private Blob, three at a time. Each file becomes its own document and run. Uploading from a patient page fixes the patient.
+2. **Render.** pdfium (WASM) renders PDF pages; Sharp applies EXIF orientation to images. The viewer shows these unredacted renders only while the status is `reading` or `redacting`.
+3. **OCR.** Reducto returns typed blocks with boxes, reading order, cross-page `continues` links and word boxes. The result is stored encrypted ([ADR 0003](adr/0003-ocr-output-as-blob-artifacts.md)); providers are compared in [evals](evals.md).
+4. **Classify, demographics and PII detection** run in parallel.
+   - Classification sets the class: clinical, consent (with a summary) or other.
+   - Demographics hashes identifiers inside the step and links the patient. An MRN, or last name, first name and date of birth, is a strong match; a partial match links with an identity mismatch; no match proposes a new patient.
+   - PII detection finds identifier spans down to part of a token, so in `01/15/1985` only `01/15` is redacted ([ADR 0002](adr/0002-redact-direct-identifiers-keep-clinical-dates.md)). A picture pass classifies each figure (patient photo, other face, signature, logo, medical image) and finds identifiers printed inside it.
+5. **Redact.** Tesseract reads each identifier region and returns character boxes; a redaction covers those characters with at most one pixel of padding. Reducto boxes are axis-aligned, so the angle comes from Tesseract baselines or the page skew. Low-confidence, unclear-picture and fallback-geometry candidates stay `needsReview` and are outlined, not burned. Burned pages are checkpointed encrypted before publication so retries survive render cleanup.
+6. **Observations.** Clinical documents move to `extracting`. Extraction reads identifier-masked OCR and records labs, vitals, symptoms, adverse events, medical history and medications. Names stay as printed; vitals carry LOINC codes, and blood pressure is one panel with systolic and diastolic components ([ADR 0005](adr/0005-vitals-as-printed-with-loinc-codes.md)). Repeats within a document are merged, preferring tables over lists over narrative, and confidence below 0.7 is flagged. Each observation's box covers its row or its label and value, drawn as a rotated polygon on skewed pages.
+7. **Note index.** Clinical and consent notes are masked, chunked by section and embedded with `text-embedding-3-small` into `note_chunks` ([ADR 0004](adr/0004-section-aware-note-chunking.md)). Chunks covered by a non-identifier redaction are hidden from search.
+8. **Review.** The run registers its review hook, sets `needsReview` (consent documents skip extraction; other documents end as `unsupported`) and applies each action with `applyReviewAction`. Marking the document reviewed or discarding it ends the run and deletes originals and transient artifacts, keeping only the published redacted pages.
 
-Entity enrichment is not implemented.
+Published pages are versioned WebP pairs (`pages/<page>-v<version>.webp` and a thumbnail). Publishing writes every pair, bumps `documents.page_version`, then deletes older pages and renders, one publication at a time per document. The server signs 15-minute, single-file URLs so the browser loads pages straight from private Blob; OCR is never served.
 
 ## Demo administration
 
