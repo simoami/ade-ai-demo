@@ -33,6 +33,8 @@ Turbo coordinates package tasks. Agent tests use Node’s built-in test runner.
 
 Use Biome with the checked-in configuration, single quotes, two-space indentation, descriptive kebab-case directory names, and Markdown headings in sentence case. Keep agent instructions direct, action-oriented, and colocated with the behavior they govern. Edit the canonical `.agents/skills/...` file rather than its `.claude/skills/...` symlink.
 
+Event handlers in components are named `handleXxx`; callback props are named `onXxx`.
+
 Module-level constants holding primitive literals or regular expressions use UPPER_SNAKE_CASE; framework-required export names (such as Next.js `maxDuration`) keep their names.
 
 ## Testing Guidelines

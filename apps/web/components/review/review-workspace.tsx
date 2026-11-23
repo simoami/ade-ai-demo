@@ -111,9 +111,9 @@ export function ReviewWorkspace({
   const regions = [...redactions, ...observations]
   const outlines = reviewOutlines(redactions, observations, page, selected?.id)
 
-  const deselect = useCallback(() => setSelected(null), [])
+  const handleDeselect = useCallback(() => setSelected(null), [])
 
-  function select(item: ReviewItem) {
+  function handleSelect(item: ReviewItem) {
     setSelected(item)
     setPage(item.page)
   }
@@ -135,7 +135,7 @@ export function ReviewWorkspace({
     router.refresh()
   }
 
-  function decide(id: string, decision: Decision) {
+  function handleDecide(id: string, decision: Decision) {
     const previous = overrides.decisions[id]
     const setDecision =
       (value: Decision | undefined) => (current: ReviewOverrides) => {
@@ -153,7 +153,7 @@ export function ReviewWorkspace({
     void submit(action, setDecision(decision), setDecision(previous))
   }
 
-  function relink(next: LinkOverride) {
+  function handleRelink(next: LinkOverride) {
     const previous = link
     void submit(
       'patientId' in next
@@ -164,7 +164,7 @@ export function ReviewWorkspace({
     )
   }
 
-  function finish(type: 'markReviewed' | 'discard') {
+  function handleFinish(type: 'markReviewed' | 'discard') {
     void submit(
       { type },
       (current) => ({
@@ -273,7 +273,7 @@ export function ReviewWorkspace({
           page={page}
           onPage={setPage}
           outlines={outlines}
-          onDeselect={deselect}
+          onDeselect={handleDeselect}
         />
 
         <aside className="flex min-h-0 flex-col border-l bg-card">
@@ -310,8 +310,8 @@ export function ReviewWorkspace({
                     patientId={patientId}
                     creating={creating}
                     readOnly={readOnly}
-                    onLink={(id) => relink({ patientId: id })}
-                    onCreate={() => relink({ create: true })}
+                    onLink={(id) => handleRelink({ patientId: id })}
+                    onCreate={() => handleRelink({ create: true })}
                   />
                 </section>
                 <section className="flex flex-col gap-3 border-t pt-4">
@@ -321,8 +321,8 @@ export function ReviewWorkspace({
                     page={page}
                     selectedId={selected?.id ?? null}
                     readOnly={readOnly}
-                    onSelect={select}
-                    onDecide={decide}
+                    onSelect={handleSelect}
+                    onDecide={handleDecide}
                   />
                 </section>
               </div>
@@ -335,8 +335,8 @@ export function ReviewWorkspace({
                   page={page}
                   selectedId={selected?.id ?? null}
                   readOnly={readOnly}
-                  onSelect={select}
-                  onDecide={decide}
+                  onSelect={handleSelect}
+                  onDecide={handleDecide}
                 />
               </div>
             )}
@@ -393,7 +393,7 @@ export function ReviewWorkspace({
               <Button
                 size="lg"
                 disabled={!canMarkReviewed(document, overrides)}
-                onClick={() => finish('markReviewed')}
+                onClick={() => handleFinish('markReviewed')}
               >
                 <Check data-icon="inline-start" />
                 Mark as reviewed
@@ -419,7 +419,7 @@ export function ReviewWorkspace({
             <Button
               variant="destructive"
               onClick={() => {
-                finish('discard')
+                handleFinish('discard')
                 setConfirmingDiscard(false)
               }}
             >

@@ -122,7 +122,7 @@ export function PageViewer({
     return () => window.removeEventListener('keydown', clear)
   }, [selectedId, onDeselect])
 
-  function stepZoom(direction: 'in' | 'out') {
+  function handleStepZoom(direction: 'in' | 'out') {
     const viewer = transformRef.current
 
     if (!viewer) return
@@ -158,7 +158,7 @@ export function PageViewer({
             size="icon-sm"
             aria-label="Zoom out"
             disabled={nextZoomStep(zoom, 'out') === undefined}
-            onClick={() => stepZoom('out')}
+            onClick={() => handleStepZoom('out')}
           >
             <ZoomOut />
           </Button>
@@ -176,7 +176,7 @@ export function PageViewer({
             size="icon-sm"
             aria-label="Zoom in"
             disabled={nextZoomStep(zoom, 'in') === undefined}
-            onClick={() => stepZoom('in')}
+            onClick={() => handleStepZoom('in')}
           >
             <ZoomIn />
           </Button>

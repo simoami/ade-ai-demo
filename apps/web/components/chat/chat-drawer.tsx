@@ -130,7 +130,7 @@ function Conversation({
     [stop]
   )
 
-  function send(text: string) {
+  function handleSend(text: string) {
     if (!text.trim() || busy) return
 
     void sendMessage({ text: text.trim() }, { body: { context } })
@@ -155,7 +155,7 @@ function Conversation({
                 variant="outline"
                 className="h-auto w-full justify-start whitespace-normal text-left"
                 disabled={busy}
-                onClick={() => send(prompt)}
+                onClick={() => handleSend(prompt)}
               >
                 {prompt}
               </Button>
@@ -199,7 +199,7 @@ function Conversation({
         className="space-y-2 border-t p-4"
         onSubmit={(event) => {
           event.preventDefault()
-          send(input)
+          handleSend(input)
         }}
       >
         <Textarea

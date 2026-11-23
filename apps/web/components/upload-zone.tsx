@@ -22,7 +22,7 @@ export function UploadZone() {
   const [dragging, setDragging] = useState(false)
   const [message, setMessage] = useState<{ error: boolean; text: string }>()
 
-  async function select(files: FileList | null) {
+  async function handleSelect(files: FileList | null) {
     if (busy.current) return
 
     const list = Array.from(files ?? [])
@@ -92,7 +92,7 @@ export function UploadZone() {
       onDrop={(event) => {
         event.preventDefault()
         setDragging(false)
-        select(event.dataTransfer.files)
+        handleSelect(event.dataTransfer.files)
       }}
     >
       <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent text-primary">
@@ -126,7 +126,7 @@ export function UploadZone() {
         disabled={uploading}
         className="sr-only"
         onChange={(event) => {
-          void select(event.target.files)
+          void handleSelect(event.target.files)
           event.target.value = ''
         }}
       />

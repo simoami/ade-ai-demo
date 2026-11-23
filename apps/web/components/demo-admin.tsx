@@ -41,12 +41,12 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  function closeWelcome() {
+  function handleCloseWelcome() {
     dismissWelcome(() => window.localStorage, showAgain)
     setWelcomeClosed(true)
   }
 
-  async function deleteAll() {
+  async function handleDeleteAll() {
     setDeleting(true)
     setError('')
     setMessage('')
@@ -142,7 +142,7 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
                 <Button
                   variant="destructive"
                   disabled={deleting}
-                  onClick={deleteAll}
+                  onClick={handleDeleteAll}
                 >
                   {deleting ? 'Deleting…' : 'Delete all documents'}
                 </Button>
@@ -155,7 +155,7 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
       <Dialog
         open={welcomeOpen}
         onOpenChange={(open) => {
-          if (!open) closeWelcome()
+          if (!open) handleCloseWelcome()
         }}
       >
         <DialogContent className="sm:max-w-2xl">
@@ -170,7 +170,7 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
               className="rounded-sm text-primary underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-popover"
               onClick={(event) => {
                 event.preventDefault()
-                closeWelcome()
+                handleCloseWelcome()
                 const card = document.getElementById(samplesId)
                 if (!card) return
 
@@ -198,7 +198,7 @@ export function DemoAdmin({ samplesId }: { samplesId: string }) {
               />
               Show this again
             </label>
-            <Button className="ms-auto" onClick={closeWelcome}>
+            <Button className="ms-auto" onClick={handleCloseWelcome}>
               Dismiss
             </Button>
           </DialogFooter>
