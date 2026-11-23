@@ -11,7 +11,6 @@ import {
   PopoverTrigger,
 } from '@repo/ui/components/popover'
 import { isToolUIPart } from 'ai'
-import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import {
   type ComponentProps,
@@ -23,8 +22,8 @@ import {
 import { defaultComponents, Streamdown } from 'streamdown'
 import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
-import { noteSources } from '#lib/chat-sources'
 import { citationNumbers, parseCitation } from '#lib/citations'
+import { noteExcerpts, pageKey } from '#lib/note-excerpts'
 import { observationKindLabels } from '#lib/observations'
 
 type Part = ChatMessage['parts'][number]
@@ -32,11 +31,12 @@ type Part = ChatMessage['parts'][number]
 const CitationContext = createContext<{
   numbers: Map<string, number>
   documents: { id: string; fileName: string }[]
-}>({ numbers: new Map(), documents: [] })
+  excerpts: ReturnType<typeof noteExcerpts>
+}>({ numbers: new Map(), documents: [], excerpts: new Map() })
 
 const markdownComponents = { a: CitationLink }
 
-/** Numbers one message's page citations and resolves their file names. */
+/** Numbers one message's page citations and resolves their file names and note excerpts. */
 export function MessageCitations({
   parts,
   documents,
@@ -49,15 +49,25 @@ export function MessageCitations({
   const text = parts
     .map((part) => (part.type === 'text' ? part.text : ''))
     .join('\n')
+  // Excerpts come from this message's own note searches, so a citation only previews text the answer saw.
+  const excerpts = noteExcerpts(
+    parts.flatMap((part) =>
+      part.type === 'tool-searchNotes' && part.state === 'output-available'
+        ? part.output.chunks
+        : []
+    )
+  )
 
   return (
-    <CitationContext value={{ numbers: citationNumbers(text), documents }}>
+    <CitationContext
+      value={{ numbers: citationNumbers(text), documents, excerpts }}
+    >
       {children}
     </CitationContext>
   )
 }
 
-/** Renders cited text and the typed clinical tool outputs without raw errors; note searches appear as sources after the answer. */
+/** Renders cited text and the typed clinical tool outputs without raw errors; note searches surface through citation popovers. */
 export function ChatPart({
   part,
   context,
@@ -142,75 +152,8 @@ export function ChatPart({
   }
 }
 
-/** Show deduplicated note citations after the answer, with optional bounded excerpts. */
-export function ChatSources({
-  parts,
-  context,
-}: {
-  parts: ChatMessage['parts']
-  context: PageContext
-}) {
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const results = parts.filter(
-    (part) =>
-      part.type === 'tool-searchNotes' && part.state === 'output-available'
-  )
-  const sources = noteSources(
-    results.flatMap((part) => part.output.chunks),
-    context
-  )
-  if (!results.length) return null
-  if (!sources.length)
-    return (
-      <p className="text-xs text-muted-foreground">No matching notes found.</p>
-    )
-
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-        <span>Sources</span>
-        {sources.map((source) => (
-          // One pill split in two: the label toggles the excerpt, the arrow opens the cited page.
-          <span key={source.key} className="inline-flex">
-            <Button
-              variant="outline"
-              size="xs"
-              className="rounded-s-full rounded-e-none"
-              aria-expanded={expanded === source.key}
-              onClick={() =>
-                setExpanded(expanded === source.key ? null : source.key)
-              }
-            >
-              {source.label}
-              <ChevronDown data-icon="inline-end" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon-xs"
-              className="-ms-px rounded-s-none rounded-e-full text-primary"
-              nativeButton={false}
-              render={
-                <Link href={source.href} aria-label={`Open ${source.label}`} />
-              }
-            >
-              <ArrowUpRight />
-            </Button>
-          </span>
-        ))}
-      </div>
-      {sources
-        .filter((source) => source.key === expanded)
-        .map((source) => (
-          <p key={source.key} className="text-xs text-muted-foreground">
-            {source.excerpt}
-          </p>
-        ))}
-    </div>
-  )
-}
-
 function CitationLink(props: ComponentProps<typeof defaultComponents.a>) {
-  const { numbers, documents } = use(CitationContext)
+  const { numbers, documents, excerpts } = use(CitationContext)
   const citation = parseCitation(props.href)
   const number = props.href && numbers.get(props.href)
   if (!citation || !number) return <defaultComponents.a {...props} />
@@ -218,6 +161,7 @@ function CitationLink(props: ComponentProps<typeof defaultComponents.a>) {
   const fileName =
     documents.find((document) => document.id === citation.documentId)
       ?.fileName ?? 'Document'
+  const excerpt = excerpts.get(pageKey(citation.documentId, citation.page))
 
   return (
     <Popover>
@@ -229,7 +173,12 @@ function CitationLink(props: ComponentProps<typeof defaultComponents.a>) {
       </PopoverTrigger>
       <PopoverContent side="top" className="w-auto max-w-64">
         <PopoverTitle className="break-all">{fileName}</PopoverTitle>
-        <p className="text-muted-foreground">Page {citation.page}</p>
+        <p className="text-muted-foreground">
+          {[excerpt?.section, `Page ${citation.page}`]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+        {excerpt && <p>{excerpt.text}</p>}
         <Link href={props.href ?? ''} className="text-primary underline">
           Open page
         </Link>

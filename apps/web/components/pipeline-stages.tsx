@@ -86,13 +86,7 @@ export function PipelineStages() {
           </li>
         ))}
       </ol>
-      <p aria-live="polite" className="text-xs">
-        <span className="font-medium">
-          STEP {active + 1}: {label}.
-        </span>{' '}
-        {caption}.
-      </p>
-      <div className="flex gap-2">
+      <p aria-live="polite" className="text-xs flex items-center gap-2">
         <Button
           variant="outline"
           size="icon-sm"
@@ -102,6 +96,9 @@ export function PipelineStages() {
         >
           <ChevronLeft />
         </Button>
+        <span className="font-semibold text-muted-foreground">
+          STEP {active + 1}
+        </span>
         <Button
           variant="outline"
           size="icon-sm"
@@ -111,7 +108,8 @@ export function PipelineStages() {
         >
           <ChevronRight />
         </Button>
-      </div>
+        {label}. {caption}.
+      </p>
     </div>
   )
 }

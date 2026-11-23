@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog'
+import { Skeleton } from '@repo/ui/components/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { cn } from '@repo/ui/lib/utils'
 import { ArrowLeft, Check } from 'lucide-react'
@@ -257,6 +258,14 @@ export function ReviewWorkspace({
               </button>
             )
           })}
+          {document.pageImages.length === 0 &&
+            Array.from({ length: document.pages || 1 }, (_, index) => (
+              <Skeleton
+                // biome-ignore lint/suspicious/noArrayIndexKey: Placeholders stand in for page numbers.
+                key={index}
+                className="mx-auto mt-1 mb-5 aspect-[8.5/11] w-[57px] rounded-sm"
+              />
+            ))}
         </nav>
 
         <PageViewer

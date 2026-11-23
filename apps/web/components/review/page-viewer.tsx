@@ -7,6 +7,7 @@ import {
   TransformComponent,
   TransformWrapper,
 } from 'react-zoom-pan-pinch'
+import { PageSkeleton } from '#components/record-skeletons'
 import { getCoverScale, nextZoomStep, zoomSteps } from '#lib/page-zoom'
 import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
@@ -139,12 +140,11 @@ export function PageViewer({
   if (images.length === 0) {
     return (
       <section
-        className="flex min-h-0 flex-col items-center justify-center gap-3 bg-muted/60 p-6 text-muted-foreground"
-        aria-label="Document viewer"
+        role="status"
+        aria-label="Preparing document pages"
+        className="flex min-h-0 items-center justify-center bg-muted/60 p-6"
       >
-        <p className="text-xs" role="status">
-          No pages available
-        </p>
+        <PageSkeleton />
       </section>
     )
   }
