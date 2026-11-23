@@ -69,6 +69,31 @@ test('selects only the matching narrative line', () => {
   )
 })
 
+test('outlines a stacked label and its combined value without neighbouring fields', () => {
+  const grid = { ...block, kind: 'other' as const }
+  const field = (text: string, x: number, y: number): Word => ({
+    text,
+    blockId: block.id,
+    box: { x, y, width: 0.08, height: 0.02 },
+  })
+  const actual = observationBox(
+    grid,
+    [
+      field('Blood', 0.1, 0.15),
+      field('Pressure', 0.19, 0.15),
+      field('Heart', 0.4, 0.15),
+      field('Rate', 0.49, 0.15),
+      field('128/78', 0.1, 0.2),
+      field('76', 0.4, 0.2),
+    ],
+    { name: 'Systolic blood pressure', value: '128', valueNumeric: 128 }
+  )
+  assert.equal(actual.x, 0.1)
+  assert.equal(actual.y, 0.15)
+  assert.ok(Math.abs(actual.width - 0.17) < 1e-12)
+  assert.ok(Math.abs(actual.height - 0.07) < 1e-12)
+})
+
 test('falls back to the block when words or matches are missing', () => {
   const observation = { name: 'Potassium', value: '4.1', valueNumeric: 4.1 }
   for (const input of [

@@ -60,16 +60,19 @@ export function observationBox(
       .map(normalize)
       .filter(Boolean)
   )
-  const nameTokens = observation.name
+  const allNameTokens = observation.name
     .split(/\s+/)
     .map(normalize)
     .filter(
       (token) =>
         token.length > 1 && !/^(the|of|and|in|on|with|for)$/.test(token)
     )
-    .slice(0, 2)
+  const nameTokens = allNameTokens.slice(0, 2)
+  // A combined reading such as "128/78" holds both blood pressure components, so each part can match.
   const values = blockWords.filter((word) =>
-    valueTokens.has(normalize(word.text))
+    [word.text, ...word.text.split('/')].some((part) =>
+      valueTokens.has(normalize(part))
+    )
   )
   const names = nameTokens.flatMap((token) =>
     blockWords.filter((word) => normalize(word.text) === token)
@@ -93,13 +96,24 @@ export function observationBox(
     pairs[0]?.words ?? (values.length ? values.slice(0, 1) : names.slice(0, 1))
   if (!matched.length) return block.box
 
+  const [value, name] = matched
   const top = Math.min(...matched.map((word) => word.box.y))
   const bottom = Math.max(
     ...matched.map((word) => word.box.y + word.box.height)
   )
-  const row = blockWords.filter(
-    (word) => center(word) >= top && center(word) <= bottom
-  )
+  // A label above its value (a field grid rather than a table row) outlines just that label and value;
+  // widening to full rows would cover every neighbouring field in the grid.
+  const stacked = value && name && !pairs[0]?.sameBand
+  const row = stacked
+    ? [
+        value,
+        ...blockWords.filter(
+          (word) =>
+            Math.abs(center(word) - center(name)) <= name.box.height / 2 &&
+            allNameTokens.includes(normalize(word.text))
+        ),
+      ]
+    : blockWords.filter((word) => center(word) >= top && center(word) <= bottom)
   const rectangle = bounds(row.flatMap((word) => corners(word.box)))
   const points = corners(rectangle).map(
     ([x, y]): Point => [
