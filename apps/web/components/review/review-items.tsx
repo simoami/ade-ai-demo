@@ -68,8 +68,11 @@ export function ReviewItems({
       }))
     : [
         ...(flagged.length ? [{ title: 'Needs review', items: flagged }] : []),
-        // The page and its count are shown beside the Redactions title, so this group has no heading.
-        { title: null, items: onPage },
+        // Redactions list every page; the count sits beside the Redactions title, so this group has no heading.
+        {
+          title: null,
+          items: items.filter((item) => item.state !== 'needsReview'),
+        },
       ]
 
   return (
@@ -88,7 +91,11 @@ export function ReviewItems({
         >
           {group.items.length === 0 && (
             <li className="px-3 py-2 text-xs text-muted-foreground">
-              Nothing else on this page.
+              {clinicalList
+                ? 'Nothing else on this page.'
+                : flagged.length
+                  ? 'No other redactions.'
+                  : 'No redactions.'}
             </li>
           )}
           {group.items.map((item) => {

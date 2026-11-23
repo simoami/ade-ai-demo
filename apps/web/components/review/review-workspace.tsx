@@ -351,16 +351,11 @@ export function ReviewWorkspace({
                         className="size-4 text-muted-foreground transition-transform group-data-[panel-open]:rotate-90"
                       />
                       Redactions
-                      <span className="ms-auto text-xs font-normal text-muted-foreground">
-                        Page {page}
-                      </span>
-                      <Badge variant="secondary" className="tabular-nums">
-                        {
-                          redactionItems.filter(
-                            (item) =>
-                              item.page === page && item.state !== 'needsReview'
-                          ).length
-                        }
+                      <Badge
+                        variant="secondary"
+                        className="ms-auto tabular-nums"
+                      >
+                        {redactionItems.length}
                       </Badge>
                     </CollapsibleTrigger>
                   </h2>
