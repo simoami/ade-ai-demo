@@ -231,7 +231,7 @@ union outside the span box. Unmatched spans score zero coverage and are left
 out of the over-coverage mean.
 Braintrust displays 1-CER and 1-WER clamped to 0..1; local reports retain the
 unbounded error rates. Continuation-link accuracy is not scored. Each page is
-read independently, so `continues` is currently null in model output; ground
+read independently, so `continues` is null in model output; ground
 truth retains links for later document-level stages.
 
 ## Experiment log

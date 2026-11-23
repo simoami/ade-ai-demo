@@ -51,10 +51,9 @@ data downloads are needed. Verify Vercel output with
 
 Database status advances from `rendering` to `reading` to `redacting` to
 `needsReview` once redacted pages are published. Processing failures write `failed` and fail
-the workflow with a content-free error. The review hook records terminal
-`reviewed` or `discarded` decisions. `redaction.update` currently increments a
-refresh counter only. Terminal review does not yet delete artifacts. Real
-uploads produce no redacted, servable `pages/<page>.webp` images in this step.
+the workflow with a content-free error. The review hook applies each review action and records terminal
+`reviewed` or `discarded` decisions; afterwards a durable step deletes originals
+and transient artifacts, keeping only the published redacted page pairs.
 Workflow history includes original upload references and file names as input;
 OCR content remains inside steps and encrypted Blob storage. Local Workflow
 history lives in `packages/ai/.eve/.workflow-data`.
