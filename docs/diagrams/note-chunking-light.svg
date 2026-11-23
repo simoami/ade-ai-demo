@@ -1,88 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Note chunking: each note section becomes one chunk with its section path stored apart from the body; an oversized section splits at the last full sentence before the limit, and the next chunk repeats that sentence">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1232 316" width="1232" height="316" role="img" aria-label="An oversized note section splits at the last full sentence before the 2,000-character limit instead of mid-word, and the next chunk repeats that sentence as overlap">
 <style>
 .bg{fill:#ffffff}
 .frame{fill:#ffffff;stroke:#cfcfcf;stroke-width:1.5}
-.panel{fill:url(#hatch);stroke:#cfcfcf;stroke-width:1.5}
 .box{fill:#ffffff;stroke:#d4d4d4;stroke-width:1.5}
-.rule{stroke:#cfcfcf;stroke-width:1.5}
 .guide{stroke:#d4d4d4;stroke-width:1.2;stroke-dasharray:4 4}
-.label{font:600 15px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#171717;letter-spacing:1px}
-.tag{font:400 11px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#737373;letter-spacing:.6px}
-.key{font:400 12px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#737373;letter-spacing:.6px}
-.sub{font:400 14px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#737373}
-.h1{font:600 20px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#171717}
-.h2{font:600 16px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#171717}
+.label{font:600 14px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#171717;letter-spacing:1px}
+.note{font:400 13px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#737373}
 .body{font:400 15px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#404040}
-.val{font:500 15px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#171717}
-.code{font:400 14px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#404040}
-.acc{fill:#0f766e}
 .accbox{fill:#f0fdfa;stroke:#0f766e;stroke-width:1.5}
 .acctint{fill:#ccfbf1;stroke:none}
-.acctext{font:600 11px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#0f766e;letter-spacing:.8px}
-.edge{fill:none;stroke:#171717;stroke-width:1.5}
-.head{fill:#171717}
+.accnote{font:500 13px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#0f766e}
 .accedge{fill:none;stroke:#0f766e;stroke-width:1.5}
 .acchead{fill:#0f766e}
 .warnline{stroke:#e11d48;stroke-width:2;stroke-dasharray:5 4}
-.warntext{font:600 11px 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;fill:#e11d48;letter-spacing:.8px}
-.pill{fill:#ffffff;stroke:#d4d4d4;stroke-width:1.2}
+.warnnote{font:500 13px Geist, Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;fill:#e11d48}
 </style>
-<defs>
-<pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fafafa"/><line x1="0" y1="0" x2="0" y2="8" stroke="#ededed" stroke-width="1"/></pattern>
-</defs>
-<rect class="bg" width="1200" height="900"/>
-<rect class="frame" x="16" y="16" width="1168" height="868" rx="6"/>
-<text class="label" x="48" y="62">1 · EACH NOTE SECTION BECOMES A CHUNK</text>
-<rect class="panel" x="48" y="86" width="380" height="304" rx="6"/>
-<rect class="box" x="64" y="102" width="348" height="272" rx="4"/>
-<text class="h1" x="84" y="142">Screening visit</text>
-<rect class="pill" x="256" y="126" width="140" height="20" rx="4"/><text class="tag" x="326.0" y="140" text-anchor="middle">TITLE · LEVEL 1</text>
-<text class="h2" x="84" y="194">Chief complaint</text>
-<rect class="pill" x="256" y="178" width="140" height="20" rx="4"/><text class="tag" x="326.0" y="192" text-anchor="middle">SECTION · LEVEL 2</text>
-<text class="body" x="84" y="222">Fatigue for two weeks.</text>
-<text class="h2" x="84" y="274">Plan</text>
-<rect class="pill" x="256" y="258" width="140" height="20" rx="4"/><text class="tag" x="326.0" y="272" text-anchor="middle">SECTION · LEVEL 2</text>
-<text class="body" x="84" y="302">Start iron. Recheck CBC in 4 weeks.</text>
-<text class="tag" x="84" y="354">PAGE 1</text>
-<path class="edge" d="M428 208 H492"/><path class="head" d="M500 208 l-9 -5 v10 z"/>
-<path class="edge" d="M428 288 H492"/><path class="head" d="M500 288 l-9 -5 v10 z"/>
-<rect class="box" x="500" y="146" width="652" height="124" rx="6"/>
-<text class="key" x="520" y="178">SECTION</text><text class="val" x="612" y="178">Screening visit › Chief complaint</text>
-<text class="key" x="520" y="210">TEXT</text><text class="val" x="612" y="210">Fatigue for two weeks.</text>
-<text class="key" x="520" y="244">EMBEDS</text><text class="code" x="612" y="244"><tspan class="acc">[Screening visit › Chief complaint]</tspan> Fatigue for two weeks.</text>
-<rect class="pill" x="1080" y="164" width="56" height="20" rx="4"/><text class="tag" x="1108" y="178" text-anchor="middle">PAGE 1</text>
-<rect class="box" x="500" y="282" width="652" height="124" rx="6"/>
-<text class="key" x="520" y="314">SECTION</text><text class="val" x="612" y="314">Screening visit › Plan</text>
-<text class="key" x="520" y="346">TEXT</text><text class="val" x="612" y="346">Start iron. Recheck CBC in 4 weeks.</text>
-<text class="key" x="520" y="380">EMBEDS</text><text class="code" x="612" y="380"><tspan class="acc">[Screening visit › Plan]</tspan> Start iron. Recheck CBC in 4 weeks.</text>
-<rect class="pill" x="1080" y="300" width="56" height="20" rx="4"/><text class="tag" x="1108" y="314" text-anchor="middle">PAGE 1</text>
-<text class="sub" x="48" y="430">The heading path is stored once in the section field. Only the embedding input adds it, in brackets, so a search for “chief complaint” finds the body.</text>
-<line class="rule" x1="48" y1="460" x2="1152" y2="460"/>
-<text class="label" x="48" y="506">2 · AN OVERSIZED SECTION SPLITS AT A SENTENCE</text>
-<text class="sub" x="48" y="534">Section “Screening visit › Assessment” is longer than the 2,000-character limit.</text>
-<rect class="box" x="48" y="596" width="200" height="52" rx="4"/>
-<text class="body" x="64" y="627">History reviewed today.</text>
-<rect class="box" x="256" y="596" width="190" height="52" rx="4"/>
-<text class="body" x="272" y="627">Labs remain stable.</text>
-<rect class="accbox" x="454" y="596" width="280" height="52" rx="4"/>
-<text class="body" x="470" y="627">Continue iron 65 mg b.i.d.</text>
-<rect class="box" x="742" y="596" width="300" height="52" rx="4"/>
-<rect class="box" x="1050" y="596" width="102" height="52" rx="4"/>
-<text class="body" x="1066" y="627">Recheck.</text>
-<text class="body" x="890" y="627" text-anchor="end">Discussed metfor</text><text class="body" x="894" y="627">min side effects.</text>
-<line class="warnline" x1="892" y1="576" x2="892" y2="668"/>
-<text class="warntext" x="892" y="568" text-anchor="middle">2,000 CHARACTERS · A FIXED CUT WOULD SPLIT “METFORMIN”</text>
-<line class="guide" x1="454" y1="648" x2="454" y2="804"/>
-<line class="guide" x1="734" y1="648" x2="734" y2="804"/>
-<rect class="box" x="48" y="704" width="686" height="44" rx="4"/>
-<rect class="acctint" x="455" y="705" width="278" height="42" rx="3"/>
-<text class="label" x="64" y="732">CHUNK 1</text><text class="tag" x="164" y="731">SENTENCES 1–3 · ENDS ON A FULL SENTENCE</text>
-<text class="acctext" x="594" y="731" text-anchor="middle">LAST SENTENCE</text>
-<rect class="box" x="454" y="760" width="698" height="44" rx="4"/>
-<rect class="acctint" x="455" y="761" width="278" height="42" rx="3"/>
-<text class="acctext" x="594" y="787" text-anchor="middle">OVERLAP · REPEATED</text>
-<text class="label" x="758" y="788">CHUNK 2</text><text class="tag" x="858" y="787">SENTENCES 3–5</text>
-<path class="accedge" d="M892 668 V680 H744 Q736 680 736 688 V696"/><path class="acchead" d="M736 704 l-5 -9 h10 z"/>
-<text class="acctext" x="902" y="676">MOVES BACK TO THE SENTENCE BOUNDARY</text>
-<text class="sub" x="48" y="848">No word, dose or qualifier is cut. The next chunk opens with the previous chunk’s last sentence, so a thought split at the boundary reads on both sides.</text>
+<rect class="bg" width="1232" height="316"/>
+<rect class="frame" x="16" y="16" width="1200" height="284" rx="6"/>
+<rect class="box" x="48" y="74" width="200" height="52" rx="4"/>
+<text class="body" x="64" y="105">History reviewed today.</text>
+<rect class="box" x="256" y="74" width="190" height="52" rx="4"/>
+<text class="body" x="272" y="105">Labs remain stable.</text>
+<rect class="accbox" x="454" y="74" width="280" height="52" rx="4"/>
+<text class="body" x="470" y="105">Continue iron 65 mg b.i.d.</text>
+<rect class="box" x="742" y="74" width="300" height="52" rx="4"/>
+<rect class="box" x="1050" y="74" width="102" height="52" rx="4"/>
+<text class="body" x="1066" y="105">Recheck.</text>
+<text class="body" x="890" y="105" text-anchor="end">Discussed metfor</text><text class="body" x="894" y="105">min side effects.</text>
+<line class="warnline" x1="892" y1="54" x2="892" y2="146"/>
+<text class="warnnote" x="892" y="46" text-anchor="middle">2,000 characters: a fixed cut would split “metformin”</text>
+<line class="guide" x1="454" y1="126" x2="454" y2="282"/>
+<line class="guide" x1="734" y1="126" x2="734" y2="282"/>
+<rect class="box" x="48" y="182" width="686" height="44" rx="4"/>
+<rect class="acctint" x="455" y="183" width="278" height="42" rx="3"/>
+<text class="label" x="64" y="210">CHUNK 1</text><text class="note" x="160" y="209">Sentences 1–3, ending on a full sentence</text>
+<text class="accnote" x="594" y="209" text-anchor="middle">Last sentence</text>
+<rect class="box" x="454" y="238" width="698" height="44" rx="4"/>
+<rect class="acctint" x="455" y="239" width="278" height="42" rx="3"/>
+<text class="accnote" x="594" y="265" text-anchor="middle">Overlap: repeated sentence</text>
+<text class="label" x="758" y="266">CHUNK 2</text><text class="note" x="852" y="265">Sentences 3–5</text>
+<path class="accedge" d="M892 146 V158 H744 Q736 158 736 166 V174"/><path class="acchead" d="M736 182 l-5 -9 h10 z"/>
+<text class="accnote" x="902" y="155">Instead, moves back to the sentence boundary</text>
 </svg>
