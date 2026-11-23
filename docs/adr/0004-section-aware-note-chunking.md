@@ -13,6 +13,11 @@ Clinical headings already mark topic changes, and the OCR provides them, so stru
 
 ## How it is applied
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../diagrams/note-chunking-dark.svg">
+  <img alt="Each note section becomes one chunk whose section path is stored apart from its body and prefixed in brackets only for embedding. An oversized section is cut at the last full sentence before the 2,000-character limit instead of mid-word, and the next chunk repeats that sentence as overlap." src="../diagrams/note-chunking-light.svg">
+</picture>
+
 - **Sections.** OCR heading blocks start a note section. A heading carries a level (the document title is level 1 and section headers are level 2; headings without a level default to 2), and each section records its section path, the headings from the title down, for example `CAR-T Screening Visit › Chief complaint`. A heading with no body emits no chunk; it remains in the path until a heading at the same or a higher level replaces it. Blocks before the first heading stay as separate chunks.
 - **Headings stored apart from text.** A chunk stores its `section` path and its `text` body separately. The embedding input is built in code as `[section path]` followed by the body, so a query for "chief complaint" matches the heading even when the body never repeats it. The chat tool returns `section`, `text` and `page` as separate fields, so the model can tell heading from note text and cite the page, and the stored body never repeats the heading.
 - **Pages.** A section continues across a page break, but every chunk is cut at the page, so each chunk cites one page and the second page's chunk keeps its section path.
