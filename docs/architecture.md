@@ -2,29 +2,6 @@
 
 A clinician uploads a scanned or digital record. The system reads it, redacts direct identifiers, links it to a patient, extracts observations, indexes the clinical notes and hands the result to a person for review. A page-aware assistant answers questions about the records with page citations. Terms are defined in [`CONTEXT.md`](../CONTEXT.md); decisions with real trade-offs are in [`docs/adr`](adr).
 
-## Principles
-
-1. **Evals drive model work.** Each model-backed stage has a synthetic dataset and scorers, and prompt or model changes are compared against a baseline. See [Evaluation](#evaluation).
-2. **Fail closed on privacy.** Published pages burn every applied or accepted redaction, and uncertain candidates stay outlined until a reviewer decides. Unredacted renders are visible only while a document is being evaluated and redacted.
-3. **Everything cites its source.** Observations, redactions and note chunks keep their page and box, so reviewers can check each one on the page.
-4. **Deterministic pipeline, models for narrow judgments.** A durable workflow orders the steps. Models classify, read demographics, find identifiers and extract observations through structured output; the chat assistant can only read through typed tools.
-5. **Replay-safe writes.** Rows use deterministic IDs and are replaced as a set, so a retried step never duplicates data.
-
-## Services
-
-| Service                      | Use                                                                                 |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| OpenAI (AI SDK)              | Picture pass, classification, demographics, PII detection, extraction, chat, embeddings |
-| Reducto parse (`r-1`)        | OCR blocks and word boxes, chosen by the OCR evaluation                             |
-| Tesseract (WASM, in-process) | Character boxes inside identifier regions, for exact redaction geometry             |
-| Vercel Workflow (via eve)    | Durable pipeline run and review loop                                                |
-| Vercel Blob (private)        | Originals, renders, encrypted artifacts and published pages                         |
-| Neon Postgres + pgvector     | Application data and note embeddings                                                |
-| Braintrust                   | Eval datasets, experiments and scores                                               |
-| Vercel Deployment Protection | Access control for every deployment; the app has no auth code                       |
-
-Models are called directly, without AI Gateway, from one registry in `packages/ai/src/models.ts`.
-
 ## System diagram
 
 One Vercel deployment runs two services from root `vercel.ts`: the Next.js `web` service and the `eve` service that owns the durable workflow. `web` reaches `eve` only through a private service binding.
@@ -33,8 +10,6 @@ One Vercel deployment runs two services from root `vercel.ts`: the Next.js `web`
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/system-dark.svg">
   <img alt="Browser reaches Next.js through Vercel Authentication; Next.js calls the eve workflow service over a private binding with Vercel OIDC; the workflow renders, reads, redacts, classifies and extracts, then waits for human review; it writes to Vercel Blob and Neon Postgres and calls Reducto and OpenAI; the browser uploads to and reads pages from Blob directly." src="diagrams/system-light.svg">
 </picture>
-
-Consent documents skip extraction and other documents end as unsupported after redaction. Signed Blob URLs are issued per request on the server and never cached.
 
 ## Pipeline
 
@@ -72,6 +47,10 @@ After processing, the run waits on one review hook. The UI resumes it with typed
 
 Statuses: `rendering` → `reading` → `redacting` → (`extracting` →) `needsReview` → `reviewed` or `discarded`. Unsupported documents end as `unsupported`, and failures as `failed`.
 
+## Chat
+
+A drawer on every workspace page streams answers from a Next.js route built on the AI SDK. The page sets the scope (all documents, all patients, one document or one patient), and the model reads data only through typed tools: `queryObservations`, `observationTrend`, `reviewStatus`, `listDocuments` and `searchNotes` (pgvector). Trends are computed in code, results render as observation cards and charts, and every clinical claim links to its source page. Conversations are not stored.
+
 ## Privacy
 
 - All document content is PHI. Logs carry IDs, counts, durations and statuses only, and the logger masks sensitive keys as a backstop.
@@ -88,9 +67,28 @@ Postgres holds `patients`, `documents`, `redactions`, `observations`, `note_chun
 
 Observations share common columns (kind, name, value, numeric value, unit, date, source region, review state) and keep kind-specific fields in a `details` JSON column, such as reference ranges, adverse-event seriousness, LOINC codes and blood pressure components. Observations from different documents are never merged; patient history is assembled at read time.
 
-## Chat
+## Principles
 
-A drawer on every workspace page streams answers from a Next.js route built on the AI SDK. The page sets the scope (all documents, all patients, one document or one patient), and the model reads data only through typed tools: `queryObservations`, `observationTrend`, `reviewStatus`, `listDocuments` and `searchNotes` (pgvector). Trends are computed in code, results render as observation cards and charts, and every clinical claim links to its source page. Conversations are not stored.
+1. **Evals drive model work.** Each model-backed stage has a synthetic dataset and scorers, and prompt or model changes are compared against a baseline. See [Evaluation](#evaluation).
+2. **Fail closed on privacy.** Published pages burn every applied or accepted redaction, and uncertain candidates stay outlined until a reviewer decides. Unredacted renders are visible only while a document is being evaluated and redacted.
+3. **Everything cites its source.** Observations, redactions and note chunks keep their page and box, so reviewers can check each one on the page.
+4. **Deterministic pipeline, models for narrow judgments.** A durable workflow orders the steps. Models classify, read demographics, find identifiers and extract observations through structured output; the chat assistant can only read through typed tools.
+5. **Replay-safe writes.** Rows use deterministic IDs and are replaced as a set, so a retried step never duplicates data.
+
+## Services
+
+| Service                      | Use                                                                                 |
+| ---------------------------- | ----------------------------------------------------------------------------------- |
+| OpenAI (AI SDK)              | Picture pass, classification, demographics, PII detection, extraction, chat, embeddings |
+| Reducto parse (`r-1`)        | OCR blocks and word boxes, chosen by the OCR evaluation                             |
+| Tesseract (WASM, in-process) | Character boxes inside identifier regions, for exact redaction geometry             |
+| Vercel Workflow (via eve)    | Durable pipeline run and review loop                                                |
+| Vercel Blob (private)        | Originals, renders, encrypted artifacts and published pages                         |
+| Neon Postgres + pgvector     | Application data and note embeddings                                                |
+| Braintrust                   | Eval datasets, experiments and scores                                               |
+| Vercel Deployment Protection | Access control for every deployment; the app has no auth code                       |
+
+Models are called directly, without AI Gateway, from one registry in `packages/ai/src/models.ts`.
 
 ## Evaluation
 
