@@ -1,6 +1,6 @@
 # Clinical record ingestion
 
-A pipeline that turns uploaded clinical records into redacted, patient-linked, reviewable data. It reads each document with OCR, redacts direct identifiers in the page images, extracts observations with source citations, and indexes clinical notes for semantic search. A person reviews the result before it is locked, and a page-aware assistant answers questions about the records with page citations.
+A pipeline that turns uploaded clinical records into de-identified, standardized data. It reads each document with OCR, redacts direct identifiers in the page images, extracts observations with source citations, and indexes clinical notes for semantic search. A person reviews the result before it is locked, and a page-aware assistant answers questions about the records with page citations.
 
 Built on Next.js, the AI SDK, eve, Vercel Workflow, Vercel Blob and Neon Postgres with pgvector. Model-backed stages are developed against evaluation datasets first.
 
