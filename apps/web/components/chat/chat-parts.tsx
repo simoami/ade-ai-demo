@@ -3,16 +3,57 @@
 import type { ChatMessage, PageContext } from '@repo/ai/chat'
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTitle,
+  PopoverTrigger,
+} from '@repo/ui/components/popover'
 import { isToolUIPart } from 'ai'
 import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
-import { Streamdown } from 'streamdown'
+import {
+  type ComponentProps,
+  createContext,
+  type ReactNode,
+  use,
+  useState,
+} from 'react'
+import { defaultComponents, Streamdown } from 'streamdown'
 import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
 import { noteSources } from '#lib/chat-sources'
+import { citationNumbers, parseCitation } from '#lib/citations'
 
 type Part = ChatMessage['parts'][number]
+
+const CitationContext = createContext<{
+  numbers: Map<string, number>
+  documents: { id: string; fileName: string }[]
+}>({ numbers: new Map(), documents: [] })
+
+const markdownComponents = { a: CitationLink }
+
+/** Numbers one message's page citations and resolves their file names. */
+export function MessageCitations({
+  parts,
+  documents,
+  children,
+}: {
+  parts: ChatMessage['parts']
+  documents: { id: string; fileName: string }[]
+  children: ReactNode
+}) {
+  const text = parts
+    .map((part) => (part.type === 'text' ? part.text : ''))
+    .join('\n')
+
+  return (
+    <CitationContext value={{ numbers: citationNumbers(text), documents }}>
+      {children}
+    </CitationContext>
+  )
+}
 
 /** Render cited text and the five typed clinical tool outputs without raw errors. */
 export function ChatPart({
@@ -29,6 +70,7 @@ export function ChatPart({
       <Streamdown
         skipHtml
         controls={false}
+        components={markdownComponents}
         className="text-sm leading-7 wrap-break-word [&_li]:leading-7 [&_p]:leading-7 [&_a]:text-primary [&_a]:underline [&_table]:text-xs [&_th]:bg-muted [&_th]:p-2 [&_td]:p-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm"
       >
         {part.text}
@@ -163,6 +205,35 @@ export function ChatSources({
           </p>
         ))}
     </div>
+  )
+}
+
+function CitationLink(props: ComponentProps<typeof defaultComponents.a>) {
+  const { numbers, documents } = use(CitationContext)
+  const citation = parseCitation(props.href)
+  const number = props.href && numbers.get(props.href)
+  if (!citation || !number) return <defaultComponents.a {...props} />
+
+  const fileName =
+    documents.find((document) => document.id === citation.documentId)
+      ?.fileName ?? 'Document'
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        aria-label={`Citation ${number}: ${fileName}, page ${citation.page}`}
+        className="mx-0.5 cursor-pointer align-super text-[0.7em] leading-none font-medium tabular-nums text-primary hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-ring"
+      >
+        [{number}]
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-auto max-w-64">
+        <PopoverTitle className="break-all">{fileName}</PopoverTitle>
+        <p className="text-muted-foreground">Page {citation.page}</p>
+        <Link href={props.href ?? ''} className="text-primary underline">
+          Open page
+        </Link>
+      </PopoverContent>
+    </Popover>
   )
 }
 
