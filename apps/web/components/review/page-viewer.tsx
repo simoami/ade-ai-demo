@@ -15,6 +15,9 @@ import { outsetOutline } from './page-outline'
 // The library clamps the centered position to the page edges.
 const SELECTION_ZOOM = 1.5
 
+// Screen pixels kept between a zoomed-to outline and the viewport edge.
+const SELECTION_PADDING = 32
+
 const ZOOM_TO_ELEMENT_DURATION = 200
 
 const selectedOutlineId = (id: string) => `page-outline-${id}`
@@ -103,9 +106,20 @@ export function PageViewer({
   useEffect(() => {
     if (!selectedId || viewport.width === 0 || viewport.height === 0) return
 
-    // Without a fixed scale the library fits the target, capped here so small targets stop at 150%.
-    void transformRef.current?.zoomToElement(selectedOutlineId(selectedId), {
-      maxScale: SELECTION_ZOOM,
+    const transform = transformRef.current
+    const outline = document.getElementById(selectedOutlineId(selectedId))
+    if (!transform || !outline) return
+
+    // Fit the outline plus a margin on every side, so a wide row never touches the viewport edges;
+    // small outlines still stop at 150%. The outline's screen size divided by the current scale is its unscaled size.
+    const { scale } = transform.state
+    const { width, height } = outline.getBoundingClientRect()
+    const fit = Math.min(
+      viewport.width / (width / scale + 2 * SELECTION_PADDING),
+      viewport.height / (height / scale + 2 * SELECTION_PADDING)
+    )
+    void transform.zoomToElement(outline.id, {
+      scale: Math.min(SELECTION_ZOOM, fit),
       animationTime: ZOOM_TO_ELEMENT_DURATION,
     })
   }, [selectedId, viewport.width, viewport.height])
