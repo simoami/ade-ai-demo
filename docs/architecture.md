@@ -36,10 +36,6 @@ One Vercel deployment runs two services from root `vercel.ts`: the Next.js `web`
 
 Consent documents skip extraction and other documents end as unsupported after redaction. Signed Blob URLs are issued per request on the server and never cached.
 
-## Web rendering and cache boundaries
-
-Next.js prerenders the workspace shell and streams live data into skeletons. Records that can still change (processing or in review) are always read live, because eve writes asynchronously. Reviewed and discarded records are cached with `use cache` and tagged, and every write path expires the tags it affects. Signed Blob URLs are created per request outside any cache.
-
 ## Pipeline
 
 Each document gets one eve workflow run. The browser calls Next.js `/api/documents`, which validates the request and calls eve over a private Vercel service binding (`PIPELINE_SERVICE_ORIGIN`, 15-second timeout). The eve channel `/pipeline/documents` has no public route. It authenticates with HTTP Basic locally and Vercel OIDC on deployments, then starts, reads or resumes runs. Unknown errors return 503.
