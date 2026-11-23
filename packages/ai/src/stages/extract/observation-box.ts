@@ -40,17 +40,13 @@ function phrase(anchor: Word, words: Word[]) {
       (word) => Math.abs(center(word) - center(anchor)) <= anchor.box.height / 2
     )
     .sort((a, b) => a.box.x - b.box.x)
-  const gap = (left: Word, right: Word) =>
-    right.box.x - (left.box.x + left.box.width)
+  // A missing neighbour counts as an infinite gap, which ends the phrase at the line's edge.
+  const gap = (left?: Word, right?: Word) =>
+    left && right ? right.box.x - (left.box.x + left.box.width) : Infinity
   let start = line.indexOf(anchor)
   let end = start
-  while (start > 0 && gap(line[start - 1], line[start]) <= anchor.box.height)
-    start--
-  while (
-    end < line.length - 1 &&
-    gap(line[end], line[end + 1]) <= anchor.box.height
-  )
-    end++
+  while (gap(line[start - 1], line[start]) <= anchor.box.height) start--
+  while (gap(line[end], line[end + 1]) <= anchor.box.height) end++
 
   return line.slice(start, end + 1)
 }
