@@ -23,11 +23,13 @@ export function noteSources(
   return sources.map((source) => {
     const text = source.text.replace(/\s+/g, ' ').trim()
 
+    const label = [source.section, `page ${source.page}`]
+      .filter(Boolean)
+      .join(' · ')
+
     return {
       key: `${source.documentId}:${source.page}`,
-      label: currentDocument
-        ? `page ${source.page}`
-        : `${source.fileName}, page ${source.page}`,
+      label: currentDocument ? label : `${source.fileName}, ${label}`,
       href: `/documents/${encodeURIComponent(source.documentId)}?page=${source.page}`,
       excerpt: text.length > 200 ? `${text.slice(0, 199).trimEnd()}…` : text,
     }

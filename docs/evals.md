@@ -356,3 +356,18 @@ layout, identity and scan diversity. Its transcription error does not predict
 performance on real records. Local JSON reports in `packages/ai/evals/results/`
 contain only IDs, scores, counts and timings and are gitignored. OCR remains
 outside the workflow.
+
+## Note retrieval
+
+`BRAINTRUST_API_KEY= pnpm eval notes` runs ten questions over the six searchable
+seeded synthetic fixtures (clinical-20, clinical-followup, intake-01, referral-01,
+radiology-01 and consent-01). It uses ground-truth OCR with identifiers masked,
+the real section chunker and embedding model, in-memory cosine distance and
+`selectNoteMatches` (up to four results at the chat similarity threshold).
+Recall@4 requires the expected fixture, section and page; it is report-only,
+with no pass threshold. Existing fixtures mostly have broad document headings,
+so path nesting and sentence splitting are covered by unit tests instead.
+The local `evals/results/notes-latest.json` report contains metadata and metrics
+only; runtime failures appear as failed question IDs or a failed run.
+
+Local baseline (2026-11-23): recall@4 1.00 (10/10 questions; 31 chunks).

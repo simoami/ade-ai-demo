@@ -213,6 +213,7 @@ export const noteChunks = pgTable(
     documentId: text('document_id')
       .notNull()
       .references(() => documents.id, { onDelete: 'cascade' }),
+    section: text('section'),
     text: text('text').notNull(),
     source: jsonb('source').$type<SourceRegion[]>().notNull(),
     embedding: vector('embedding', { dimensions: 1536 }).notNull(),

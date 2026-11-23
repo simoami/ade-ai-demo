@@ -22,6 +22,7 @@ export const blockSchema = z.object({
     'other',
   ]),
   text: z.string(),
+  level: z.union([z.literal(1), z.literal(2)]).optional(),
   box: boxSchema,
   continues: z.string().nullable(),
 })

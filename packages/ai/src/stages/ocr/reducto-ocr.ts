@@ -64,6 +64,12 @@ export function reductoOcr(
       return {
         id: `p${pageNumber}-b${index + 1}`,
         kind,
+        level:
+          block.type === 'Title'
+            ? 1
+            : block.type === 'Section Header'
+              ? 2
+              : undefined,
         // Figure content is a generated description, not text printed in the picture.
         text: kind === 'figure' ? '' : htmlText(block.content),
         box: {

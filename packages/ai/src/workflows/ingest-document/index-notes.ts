@@ -8,13 +8,16 @@ import {
   maskIdentifiers,
 } from '#stages/extract/mask-identifiers'
 import type { Block, OcrPage } from '#stages/ocr/ocr-result'
-import { documentScopedId } from './deterministic-id.ts'
+import { documentScopedId } from '#workflows/ingest-document/deterministic-id'
 import {
   artifactDefaults,
   readIdentifierSpans,
   readOcr,
-} from './document-artifacts.ts'
-import { listRedactions, replaceNoteChunks } from './document-store.ts'
+} from '#workflows/ingest-document/document-artifacts'
+import {
+  listRedactions,
+  replaceNoteChunks,
+} from '#workflows/ingest-document/document-store'
 
 type Embedder = (values: string[]) => Promise<number[][]>
 
@@ -42,66 +45,119 @@ export function isSearchableNoteBlock(block: Block): boolean {
   )
 }
 
-// A character ceiling keeps even a dense OCR block within the embedding model's token limit.
 const maxChunkLength = 2000
 
-/** Groups each heading with the blocks under it so a section is retrieved with its title; blocks before any heading stay separate. */
-function noteSections(blocks: Block[], page: number) {
-  const sections: { text: string; source: Chunk['source'] }[] = []
-  let heading: string | null = null
-  for (const block of blocks) {
-    const text = block.text.trim()
-    const source = { page, blockId: block.id, box: block.box }
-    const current = sections.at(-1)
-    if (block.kind === 'heading') {
-      heading = text
-      sections.push({ text, source: [source] })
-    } else if (
-      heading !== null &&
-      current &&
-      current.text.length + text.length < maxChunkLength
-    ) {
-      current.text += `\n${text}`
-      current.source.push(source)
-    } else {
-      sections.push({
-        text: heading === null ? text : `${heading}\n${text}`,
-        source: [source],
-      })
-    }
-  }
-  return sections
+// Keep common clinical abbreviations and initials intact; decimal points have no following whitespace.
+function sentences(text: string) {
+  return text.split(
+    /(?<!\b(?:dr|mr|mrs|ms|mg|vs|etc|e\.g|i\.e|b\.i\.d)\.)(?<!\b[a-z]\.)(?<=[.!?])\s+/i
+  )
 }
 
-/** Builds bounded section chunks from identifier-masked blocks; embeddings and text never enter workflow history. */
+type NotePiece = { text: string; source: Chunk['source']; table?: boolean }
+
+function splitSection(blocks: NotePiece[]): NotePiece[] {
+  const pieces: NotePiece[] = []
+  let current: NotePiece = { text: '', source: [] }
+  let hasBody = false
+  let overlap: NotePiece = current
+
+  const flush = () => {
+    pieces.push(current)
+    current = { ...overlap }
+    hasBody = false
+  }
+
+  for (const block of blocks) {
+    if (hasBody && current.text.length + block.text.length + 1 > maxChunkLength)
+      flush()
+
+    const parts =
+      !block.table &&
+      current.text.length + block.text.length + 1 > maxChunkLength
+        ? sentences(block.text)
+        : [block.text]
+    for (const text of parts) {
+      if (hasBody && current.text.length + text.length + 1 > maxChunkLength)
+        flush()
+
+      current.text = [current.text, text].filter(Boolean).join('\n')
+      current.source = [
+        ...new Map(
+          [...current.source, ...block.source].map((source) => [
+            source.blockId,
+            source,
+          ])
+        ).values(),
+      ]
+      overlap = { text: sentences(text).at(-1) ?? text, source: block.source }
+      hasBody = true
+    }
+  }
+  if (current.text) pieces.push(current)
+
+  return pieces
+}
+
+/** Builds embedding input from the section path and body without changing stored text. */
+export function noteEmbeddingInput({
+  section,
+  text,
+}: {
+  section?: string | null
+  text: string
+}): string {
+  return section ? `[${section}]\n${text}` : text
+}
+
+/** Builds page-bounded section chunks from identifier-masked blocks; embeddings and text never enter workflow history. */
 export async function buildNoteChunks(
   documentId: string,
   pages: OcrPage[],
   spans: MaskedSpans,
   embedder: Embedder = embed
 ): Promise<Chunk[]> {
+  const headings: string[] = []
   const chunks = maskIdentifiers(pages, spans).flatMap((page, pageIndex) => {
+    const sections: { section: string | null; blocks: NotePiece[] }[] = []
+    let current: (typeof sections)[number] | undefined
+    for (const block of page.blocks.filter(isSearchableNoteBlock)) {
+      if (block.kind === 'heading') {
+        const level = block.level ?? 2
+        headings.length = level - 1
+        headings[level - 1] = block.text.trim()
+        current = undefined
+        continue
+      }
+
+      const section = headings.filter(Boolean).join(' › ') || null
+      if (!current || !section) {
+        current = { section, blocks: [] }
+        sections.push(current)
+      }
+      current.blocks.push({
+        text: block.text.trim(),
+        table: block.kind === 'table',
+        source: [{ page: pageIndex + 1, blockId: block.id, box: block.box }],
+      })
+    }
+
     let index = 0
-    const blocks = page.blocks.filter(isSearchableNoteBlock)
-    return noteSections(blocks, pageIndex + 1).flatMap(({ text, source }) =>
-      Array.from(
-        { length: Math.ceil(text.length / maxChunkLength) },
-        (_, part) => ({
-          id: documentScopedId(documentId, `note:${pageIndex + 1}:${index++}`),
-          documentId,
-          text: text.slice(part * maxChunkLength, (part + 1) * maxChunkLength),
-          source,
-        })
-      ).filter((chunk) =>
-        /[\p{L}\p{N}]/u.test(chunk.text.replaceAll(identifierPlaceholder, ''))
-      )
+    return sections.flatMap(({ section, blocks }) =>
+      splitSection(blocks).map(({ text, source }) => ({
+        id: documentScopedId(documentId, `note:${pageIndex + 1}:${index++}`),
+        documentId,
+        section,
+        text,
+        source,
+      }))
     )
   })
   if (!chunks.length) return []
 
   try {
     const embeddings = embeddingsSchema.safeParse(
-      await embedder(chunks.map(({ text }) => text))
+      await embedder(chunks.map(noteEmbeddingInput))
     )
     if (!embeddings.success || embeddings.data.length !== chunks.length)
       throw new Error('Invalid note embeddings')

@@ -1,0 +1,2 @@
+- Split oversized OCR tables by rows with repeated column headers once normalized OCR preserves table structure.
+- Bound indivisible oversized sentences and their overlap without cutting words or losing clinical context.

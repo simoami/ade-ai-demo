@@ -291,6 +291,7 @@ export function chatTools(context: PageContext) {
             distance,
             fileName: documents.fileName,
             documentId: noteChunks.documentId,
+            section: noteChunks.section,
             text: noteChunks.text,
             source: noteChunks.source,
           })
@@ -316,6 +317,7 @@ export function chatTools(context: PageContext) {
               documentId: row.documentId,
               fileName: row.fileName,
               page: source.page,
+              section: row.section,
               text: row.text,
               box: source.box,
             }))

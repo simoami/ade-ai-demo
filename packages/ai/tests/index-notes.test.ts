@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { noteChunks } from '@repo/db'
-import type { OcrPage } from '#stages/ocr/ocr-result'
+import { blockSchema, type OcrPage } from '#stages/ocr/ocr-result'
 import {
   buildNoteChunks,
   indexDocumentNotes,
   isSearchableNoteBlock,
+  noteEmbeddingInput,
 } from '#workflows/ingest-document/index-notes'
 
 const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
@@ -67,7 +68,7 @@ test('embeds only masked text and keeps stable IDs and block source geometry', a
   )
 })
 
-test('bounds large blocks, keeps unique IDs and skips blank text without calling the embedder', async () => {
+test('preserves indivisible oversized sentences, keeps unique IDs and skips blank text without calling the embedder', async () => {
   const long = [
     {
       ...pages[0],
@@ -86,9 +87,9 @@ test('bounds large blocks, keeps unique IDs and skips blank text without calling
   const chunks = await buildNoteChunks(documentId, long, [], embed)
   assert.deepEqual(
     chunks.map(({ text }) => text.length),
-    [2000, 2000, 100]
+    [4100]
   )
-  assert.equal(new Set(chunks.map(({ id }) => id)).size, 3)
+  assert.equal(new Set(chunks.map(({ id }) => id)).size, 1)
   assert.deepEqual(
     await buildNoteChunks(documentId, [], [], async () => {
       throw new Error('must not call')
@@ -97,7 +98,7 @@ test('bounds large blocks, keeps unique IDs and skips blank text without calling
   )
 })
 
-test('indexes each heading with the blocks under it and keeps earlier blocks separate', async () => {
+test('stores section headings separately and keeps earlier blocks separate', async () => {
   const block = (id: string, kind: 'heading' | 'paragraph', text: string) => ({
     id,
     kind,
@@ -123,11 +124,15 @@ test('indexes each heading with the blocks under it and keeps earlier blocks sep
     embed
   )
   assert.deepEqual(
-    chunks.map(({ text, source }) => [text, source.map((s) => s.blockId)]),
+    chunks.map(({ section, text, source }) => [
+      section,
+      text,
+      source.map((s) => s.blockId),
+    ]),
     [
-      ['Screening visit', ['title']],
-      ['Chief complaint\nSynthetic fatigue for two weeks', ['cc', 'cc-body']],
-      ['Plan\nSynthetic follow-up in one month', ['plan', 'plan-body']],
+      [null, 'Screening visit', ['title']],
+      ['Chief complaint', 'Synthetic fatigue for two weeks', ['cc-body']],
+      ['Plan', 'Synthetic follow-up in one month', ['plan-body']],
     ]
   )
 })
@@ -279,4 +284,143 @@ test('does not embed masked-only blocks or page furniture', async () => {
     ),
     []
   )
+})
+
+const block = (
+  id: string,
+  text: string,
+  kind: 'heading' | 'paragraph' = 'paragraph',
+  level?: 1 | 2
+) => ({ id, text, kind, level, box, continues: null })
+
+const page = (...blocks: OcrPage['blocks']): OcrPage => ({
+  blocks,
+  usage: { latencyMs: 0 },
+})
+
+test('builds paths from title and section, folds empty headings, and carries paths across pages', async () => {
+  const chunks = await buildNoteChunks(
+    documentId,
+    [
+      page(
+        block('title', 'Screening visit', 'heading', 1),
+        block('cc', 'Chief complaint', 'heading', 2),
+        block('body', 'Synthetic fatigue.')
+      ),
+      page(
+        block('continued', 'Synthetic continued fatigue.'),
+        block('plan', 'Plan', 'heading'),
+        block('plan-body', 'Synthetic follow-up.'),
+        block('empty', 'Empty heading', 'heading')
+      ),
+      page(
+        block('new-title', 'Follow-up visit', 'heading', 1),
+        block('new-body', 'Synthetic stable.')
+      ),
+    ],
+    [],
+    embed
+  )
+  assert.deepEqual(
+    chunks.map(({ section, text, source }) => [section, text, source[0]?.page]),
+    [
+      ['Screening visit › Chief complaint', 'Synthetic fatigue.', 1],
+      ['Screening visit › Chief complaint', 'Synthetic continued fatigue.', 2],
+      ['Screening visit › Plan', 'Synthetic follow-up.', 2],
+      ['Follow-up visit', 'Synthetic stable.', 3],
+    ]
+  )
+})
+
+test('embeds the section path with body or just the body when no section exists', () => {
+  assert.equal(
+    noteEmbeddingInput({ section: 'Visit › Plan', text: 'Rest.' }),
+    '[Visit › Plan]\nRest.'
+  )
+  assert.equal(noteEmbeddingInput({ section: null, text: 'Rest.' }), 'Rest.')
+  assert.equal(noteEmbeddingInput({ text: 'Rest.' }), 'Rest.')
+})
+
+test('splits long sections at blocks then sentences, preserving abbreviations and sentence overlap', async () => {
+  const sentence = 'Dr. Sample prescribed 7.8 mg. b.i.d. e.g. with meals.'
+  const first = `${'Synthetic context '.repeat(80)}ends here.`
+  const second = Array.from({ length: 35 }, () => sentence).join(' ')
+  const chunks = await buildNoteChunks(
+    documentId,
+    [
+      page(
+        block('heading', 'Plan', 'heading'),
+        block('first', first),
+        block('second', second),
+        block('next', 'Assessment', 'heading'),
+        block('last', 'Stable.')
+      ),
+    ],
+    [],
+    async (values) => {
+      assert.ok(
+        values.every(
+          (value) =>
+            value.startsWith('[Plan]\n') || value === '[Assessment]\nStable.'
+        )
+      )
+      return embed(values)
+    }
+  )
+  const plan = chunks.filter(({ section }) => section === 'Plan')
+  assert.ok(plan.length > 1)
+  assert.equal(plan[0]?.text, first)
+  assert.ok(plan.every(({ text }) => text.length <= 2000))
+  for (let i = 1; i < plan.length; i++) {
+    const previous = plan[i - 1]?.text ?? ''
+    const overlap = i === 1 ? first : sentence
+    assert.ok(previous.endsWith(overlap))
+    assert.ok(plan[i]?.text.startsWith(overlap))
+  }
+  assert.equal(chunks.at(-1)?.text, 'Stable.')
+  assert.ok(
+    plan.every(
+      ({ text }) =>
+        !text.includes('\nSample') &&
+        !text.includes('\nb.i.d.') &&
+        !text.includes('\nwith meals')
+    )
+  )
+})
+
+test('parses legacy OCR headings without a level and rejects unsupported levels', () => {
+  const legacy = {
+    id: 'legacy',
+    kind: 'heading',
+    text: 'Synthetic visit',
+    box,
+    continues: null,
+  }
+  assert.equal(blockSchema.parse(legacy).level, undefined)
+  for (const level of [1, 2])
+    assert.equal(blockSchema.parse({ ...legacy, level }).level, level)
+  assert.equal(blockSchema.safeParse({ ...legacy, level: 3 }).success, false)
+})
+
+test('keeps oversized tables whole and restricts overlap sources to the contributing blocks', async () => {
+  const table = `Test Result\n${'Synthetic value 7.8\n'.repeat(150)}`.trim()
+  const chunks = await buildNoteChunks(
+    documentId,
+    [
+      page(
+        block('heading', 'Labs', 'heading'),
+        { ...block('table', table), kind: 'table' },
+        block('next-heading', 'Plan', 'heading'),
+        block('a', `${'Synthetic context '.repeat(90)}ends here.`),
+        block('b', 'Synthetic monitoring sentence. '.repeat(20)),
+        block('c', 'Synthetic follow-up sentence. '.repeat(90))
+      ),
+    ],
+    [],
+    embed
+  )
+  assert.equal(chunks[0]?.text, table)
+  assert.equal(chunks[0]?.section, 'Labs')
+  const last = chunks.at(-1)
+  assert.ok(last?.source.every(({ blockId }) => blockId === 'c'))
 })

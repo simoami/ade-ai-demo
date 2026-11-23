@@ -11,6 +11,7 @@ Built on Next.js, the AI SDK, eve, Vercel Workflow, Vercel Blob and Neon Postgre
 - [Architecture](docs/architecture.md): pipeline, review loop, privacy, data model, evaluation
 - [Domain language](CONTEXT.md)
 - [Decision records](docs/adr)
+- [Future enhancements](docs/future-enhancements.md)
 - [Contributor and agent guidelines](AGENTS.md)
 
 ## Layout

@@ -92,7 +92,8 @@ only during `reading` and `redacting`. Serialize `publishRedactedPages` per docu
 write all pairs, publish the version, then delete obsolete pages and renders.
 Migration 0002 adds the nullable version and 0003 adds `documents.proposed_patient`
 and the `observation.update` and `patient.create` review actions. Migration 0004
-adds medical-history and medication kinds; migrate and reseed each deployment branch.
+adds medical-history and medication kinds; migration 0005 adds nullable
+`note_chunks.section`. Migrate and reseed each deployment branch.
 Originals and internal renders live in private Blob; encrypted OCR uses
 `DOCUMENT_ENCRYPTION_KEY` (base64, 32 bytes). Documents and run IDs live in
 Postgres (`DATABASE_URL`). Web uploads accept up to 10 PDF, PNG or JPEG files per selection, 20 MB per file; each file starts its own document. The workflow accepts uploaded PDFs or ordered
@@ -102,7 +103,8 @@ then picture review and redaction. Clinical documents are extracted (`extracting
 `needsReview`), consent documents go to `needsReview` and others to `unsupported`.
 Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
 and derives AE seriousness in code. Clinical and consent documents then index
-identifier-masked OCR sections (each heading with the blocks under it) with `embeddingModel` into `note_chunks` (1536 dimensions),
+identifier-masked OCR sections as page-bounded body chunks with separate section paths,
+embedding `[section path]` followed by the body with `embeddingModel` into `note_chunks` (1536 dimensions),
 replacing rows atomically with document/page/index UUID v5 IDs. Keep chunk text
 and embeddings inside the durable step; return counts only.
 Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible. Accepting or rejecting a redaction republishes pages from encrypted review sources before recording the decision.

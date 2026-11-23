@@ -6,6 +6,7 @@ const chunk = {
   documentId: 'synthetic-document',
   fileName: 'synthetic.pdf',
   page: 1,
+  section: null,
   text: 'Synthetic assessment. '.repeat(20),
   box: { x: 0, y: 0, width: 1, height: 1 },
 }
@@ -56,4 +57,17 @@ test('labels cross-document sources with filenames and preserves short excerpts'
   )
   assert.equal(sources[1]?.excerpt, 'Stable.')
   assert.deepEqual(noteSources([], { page: 'patients' }), [])
+})
+
+test('shows the section path alongside the page', () => {
+  const source = { ...chunk, section: 'Visit › Chief complaint' }
+  assert.equal(
+    noteSources([source], { page: 'document', documentId: chunk.documentId })[0]
+      ?.label,
+    'Visit › Chief complaint · page 1'
+  )
+  assert.equal(
+    noteSources([source], { page: 'patients' })[0]?.label,
+    'synthetic.pdf, Visit › Chief complaint · page 1'
+  )
 })

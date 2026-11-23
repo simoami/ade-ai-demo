@@ -36,6 +36,13 @@
       "when": 1795374506733,
       "tag": "0004_fuzzy_peter_quill",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795449937602,
+      "tag": "0005_section_aware_notes",
+      "breakpoints": true
     }
   ]
 }

@@ -31,6 +31,12 @@ const parsed = {
               ],
             },
           },
+          ...['Title', 'Section Header'].map((type) => ({
+            type,
+            bbox: box,
+            content: 'Synthetic heading',
+            confidence: 'high',
+          })),
           {
             type: 'Figure',
             bbox: box,
@@ -64,8 +70,14 @@ test('maps Reducto blocks and located word citations, leaving figure description
     page.blocks.map(({ id, kind, text }) => ({ id, kind, text })),
     [
       { id: 'p2-b1', kind: 'table', text: 'Test Flag \nGlucose H' },
-      { id: 'p2-b2', kind: 'figure', text: '' },
+      { id: 'p2-b2', kind: 'heading', text: 'Synthetic heading' },
+      { id: 'p2-b3', kind: 'heading', text: 'Synthetic heading' },
+      { id: 'p2-b4', kind: 'figure', text: '' },
     ]
+  )
+  assert.deepEqual(
+    page.blocks.map(({ level }) => level),
+    [undefined, 1, 2, undefined]
   )
   assert.deepEqual(page.words, [
     {
