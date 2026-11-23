@@ -45,23 +45,37 @@ export function isSearchableNoteBlock(block: Block): boolean {
   )
 }
 
+// About 500 tokens: large enough for a typical note section, well within the embedding model's input limit.
 const maxChunkLength = 2000
 
-// Keep common clinical abbreviations and initials intact; decimal points have no following whitespace.
+/**
+ * Splits text after `.`, `!` or `?` followed by whitespace, without breaking common clinical abbreviations.
+ * "Seen by Dr. Lee. Metformin 500 mg b.i.d. continued." → ["Seen by Dr. Lee.", "Metformin 500 mg b.i.d. continued."]
+ * Decimals such as "HbA1c 7.8" never split because no whitespace follows their period.
+ */
 function sentences(text: string) {
   return text.split(
     /(?<!\b(?:dr|mr|mrs|ms|mg|vs|etc|e\.g|i\.e|b\.i\.d)\.)(?<!\b[a-z]\.)(?<=[.!?])\s+/i
   )
 }
 
+/** Text with the OCR regions it came from, so every chunk can cite boxes on the page. */
 type NotePiece = { text: string; source: Chunk['source']; table?: boolean }
 
+/**
+ * Packs one note section's blocks into chunks of at most `maxChunkLength` characters.
+ * Blocks arrive in reading order from a single section on a single page, so every chunk shares one section path and one page.
+ * A block that does not fit is split into sentences; tables are kept whole because their rows only make sense together.
+ */
 function splitSection(blocks: NotePiece[]): NotePiece[] {
   const pieces: NotePiece[] = []
   let current: NotePiece = { text: '', source: [] }
+  // False while `current` holds only the carried-over sentence, so a chunk is never closed before it has new text.
   let hasBody = false
+  // The last sentence added; it opens the next chunk so a thought cut at the boundary is still readable on both sides.
   let overlap: NotePiece = current
 
+  // Closes the current chunk and starts the next one with the overlap sentence.
   const flush = () => {
     pieces.push(current)
     current = { ...overlap }
@@ -69,6 +83,7 @@ function splitSection(blocks: NotePiece[]): NotePiece[] {
   }
 
   for (const block of blocks) {
+    // The + 1 accounts for the newline that joins block texts.
     if (hasBody && current.text.length + block.text.length + 1 > maxChunkLength)
       flush()
 
@@ -82,6 +97,7 @@ function splitSection(blocks: NotePiece[]): NotePiece[] {
         flush()
 
       current.text = [current.text, text].filter(Boolean).join('\n')
+      // A block split into sentences contributes its source region once per chunk.
       current.source = [
         ...new Map(
           [...current.source, ...block.source].map((source) => [
