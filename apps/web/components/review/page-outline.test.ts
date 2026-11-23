@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { outsetOutline } from './page-outline.ts'
+import { OUTLINE_PADDING, outsetOutline } from './page-outline.ts'
 
-test('outsets rectangles by one pixel at every rendered size and winding', () => {
+test('outsets rectangles by the outline padding at every rendered size and winding', () => {
   for (const zoom of [1, 1.5, 3]) {
     const points: [number, number][] = [
       [10 * zoom, 20 * zoom],
@@ -11,10 +11,10 @@ test('outsets rectangles by one pixel at every rendered size and winding', () =>
       [10 * zoom, 40 * zoom],
     ]
     const expected = [
-      [10 * zoom - 1, 20 * zoom - 1],
-      [30 * zoom + 1, 20 * zoom - 1],
-      [30 * zoom + 1, 40 * zoom + 1],
-      [10 * zoom - 1, 40 * zoom + 1],
+      [10 * zoom - OUTLINE_PADDING, 20 * zoom - OUTLINE_PADDING],
+      [30 * zoom + OUTLINE_PADDING, 20 * zoom - OUTLINE_PADDING],
+      [30 * zoom + OUTLINE_PADDING, 40 * zoom + OUTLINE_PADDING],
+      [10 * zoom - OUTLINE_PADDING, 40 * zoom + OUTLINE_PADDING],
     ]
 
     assert.deepEqual(outsetOutline(points), expected)
@@ -25,7 +25,7 @@ test('outsets rectangles by one pixel at every rendered size and winding', () =>
   }
 })
 
-test('outsets slanted polygon edges at a perpendicular distance of one pixel', () => {
+test('outsets slanted polygon edges at a perpendicular distance of the outline padding', () => {
   const points: [number, number][] = [
     [0, 10],
     [10, 0],
@@ -45,7 +45,7 @@ test('outsets slanted polygon edges at a perpendicular distance of one pixel', (
       Math.abs(dx * (point[1] - start[1]) - dy * (point[0] - start[0])) /
       Math.hypot(dx, dy)
 
-    assert.ok(Math.abs(distance - 1) < 1e-8)
+    assert.ok(Math.abs(distance - OUTLINE_PADDING) < 1e-8)
   }
 })
 
@@ -81,10 +81,10 @@ test('handles repeated, empty and degenerate vertices without nonfinite coordina
       [0, 0],
     ]),
     [
-      [11, -1],
-      [11, 11],
-      [-1, 11],
-      [-1, -1],
+      [12, -2],
+      [12, 12],
+      [-2, 12],
+      [-2, -2],
     ]
   )
 })
