@@ -95,20 +95,6 @@ upload ─► render ─► OCR ─┬─► classify ─────┐
 
 Published pages are versioned WebP pairs (`pages/<page>-v<version>.webp` and a thumbnail). Publishing writes every pair, bumps `documents.page_version`, then deletes older pages and renders, one publication at a time per document. The server signs 15-minute, single-file URLs so the browser loads pages straight from private Blob; OCR is never served.
 
-## Demo administration
-
-The workspace header opens an Admin dialog with four synthetic scanned PDF
-samples. A browser-only welcome popup links to those downloads; opting out
-stores `ade.welcome.dismissed=1` in localStorage.
-
-`DELETE /api/documents` calls authenticated `DELETE /pipeline/documents` in eve.
-The service attempts to cancel active runs, paginates private Blob deletion under
-`documents/` and `uploads/`, then deletes review events, redactions, observations,
-note chunks (cascading clinical entities), document chat sessions and documents
-in one Neon HTTP batch transaction. Patients and their chat sessions remain.
-Blob cleanup failures stop before database deletion; a retry can finish partial
-cleanup. The returned count is the number of document rows deleted.
-
 ## Review
 
 After processing, the run waits on a single review hook in a loop. The UI resumes it with typed actions: `redaction.update`, `observation.resolve`, `patient.link`, `discard`, `markReviewed`. Each action writes a review event and runs one idempotent refresh step.
