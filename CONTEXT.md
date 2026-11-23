@@ -58,3 +58,17 @@ An observation hidden because a redaction covers it. It returns if that redactio
 
 **Duplicate observation**:
 The same observation stated more than once in one document for the same date. Observations in different documents are never duplicates of each other.
+
+## Note search
+
+**Note section**:
+A heading in a clinical note and the text under it, such as the chief complaint or the plan.
+_Avoid_: Block, paragraph
+
+**Section path**:
+The headings from the document title down to a note section, such as "Screening visit › Chief complaint".
+_Avoid_: Breadcrumb, header
+
+**Note chunk**:
+The unit note search retrieves: one note section, or one part of a long section, always on a single page and with identifiers masked.
+_Avoid_: Passage, snippet, embedding
