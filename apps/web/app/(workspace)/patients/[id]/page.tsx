@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
+import { Card } from '@repo/ui/components/card'
 import { ArrowLeft, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -47,25 +48,25 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
           </p>
         </div>
       </header>
-      <div className="mt-[17px] mb-[21px] grid grid-cols-2 gap-3 lg:grid-cols-4 [&>div]:flex [&>div]:min-h-[91px] [&>div]:flex-col [&>div]:gap-2 [&>div]:rounded-lg [&>div]:border [&>div]:bg-card [&>div]:p-3.5 [&_span]:text-[9.5px] [&_span]:text-muted-foreground [&_strong]:text-base [&_strong]:font-semibold [&_small]:text-[9px] [&_small]:text-muted-foreground">
-        <div>
+      <div className="mt-[17px] mb-[21px] grid grid-cols-2 gap-3 lg:grid-cols-4 [&>div]:flex [&>div]:min-h-[91px] [&>div]:flex-col [&>div]:gap-2 [&>div]:p-3.5 [&_span]:text-[9.5px] [&_span]:text-muted-foreground [&_strong]:text-base [&_strong]:font-semibold [&_small]:text-[9px] [&_small]:text-muted-foreground">
+        <Card>
           <span>Documents</span>
           <strong>{linked.length}</strong>
           <small>Linked patient records</small>
-        </div>
-        <div>
+        </Card>
+        <Card>
           <span>Total pages</span>
           <strong>
             {linked.reduce((count, document) => count + document.pages, 0)}
           </strong>
           <small>Across linked documents</small>
-        </div>
-        <div>
+        </Card>
+        <Card>
           <span>Observations</span>
           <strong>{observations.length}</strong>
           <small>Extracted from clinical records</small>
-        </div>
-        <div>
+        </Card>
+        <Card>
           <span>Needs review</span>
           <strong>
             {
@@ -74,10 +75,10 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
             }
           </strong>
           <small>Documents awaiting review</small>
-        </div>
+        </Card>
       </div>
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
-        <section className="rounded-lg border bg-card">
+        <Card render={<section />}>
           <div className="flex items-center justify-between px-4.5 pt-4.5 pb-3.5 [&_h2]:mb-1 [&_h2]:text-[13px] [&_h2]:font-semibold">
             <div>
               <h2>Documents</h2>
@@ -113,15 +114,15 @@ async function PatientRecord({ params }: PageProps<'/patients/[id]'>) {
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
         <section
           className="flex flex-col gap-4"
           aria-label="Lab and vital trends"
         >
           {trends.length === 0 ? (
-            <p className="rounded-lg border bg-card p-4 text-muted-foreground">
+            <Card render={<p />} className="p-4 text-muted-foreground">
               No lab or vital has two dated numeric observations yet.
-            </p>
+            </Card>
           ) : (
             trends.map((trend) => (
               <ObservationTrend

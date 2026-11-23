@@ -17,15 +17,18 @@ only applied regions; candidates needing review remain visible with outlines. It
 review sources under `redaction/source/` and a manifest before replacing
 redaction rows atomically and publishing page pairs. A retry reuses the
 checkpoint after render deletion; publication can increment the page version
-again. The class step then extracts clinical documents from identifier-masked
+again. For clinical and consent documents a durable indexing step then embeds
+identifier-masked text blocks into `note_chunks` with source regions, replacing
+rows atomically using document/page/index UUID v5 IDs.
+
+The workflow creates its review hook before the class step writes the final
+status, so a document offered for review already has searchable notes and a
+hook that accepts actions. The class step extracts clinical documents from identifier-masked
 OCR (`extracting`, then `needsReview`), sends consent documents to `needsReview`
 and others to `unsupported`. Observation rows use UUID v5 IDs from the document,
 page, block, name and date, are `flagged` below 0.7 confidence and list
 redactions covering at least 30% of their source box. Validation normalizes lab
 bounds/flags, BP components, medication numeric doses and AE seriousness.
-A durable indexing step follows clinical extraction and consent processing:
-it embeds identifier-masked text blocks into `note_chunks` with source regions,
-replacing rows atomically using document/page/index UUID v5 IDs.
 
 The workflow waits on `document:<UUID>:review` and applies each action with
 `applyReviewAction` (`review-actions.ts`). Refused actions leave the loop

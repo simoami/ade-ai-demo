@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
+import { Card } from '@repo/ui/components/card'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { PatientsSkeleton } from '#components/record-skeletons'
@@ -11,11 +12,11 @@ async function PatientRows() {
   return (
     <>
       {patients.length === 0 && (
-        <p className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
+        <Card render={<p />} className="p-6 text-sm text-muted-foreground">
           No patients yet. Patients appear once documents have been linked.
-        </p>
+        </Card>
       )}
-      <ul className="flex flex-col divide-y rounded-lg border bg-card">
+      <Card render={<ul />} className="flex flex-col divide-y">
         {patients.map((patient) => (
           <li key={patient.id}>
             <Link
@@ -35,7 +36,7 @@ async function PatientRows() {
             </Link>
           </li>
         ))}
-      </ul>
+      </Card>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { Button } from '@repo/ui/components/button'
+import { Card } from '@repo/ui/components/card'
 import { Activity, Download } from 'lucide-react'
 import { cacheLife, cacheTag } from 'next/cache'
 import Link from 'next/link'
@@ -106,10 +107,11 @@ async function SampleCard({ samplesId }: { samplesId: string }) {
   cacheLife('max')
   cacheTag('samples')
   return (
-    <section
+    <Card
+      render={<section />}
       id={samplesId}
       aria-labelledby={`${samplesId}-title`}
-      className="mt-6 overflow-y-auto rounded-lg border bg-card p-3 text-[11px]"
+      className="mt-6 overflow-y-auto p-3 text-[11px]"
     >
       <h2 id={`${samplesId}-title`} className="text-xs font-semibold">
         Sample documents
@@ -143,6 +145,6 @@ async function SampleCard({ samplesId }: { samplesId: string }) {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   )
 }

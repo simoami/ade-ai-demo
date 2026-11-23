@@ -23,6 +23,7 @@ import {
   ChatSources,
   MessageCitations,
 } from '#components/chat/chat-parts'
+import { pageContext, pageScopeLabel } from '#lib/page-context'
 
 const transport = new DefaultChatTransport<ChatMessage>({ api: '/api/chat' })
 
@@ -58,21 +59,7 @@ export function ChatDrawer({
 }) {
   const pathname = usePathname()
   const { id } = useParams<{ id?: string }>()
-  const context: PageContext =
-    pathname.startsWith('/patients/') && id
-      ? { page: 'patient', patientId: id }
-      : pathname.startsWith('/documents/') && id
-        ? { page: 'document', documentId: id }
-        : { page: pathname.startsWith('/patients') ? 'patients' : 'documents' }
-
-  const scope =
-    context.page === 'document'
-      ? `Document · ${documents.find((document) => document.id === context.documentId)?.fileName ?? context.documentId}`
-      : context.page === 'patient'
-        ? `Patient · ${context.patientId}`
-        : context.page === 'patients'
-          ? 'All patients'
-          : 'All documents'
+  const context = pageContext(pathname, id)
 
   return (
     <Drawer swipeDirection="right" modal={false} disablePointerDismissal>
@@ -101,7 +88,7 @@ export function ChatDrawer({
               variant="secondary"
               className="mt-2 max-w-full whitespace-normal break-all"
             >
-              {scope}
+              {pageScopeLabel(context, documents)}
             </Badge>
           </div>
           <DrawerClose

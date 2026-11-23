@@ -30,13 +30,14 @@ export async function ingestDocument(input: IngestInput) {
       detectIdentifiers(documentId),
     ])
     await redactPages(documentId, pageCount)
-    await finish(documentId, documentClass)
     if (documentClass !== 'other') await indexNotes(documentId)
 
+    // `finish` publishes the review status, so the hook must already accept actions and notes must be searchable.
     using hook = createHook<ReviewAction>({ token: reviewToken(documentId) })
     if (await hook.getConflict()) {
       throw new FatalError('Document already has a review run')
     }
+    await finish(documentId, documentClass)
 
     let refreshCount = 0
     for await (const action of hook) {

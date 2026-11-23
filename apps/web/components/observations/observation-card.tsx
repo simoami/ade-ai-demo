@@ -1,4 +1,5 @@
 import { Badge } from '@repo/ui/components/badge'
+import { Card } from '@repo/ui/components/card'
 import {
   Tooltip,
   TooltipContent,
@@ -16,19 +17,21 @@ import {
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { formatDate } from '#lib/format'
-import { type ObservationView, observationFlag } from '#lib/observations'
-
-export type { ObservationView } from '#lib/observations'
+import {
+  type ObservationView,
+  observationFlag,
+  observationKindLabels,
+} from '#lib/observations'
 
 type Flag = NonNullable<ReturnType<typeof observationFlag>>
 
-const kinds = {
-  lab: { label: 'Lab', icon: FlaskConical },
-  vital: { label: 'Vital', icon: HeartPulse },
-  symptom: { label: 'Symptom', icon: Stethoscope },
-  'adverse-event': { label: 'Adverse event', icon: AlertTriangle },
-  'medical-history': { label: 'Medical history', icon: History },
-  medication: { label: 'Medication', icon: Pill },
+const kindIcons = {
+  lab: FlaskConical,
+  vital: HeartPulse,
+  symptom: Stethoscope,
+  'adverse-event': AlertTriangle,
+  'medical-history': History,
+  medication: Pill,
 }
 
 const flagTones: Record<Flag, { badge: string; marker: string }> = {
@@ -54,13 +57,14 @@ export function ObservationCard({
   onSelect?: () => void
 }) {
   const { kind, name, date, page, documentId } = observation
-  const Icon = kinds[kind].icon
+  const Icon = kindIcons[kind]
   const measured = kind === 'lab' || kind === 'vital'
 
   return (
-    <article
+    <Card
+      render={<article />}
       className={cn(
-        'relative flex gap-2 rounded-md border border-l-2 bg-card p-2.5 text-sm',
+        'relative flex gap-2 rounded-md border-l-2 p-2.5 text-sm',
         selected && 'border-primary bg-accent'
       )}
     >
@@ -72,9 +76,10 @@ export function ObservationCard({
         <header className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-              {kinds[kind].label}
+              {observationKindLabels[kind].one}
             </p>
             {onSelect ? (
+              // The pseudo-element stretches over the card so the whole card selects; actions and links sit above it with z-10.
               <button
                 type="button"
                 aria-pressed={selected}
@@ -113,7 +118,7 @@ export function ObservationCard({
         </div>
         {measured ? <RangeBar observation={observation} /> : null}
       </div>
-    </article>
+    </Card>
   )
 }
 

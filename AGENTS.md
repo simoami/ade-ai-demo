@@ -101,14 +101,16 @@ Originals and internal renders live in private Blob; encrypted OCR uses
 Postgres (`DATABASE_URL`). Web uploads accept up to 10 PDF, PNG or JPEG files per selection, 20 MB per file; each file starts its own document. The workflow accepts uploaded PDFs or ordered
 PNG/JPEG images and runs rendering and Reducto OCR, then classification, demographics
 (hashed with `PATIENT_HASH_KEY` inside the step) and identifier detection as parallel steps,
-then picture review and redaction. Clinical documents are extracted (`extracting`, then
-`needsReview`), consent documents go to `needsReview` and others to `unsupported`.
-Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
-and derives AE seriousness in code. Clinical and consent documents then index
+then picture review and redaction. Clinical and consent documents then index
 identifier-masked OCR sections as page-bounded body chunks with separate section paths,
 embedding `[section path]` followed by the body with `embeddingModel` into `note_chunks` (1536 dimensions),
 replacing rows atomically with document/page/index UUID v5 IDs. Keep chunk text
-and embeddings inside the durable step; return counts only.
+and embeddings inside the durable step; return counts only. The review hook is
+created before the final status is written, so review opens only once notes are
+indexed and actions can be delivered. Clinical documents are extracted (`extracting`, then
+`needsReview`), consent documents go to `needsReview` and others to `unsupported`.
+Extraction normalizes lab bounds/flags, splits or canonicalizes BP components,
+and derives AE seriousness in code.
 Published pages burn only `applied` and `accepted` redactions; `needsReview` candidates remain outlined and visible. Accepting or rejecting a redaction republishes pages from encrypted review sources before recording the decision.
 The redaction step checkpoints encrypted burned pages, encrypted unredacted review
 sources and a manifest before publication so retries can finish after render deletion.

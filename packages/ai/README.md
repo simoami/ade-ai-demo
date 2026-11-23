@@ -50,7 +50,7 @@ data downloads are needed. Verify Vercel output with
 `.vercel/output/functions/__server.func/node_modules` in this package.
 
 Database status advances from `rendering` to `reading` to `redacting` to
-`needsReview` once redacted pages are published. Processing failures write `failed` and fail
+`needsReview` once redacted pages are published and notes indexed. Processing failures write `failed` and fail
 the workflow with a content-free error. The review hook applies each review action and records terminal
 `reviewed` or `discarded` decisions; afterwards a durable step deletes originals
 and transient artifacts, keeping only the published redacted page pairs.

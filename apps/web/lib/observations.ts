@@ -1,36 +1,23 @@
-import type { Observation } from '#lib/records-types'
+import type { ObservationView } from '@repo/ai/chat'
 
-/** Clinical fields shared by review rows and assistant cards. */
-export type ObservationView = Pick<
-  Observation,
-  | 'id'
-  | 'documentId'
-  | 'page'
-  | 'kind'
-  | 'name'
-  | 'value'
-  | 'valueNumeric'
-  | 'unit'
-  | 'date'
-  | 'details'
-  | 'state'
->
+export type { ObservationView }
 
-const kindLabels = {
-  lab: 'Labs',
-  vital: 'Vitals',
-  'adverse-event': 'Adverse events',
-  'medical-history': 'Medical history',
-  medication: 'Medications',
-  symptom: 'Symptoms',
-} as const
+/** Singular and plural display names per observation kind, in clinical domain order. */
+export const observationKindLabels = {
+  lab: { one: 'Lab', other: 'Labs' },
+  vital: { one: 'Vital', other: 'Vitals' },
+  'adverse-event': { one: 'Adverse event', other: 'Adverse events' },
+  'medical-history': { one: 'Medical history', other: 'Medical history' },
+  medication: { one: 'Medication', other: 'Medications' },
+  symptom: { one: 'Symptom', other: 'Symptoms' },
+} satisfies Record<ObservationView['kind'], { one: string; other: string }>
 
 /** Groups observations in clinical domain order without changing row order. */
-export function groupObservations<T extends Pick<Observation, 'kind'>>(
+export function groupObservations<T extends Pick<ObservationView, 'kind'>>(
   observations: T[]
 ) {
-  return Object.entries(kindLabels)
-    .map(([kind, title]) => ({
+  return Object.entries(observationKindLabels)
+    .map(([kind, { other: title }]) => ({
       kind,
       title,
       observations: observations.filter(
@@ -52,7 +39,7 @@ export function observationFlag(observation: ObservationView) {
   return rangeLow != null || rangeHigh != null ? 'normal' : null
 }
 
-/** Builds dated numeric lab/vital series, preserving each source and excluding rejected rows. */
+/** Builds dated numeric lab/vital series, preserving each source, marking unverified points and excluding rejected rows. */
 export function observationTrends(observations: ObservationView[]) {
   const series = new Map<string, ObservationView[]>()
   for (const observation of observations) {
@@ -94,7 +81,14 @@ export function observationTrends(observations: ObservationView[]) {
         points: sorted.map((row) => ({
           date: row.date,
           value: Number(row.valueNumeric),
-          flag: observationFlag(row),
+          // Same convention as the assistant's trend, so unverified points read alike in both charts.
+          flag:
+            [
+              observationFlag(row),
+              row.state === 'accepted' ? null : 'unverified',
+            ]
+              .filter(Boolean)
+              .join('; ') || null,
           documentId: row.documentId,
           page: row.page,
         })),

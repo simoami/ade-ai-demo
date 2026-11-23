@@ -1,4 +1,4 @@
-import { and, documents, eq, observations, sql } from '@repo/db'
+import { and, asc, documents, eq, observations, sql } from '@repo/db'
 import type { z } from 'zod'
 import type { observationQuerySchema } from './context.ts'
 
@@ -22,3 +22,18 @@ export function observationFilters(
       : undefined
   )
 }
+
+/** Exact-name, dated rows for one patient; undated rows never reach the limit, so they cannot crowd out plottable points. */
+export function trendFilters(patientId: string, name: string) {
+  return and(
+    observationFilters({ patientId }),
+    sql`lower(${observations.name}) = lower(${name})`,
+    sql`${observations.effectiveDate} is not null`
+  )
+}
+
+/** Newest first with stable ties. Postgres sorts NULLs first in descending order, so undated rows are pushed last explicitly. */
+export const newestFirst = [
+  sql`${observations.effectiveDate} desc nulls last`,
+  asc(observations.id),
+]

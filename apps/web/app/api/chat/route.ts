@@ -21,8 +21,11 @@ export const maxDuration = 60
 
 const log = logger.getSubLogger({ name: 'chat.route' })
 
+// Messages may carry document content, so logs name only the error class.
+const errorType = (error: unknown) =>
+  error instanceof Error ? error.name : typeof error
+
 const bodySchema = z.object({
-  id: z.string().min(1).max(200),
   messages: z.array(z.unknown()).min(1).max(100),
   context: pageContextSchema,
 })
@@ -50,7 +53,8 @@ export async function POST(request: Request) {
     ) {
       return Response.json({ error: 'Invalid chat request' }, { status: 400 })
     }
-  } catch {
+  } catch (error) {
+    log.warn({ chatId, errorType: errorType(error) }, 'Chat request rejected')
     return Response.json({ error: 'Invalid chat request' }, { status: 400 })
   }
 
@@ -63,15 +67,8 @@ export async function POST(request: Request) {
       tools,
       stopWhen: isStepCount(5),
       abortSignal: request.signal,
-      // Messages may carry document content, so only the error type is logged.
       onError: ({ error }) => {
-        log.error(
-          {
-            chatId,
-            errorType: error instanceof Error ? error.name : typeof error,
-          },
-          'Chat failed'
-        )
+        log.error({ chatId, errorType: errorType(error) }, 'Chat failed')
       },
     })
 
@@ -89,8 +86,8 @@ export async function POST(request: Request) {
         },
       }),
     })
-  } catch {
-    log.error({ chatId }, 'Chat unavailable')
+  } catch (error) {
+    log.error({ chatId, errorType: errorType(error) }, 'Chat unavailable')
     return Response.json({ error: 'Assistant unavailable' }, { status: 503 })
   }
 }

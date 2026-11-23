@@ -1,7 +1,7 @@
 import { logger } from '@repo/logger'
 import { indexDocumentNotes } from '#workflows/ingest-document/index-notes'
 
-/** Indexes masked notes after redaction and extraction, recording only counts and timing. */
+/** Indexes masked notes after redaction and before review opens, recording only counts and timing. */
 export async function indexNotes(documentId: string) {
   'use step'
   const log = logger.getSubLogger({ name: 'ingest-document.index-notes' })

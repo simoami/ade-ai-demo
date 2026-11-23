@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
+import { Card } from '@repo/ui/components/card'
 import {
   Command,
   CommandDialog,
@@ -59,7 +60,7 @@ export function PatientPanel({
   return (
     <div className="flex flex-col gap-3">
       {patient && fields ? (
-        <div className="rounded-lg border bg-card p-[13px]">
+        <Card className="p-[13px]">
           <div className="flex items-center gap-2">
             <Avatar>
               <AvatarFallback className="bg-accent text-[80%] font-semibold text-accent-foreground">
@@ -84,9 +85,9 @@ export function PatientPanel({
               </li>
             ))}
           </ul>
-        </div>
+        </Card>
       ) : creating && document.proposedPatient ? (
-        <div className="flex items-center gap-2 rounded-lg border bg-card p-[13px]">
+        <Card className="flex items-center gap-2 p-[13px]">
           <Avatar>
             <AvatarFallback className="bg-accent text-[10px] font-semibold text-accent-foreground">
               {document.proposedPatient.initials}
@@ -99,7 +100,7 @@ export function PatientPanel({
               {document.proposedPatient.birthYear ?? 'Unknown'}
             </span>
           </div>
-        </div>
+        </Card>
       ) : (
         <p className="text-sm text-muted-foreground">
           No patient is linked to this document.

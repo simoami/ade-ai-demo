@@ -10,7 +10,7 @@ import {
   pageContextSchema,
   TOOL_PRESENTATION_INSTRUCTIONS,
 } from './context.ts'
-import { observationFilters } from './queries.ts'
+import { newestFirst, observationFilters, trendFilters } from './queries.ts'
 import { observationQueryResult } from './selection.ts'
 import {
   chatTools,
@@ -114,6 +114,23 @@ test('parameterizes clinical filters and always excludes rejected or removed row
     'lab',
     "Glucose'; drop table observations; --",
   ])
+})
+
+test('trend queries drop undated rows before the limit and sort undated results last', () => {
+  const dialect = new PgDialect()
+  const trend = trendFilters('pt-1', 'Glucose')
+  assert.ok(trend)
+  const compiled = dialect.sqlToQuery(trend)
+  assert.match(compiled.sql, /effective_date.* is not null/)
+  assert.match(compiled.sql, /lower\(.*"name"\) = lower\(\$\d\)/)
+  assert.deepEqual(compiled.params, ['pt-1', 'Glucose'])
+
+  const [byDate] = newestFirst
+  assert.ok(byDate)
+  assert.match(
+    dialect.sqlToQuery(byDate).sql,
+    /effective_date.* desc nulls last/
+  )
 })
 
 const row: typeof observations.$inferSelect = {

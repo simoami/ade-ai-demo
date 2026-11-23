@@ -1,3 +1,5 @@
+import type { ObservationView } from '@repo/ai/chat'
+
 /** A normalized page region: fractions of page width and height. */
 export type Box = { x: number; y: number; width: number; height: number }
 
@@ -44,50 +46,10 @@ export type Redaction = {
   state: 'applied' | 'needsReview' | 'accepted' | 'rejected'
 }
 
-/** Optional clinical details retained alongside the printed observation. */
-export type ObservationDetails = {
-  referenceRange?: string | null
-  rangeLow?: number | null
-  rangeHigh?: number | null
-  flag?: string | null
-  flagNormalized?: 'low' | 'normal' | 'high' | 'abnormal' | null
-  startDate?: string | null
-  endDate?: string | null
-  serious?: boolean | null
-  seriousness?: string | null
-  outcome?:
-    | 'recovered'
-    | 'recovering'
-    | 'not-recovered'
-    | 'fatal'
-    | 'unknown'
-    | null
-  ongoing?: boolean | null
-  route?: string | null
-  frequency?: string | null
-}
-
-/** One clinical observation with a source region and review state. */
-export type Observation = {
-  id: string
-  page: number
-  documentId: string
-  valueNumeric: number | null
-  details: ObservationDetails
-  kind:
-    | 'lab'
-    | 'vital'
-    | 'symptom'
-    | 'adverse-event'
-    | 'medical-history'
-    | 'medication'
-  name: string
-  value: string
-  unit: string
-  date: string
+/** One clinical observation with its source region and review state. */
+export type Observation = ObservationView & {
   box: Box
   points?: [number, number][]
-  state: 'extracted' | 'needsReview' | 'accepted' | 'rejected'
 }
 
 /** Fields used to compare a document with a patient. */

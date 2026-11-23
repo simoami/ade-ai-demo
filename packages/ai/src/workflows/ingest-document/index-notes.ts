@@ -192,6 +192,19 @@ export async function buildNoteChunks(
   }
 }
 
+// Text identifier regions are already masked; suppressing their whole block would hide surrounding clinical notes.
+const IDENTIFIER_CATEGORIES = new Set([
+  'name',
+  'dob',
+  'id',
+  'address',
+  'phone',
+  'email',
+  'ssn',
+  'facility',
+  'provider',
+])
+
 const defaults = {
   ...artifactDefaults,
   readOcr,
@@ -214,21 +227,9 @@ export async function indexDocumentNotes(
       await deps.readIdentifierSpans(documentId, deps),
       deps.embed
     )
-    // Text identifier regions are already masked; suppressing their whole block would hide surrounding clinical notes.
-    const identifierCategories = new Set([
-      'name',
-      'dob',
-      'id',
-      'address',
-      'phone',
-      'email',
-      'ssn',
-      'facility',
-      'provider',
-    ])
     const redactions = (await deps.redactions(documentId)).filter(
       ({ state, category }) =>
-        state !== 'rejected' && !identifierCategories.has(category)
+        state !== 'rejected' && !IDENTIFIER_CATEGORIES.has(category)
     )
     for (const chunk of chunks) {
       chunk.removedByRedactionIds = redactions

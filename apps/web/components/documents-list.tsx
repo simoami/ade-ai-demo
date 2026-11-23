@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@repo/ui/components/button'
+import { Card } from '@repo/ui/components/card'
 import { Input } from '@repo/ui/components/input'
 import {
   Table,
@@ -34,7 +35,7 @@ export function DocumentsList({
   ).length
 
   return (
-    <section className="mt-6 overflow-hidden rounded-lg border bg-card">
+    <Card render={<section />} className="mt-6 overflow-hidden">
       <div className="flex items-center justify-between px-[18px] pt-[18px] pb-3.5 [&_h2]:mb-1 [&_h2]:text-[13px] [&_h2]:font-semibold">
         <div>
           <h2>Recent documents</h2>
@@ -120,6 +121,6 @@ export function DocumentsList({
           <strong>{documents.length}</strong> documents
         </span>
       </div>
-    </section>
+    </Card>
   )
 }

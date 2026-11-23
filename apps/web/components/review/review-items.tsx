@@ -1,5 +1,6 @@
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
+import { Card } from '@repo/ui/components/card'
 import { cn } from '@repo/ui/lib/utils'
 import {
   Check,
@@ -174,16 +175,12 @@ function ItemGroup({
   )
   const headingClass =
     'flex items-center gap-1.5 pb-2 text-[11px] font-semibold tracking-wide text-foreground uppercase'
-  const list = (
-    <ul
-      className={
-        separateCards
-          ? 'flex flex-col gap-2'
-          : 'flex flex-col divide-y rounded-md border'
-      }
-    >
+  const list = separateCards ? (
+    <ul className="flex flex-col gap-2">{children}</ul>
+  ) : (
+    <Card render={<ul />} className="flex flex-col divide-y rounded-md">
       {children}
-    </ul>
+    </Card>
   )
 
   return collapsible ? (

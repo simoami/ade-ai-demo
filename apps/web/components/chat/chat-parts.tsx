@@ -3,6 +3,7 @@
 import type { ChatMessage, PageContext } from '@repo/ai/chat'
 import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
+import { Card } from '@repo/ui/components/card'
 import {
   Popover,
   PopoverContent,
@@ -24,6 +25,7 @@ import { ObservationCard } from '#components/observations/observation-card'
 import { ObservationTrend } from '#components/observations/observation-trend'
 import { noteSources } from '#lib/chat-sources'
 import { citationNumbers, parseCitation } from '#lib/citations'
+import { observationKindLabels } from '#lib/observations'
 
 type Part = ChatMessage['parts'][number]
 
@@ -55,7 +57,7 @@ export function MessageCitations({
   )
 }
 
-/** Render cited text and the five typed clinical tool outputs without raw errors. */
+/** Renders cited text and the typed clinical tool outputs without raw errors; note searches appear as sources after the answer. */
 export function ChatPart({
   part,
   context,
@@ -100,19 +102,19 @@ export function ChatPart({
     case 'tool-reviewStatus': {
       const result = part.output
       return (
-        <ul className="space-y-1 rounded-lg border p-3">
+        <Card render={<ul />} className="flex flex-col gap-1 p-3">
           <li>Status: {result.status}</li>
           <li>Flagged observations: {result.flaggedObservations}</li>
           <li>Unchecked observations: {result.uncheckedObservations}</li>
           <li>Redactions needing review: {result.redactionsNeedingReview}</li>
           <li>Identity mismatch: {result.identityMismatch ? 'Yes' : 'No'}</li>
           <li>Patient linked: {result.patientLinked ? 'Yes' : 'No'}</li>
-        </ul>
+        </Card>
       )
     }
     case 'tool-listDocuments':
       return (
-        <ul className="divide-y rounded-lg border px-3">
+        <Card render={<ul />} className="divide-y px-3">
           {part.output.documents.map((document) => (
             <li key={document.id} className="py-2">
               <Link
@@ -133,10 +135,8 @@ export function ChatPart({
           {part.output.documents.length === 0 && (
             <li className="py-2">No matching documents found.</li>
           )}
-        </ul>
+        </Card>
       )
-    case 'tool-searchNotes':
-      return null
     default:
       return null
   }
@@ -170,31 +170,32 @@ export function ChatSources({
       <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
         <span>Sources</span>
         {sources.map((source) => (
-          <Badge
-            key={source.key}
-            variant="outline"
-            className="h-auto gap-0 p-0"
-          >
+          // One pill split in two: the label toggles the excerpt, the arrow opens the cited page.
+          <span key={source.key} className="inline-flex">
             <Button
-              variant="ghost"
+              variant="outline"
               size="xs"
-              className="rounded-full"
+              className="rounded-s-full rounded-e-none"
               aria-expanded={expanded === source.key}
               onClick={() =>
                 setExpanded(expanded === source.key ? null : source.key)
               }
             >
               {source.label}
-              <ChevronDown />
+              <ChevronDown data-icon="inline-end" />
             </Button>
-            <Link
-              href={source.href}
-              aria-label={`Open ${source.label}`}
-              className="rounded-full p-1 text-primary hover:bg-muted"
+            <Button
+              variant="outline"
+              size="icon-xs"
+              className="-ms-px rounded-s-none rounded-e-full text-primary"
+              nativeButton={false}
+              render={
+                <Link href={source.href} aria-label={`Open ${source.label}`} />
+              }
             >
-              <ArrowUpRight className="size-3" />
-            </Link>
-          </Badge>
+              <ArrowUpRight />
+            </Button>
+          </span>
         ))}
       </div>
       {sources
@@ -248,14 +249,6 @@ function ObservationResults({
   if (!result) return null
 
   const { summary, observations } = result
-  const labels = {
-    lab: ['lab', 'labs'],
-    vital: ['vital', 'vitals'],
-    'adverse-event': ['adverse event', 'adverse events'],
-    'medical-history': ['medical history', 'medical history'],
-    medication: ['medication', 'medications'],
-    symptom: ['symptom', 'symptoms'],
-  }
   const href =
     context.page === 'document'
       ? `/documents/${encodeURIComponent(context.documentId)}?tab=observations`
@@ -271,7 +264,10 @@ function ObservationResults({
           .filter(([, count]) => count > 0)
           .map(([kind, count]) => (
             <Badge key={kind} variant="secondary">
-              {count} {labels[kind as keyof typeof labels][count === 1 ? 0 : 1]}
+              {count}{' '}
+              {observationKindLabels[
+                kind as keyof typeof observationKindLabels
+              ][count === 1 ? 'one' : 'other'].toLowerCase()}
             </Badge>
           ))}
         {summary.outOfRange > 0 && (

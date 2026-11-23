@@ -1,5 +1,6 @@
 'use client'
 
+import { Card } from '@repo/ui/components/card'
 import {
   ChartContainer,
   ChartTooltip,
@@ -40,7 +41,7 @@ export function ObservationTrend({
   const latest = points.at(-1)
 
   return (
-    <figure className="min-w-0 rounded-md border bg-card p-3">
+    <Card render={<figure />} className="min-w-0 rounded-md p-3">
       <figcaption className="mb-3 flex flex-wrap items-baseline justify-between gap-1 text-sm">
         <span className="font-medium">{name}</span>
         {latest && (
@@ -146,6 +147,6 @@ export function ObservationTrend({
           ))}
         </ul>
       </details>
-    </figure>
+    </Card>
   )
 }

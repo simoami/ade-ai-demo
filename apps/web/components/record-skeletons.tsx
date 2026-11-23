@@ -1,3 +1,5 @@
+import { Card } from '@repo/ui/components/card'
+
 const cards = ['documents', 'pages', 'observations', 'review']
 const rows = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
 
@@ -10,14 +12,11 @@ export function StatsSkeleton() {
       className="mb-4 grid grid-cols-2 gap-[13px] lg:grid-cols-4"
     >
       {cards.map((card) => (
-        <div
-          key={card}
-          className="min-h-[91px] animate-pulse rounded-lg border bg-card p-3.5"
-        >
+        <Card key={card} className="min-h-[91px] animate-pulse p-3.5">
           <div className="h-3 w-24 rounded bg-muted" />
           <div className="mt-3 h-6 w-12 rounded bg-muted" />
           <div className="mt-2 h-2 w-32 rounded bg-muted" />
-        </div>
+        </Card>
       ))}
     </div>
   )
@@ -26,10 +25,11 @@ export function StatsSkeleton() {
 /** Reserves the document filters, six columns and row heights. */
 export function TableSkeleton() {
   return (
-    <section
+    <Card
+      render={<section />}
       aria-label="Loading documents"
       role="status"
-      className="mt-6 overflow-hidden rounded-lg border bg-card"
+      className="mt-6 overflow-hidden"
     >
       <div className="h-[74px] border-b p-4">
         <div className="h-4 w-32 animate-pulse rounded bg-muted" />
@@ -47,7 +47,7 @@ export function TableSkeleton() {
         </div>
       ))}
       <div className="h-12" />
-    </section>
+    </Card>
   )
 }
 
@@ -58,7 +58,7 @@ export function ReviewSkeleton() {
       <div className="mb-5 h-10 animate-pulse rounded bg-muted" />
       <div className="grid h-[75svh] grid-cols-[minmax(0,1fr)_360px] gap-5">
         <div className="animate-pulse rounded-lg border bg-muted/30" />
-        <div className="animate-pulse rounded-lg border bg-card" />
+        <Card className="animate-pulse" />
       </div>
     </div>
   )
@@ -76,7 +76,7 @@ export function PatientSkeleton() {
       <StatsSkeleton />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
         <TableSkeleton />
-        <div className="mt-6 h-72 animate-pulse rounded-lg border bg-card" />
+        <Card className="mt-6 h-72 animate-pulse" />
       </div>
     </div>
   )
@@ -85,11 +85,7 @@ export function PatientSkeleton() {
 /** Reserves patient list rows and demographics. */
 export function PatientsSkeleton() {
   return (
-    <div
-      role="status"
-      aria-label="Loading patients"
-      className="divide-y rounded-lg border bg-card"
-    >
+    <Card role="status" aria-label="Loading patients" className="divide-y">
       {rows.map((row) => (
         <div key={row} className="flex h-14 items-center gap-3 px-4">
           <div className="size-8 animate-pulse rounded-full bg-muted" />
@@ -97,6 +93,6 @@ export function PatientsSkeleton() {
           <div className="ml-auto h-4 w-64 animate-pulse rounded bg-muted" />
         </div>
       ))}
-    </div>
+    </Card>
   )
 }

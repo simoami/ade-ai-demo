@@ -93,9 +93,10 @@ test('classifies numeric ranges inclusively and respects normalized flags', () =
   )
 })
 
-test('builds sorted cited series across documents without collapsing same-day results', () => {
+test('builds sorted cited series across documents, marking unverified points, without collapsing same-day results', () => {
   const later = {
     ...observation,
+    state: 'accepted' as const,
     id: 'lab-2',
     documentId: 'document-2',
     page: 3,
@@ -109,14 +110,14 @@ test('builds sorted cited series across documents without collapsing same-day re
     {
       date: '2026-02-01',
       value: 100,
-      flag: 'high',
+      flag: 'high; unverified',
       documentId: 'document-1',
       page: 1,
     },
     {
       date: '2026-02-01',
       value: 98,
-      flag: 'normal',
+      flag: 'normal; unverified',
       documentId: 'document-1',
       page: 1,
     },
