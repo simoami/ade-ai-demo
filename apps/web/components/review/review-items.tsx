@@ -4,7 +4,6 @@ import { Card } from '@repo/ui/components/card'
 import { cn } from '@repo/ui/lib/utils'
 import {
   Check,
-  ChevronRight,
   Image,
   ScanFace,
   Signature,
@@ -69,21 +68,23 @@ export function ReviewItems({
       }))
     : [
         ...(flagged.length ? [{ title: 'Needs review', items: flagged }] : []),
-        { title: `Page ${page}`, items: onPage, collapsible: true },
+        // The page and its count are shown beside the Redactions title, so this group has no heading.
+        { title: null, items: onPage },
       ]
 
   return (
     <div className="flex flex-col gap-5">
       {groups.length === 0 && (
-        <p className="text-xs text-muted-foreground">Nothing on this page.</p>
+        <p className="text-xs text-muted-foreground p-2">
+          Nothing on this page.
+        </p>
       )}
       {groups.map((group) => (
         <ItemGroup
-          key={group.title}
+          key={group.title ?? 'page'}
           title={group.title}
           count={group.items.length}
           separateCards={clinicalList}
-          collapsible={'collapsible' in group}
         >
           {group.items.length === 0 && (
             <li className="px-3 py-2 text-xs text-muted-foreground">
@@ -151,53 +152,35 @@ export function ReviewItems({
   )
 }
 
-/** Titled list; a collapsible group starts closed so settled items stay out of the way. */
+/** A list under an optional section title with its count. */
 function ItemGroup({
   title,
   count,
   children,
   separateCards,
-  collapsible,
 }: {
-  title: string
+  title: string | null
   count: number
   separateCards: boolean
-  collapsible: boolean
   children: React.ReactNode
 }) {
-  const heading = (
-    <>
-      {title}
-      <Badge variant="secondary" className="tabular-nums">
-        {count}
-      </Badge>
-    </>
-  )
-  const headingClass =
-    'flex items-center gap-1.5 pb-2 text-[11px] font-semibold tracking-wide text-foreground uppercase'
-  const list = separateCards ? (
-    <ul className="flex flex-col gap-2">{children}</ul>
-  ) : (
-    <Card render={<ul />} className="flex flex-col divide-y rounded-md">
-      {children}
-    </Card>
-  )
-
-  return collapsible ? (
-    <details className="group/details flex flex-col">
-      <summary className={cn(headingClass, 'cursor-pointer list-none')}>
-        <ChevronRight
-          aria-hidden
-          className="size-3.5 transition-transform group-open/details:rotate-90"
-        />
-        {heading}
-      </summary>
-      {list}
-    </details>
-  ) : (
+  return (
     <section className="flex flex-col">
-      <h3 className={headingClass}>{heading}</h3>
-      {list}
+      {title !== null && (
+        <h3 className="flex items-center gap-1.5 pb-2 text-[11px] font-semibold tracking-wide text-foreground uppercase">
+          {title}
+          <Badge variant="secondary" className="tabular-nums">
+            {count}
+          </Badge>
+        </h3>
+      )}
+      {separateCards ? (
+        <ul className="flex flex-col gap-2">{children}</ul>
+      ) : (
+        <Card render={<ul />} className="flex flex-col divide-y rounded-md">
+          {children}
+        </Card>
+      )}
     </section>
   )
 }

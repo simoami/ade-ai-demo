@@ -2,7 +2,13 @@
 
 import type { ReviewAction } from '@repo/ai/review-action'
 import { Avatar, AvatarFallback } from '@repo/ui/components/avatar'
+import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@repo/ui/components/collapsible'
 import {
   Dialog,
   DialogClose,
@@ -15,7 +21,7 @@ import {
 import { Skeleton } from '@repo/ui/components/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { cn } from '@repo/ui/lib/utils'
-import { ArrowLeft, Check } from 'lucide-react'
+import { ArrowLeft, Check, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -314,17 +320,43 @@ export function ReviewWorkspace({
                     onCreate={() => handleRelink({ create: true })}
                   />
                 </section>
-                <section className="flex flex-col gap-3 border-t pt-4">
-                  <h2 className="text-sm font-semibold">Redactions</h2>
-                  <ReviewItems
-                    items={redactionItems}
-                    page={page}
-                    selectedId={selected?.id ?? null}
-                    readOnly={readOnly}
-                    onSelect={handleSelect}
-                    onDecide={handleDecide}
-                  />
-                </section>
+                <Collapsible
+                  defaultOpen
+                  render={<section />}
+                  className="flex flex-col gap-3 border-t pt-4"
+                >
+                  {/* The trigger sits inside the heading so the heading keeps its role and the button stays valid HTML. */}
+                  <h2 className="text-sm font-semibold">
+                    <CollapsibleTrigger className="group flex w-full items-center gap-1.5 text-left">
+                      <ChevronRight
+                        aria-hidden
+                        className="size-4 text-muted-foreground transition-transform group-data-[panel-open]:rotate-90"
+                      />
+                      Redactions
+                      <span className="ms-1 text-xs font-normal text-muted-foreground">
+                        Page {page}
+                      </span>
+                      <Badge variant="secondary" className="tabular-nums">
+                        {
+                          redactionItems.filter(
+                            (item) =>
+                              item.page === page && item.state !== 'needsReview'
+                          ).length
+                        }
+                      </Badge>
+                    </CollapsibleTrigger>
+                  </h2>
+                  <CollapsibleContent>
+                    <ReviewItems
+                      items={redactionItems}
+                      page={page}
+                      selectedId={selected?.id ?? null}
+                      readOnly={readOnly}
+                      onSelect={handleSelect}
+                      onDecide={handleDecide}
+                    />
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             )}
             {tab === 'observations' && (
