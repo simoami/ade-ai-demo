@@ -18,10 +18,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@repo/ui/components/empty'
 import { Skeleton } from '@repo/ui/components/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/tabs'
 import { cn } from '@repo/ui/lib/utils'
-import { ArrowLeft, Check, ChevronRight } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  ClipboardX,
+  Hourglass,
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -301,6 +314,11 @@ export function ReviewWorkspace({
                 value="observations"
               >
                 Observations
+                {mode !== 'processing' && observations.length > 0 && (
+                  <Badge variant="secondary" className="tabular-nums">
+                    {observations.length}
+                  </Badge>
+                )}
                 {pendingCount(observations) > 0 && <Dot />}
               </TabsTrigger>
             </TabsList>
@@ -333,7 +351,7 @@ export function ReviewWorkspace({
                         className="size-4 text-muted-foreground transition-transform group-data-[panel-open]:rotate-90"
                       />
                       Redactions
-                      <span className="ms-1 text-xs font-normal text-muted-foreground">
+                      <span className="ms-auto text-xs font-normal text-muted-foreground">
                         Page {page}
                       </span>
                       <Badge variant="secondary" className="tabular-nums">
@@ -359,19 +377,54 @@ export function ReviewWorkspace({
                 </Collapsible>
               </div>
             )}
-            {tab === 'observations' && (
-              <div className="flex min-w-0 flex-col gap-4">
-                {selectedTrend ? <ObservationTrend {...selectedTrend} /> : null}
-                <ReviewItems
-                  items={observationItems}
-                  page={page}
-                  selectedId={selected?.id ?? null}
-                  readOnly={readOnly}
-                  onSelect={handleSelect}
-                  onDecide={handleDecide}
-                />
-              </div>
+            {tab === 'observations' && mode === 'processing' && (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Hourglass />
+                  </EmptyMedia>
+                  <EmptyTitle>Extracting observations</EmptyTitle>
+                  <EmptyDescription>
+                    Observations appear here once the document has been read and
+                    redacted.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             )}
+            {tab === 'observations' &&
+              mode !== 'processing' &&
+              observations.length === 0 && (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <ClipboardX />
+                    </EmptyMedia>
+                    <EmptyTitle>No observations</EmptyTitle>
+                    <EmptyDescription>
+                      {document.documentClass === 'clinical'
+                        ? 'No labs, vitals, events, history or medications were found in this document.'
+                        : 'Observations are extracted from clinical documents only.'}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              )}
+            {tab === 'observations' &&
+              mode !== 'processing' &&
+              observations.length > 0 && (
+                <div className="flex min-w-0 flex-col gap-4">
+                  {selectedTrend ? (
+                    <ObservationTrend {...selectedTrend} />
+                  ) : null}
+                  <ReviewItems
+                    items={observationItems}
+                    page={page}
+                    selectedId={selected?.id ?? null}
+                    readOnly={readOnly}
+                    onSelect={handleSelect}
+                    onDecide={handleDecide}
+                  />
+                </div>
+              )}
           </div>
         </aside>
       </div>
