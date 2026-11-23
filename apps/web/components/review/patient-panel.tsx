@@ -21,19 +21,19 @@ import type {
 } from '#lib/records-types'
 import { type MatchStrength, matchStrength } from '#lib/review'
 
-const fieldLabels: Record<MatchField, string> = {
+const fieldLabels = {
   lastName: 'Last name',
   firstName: 'First name',
   birthDate: 'Date of birth',
   mrn: 'MRN',
   sex: 'Sex',
-}
+} as const satisfies Record<MatchField, string>
 
-const strengthLabels: Record<MatchStrength, string> = {
+const strengthLabels = {
   strong: 'Strong match',
   partial: 'Identity mismatch',
   none: 'No match',
-}
+} as const satisfies Record<MatchStrength, string>
 
 /** Shows the linked patient, how each document identifier compares, a picker to relink, and patient creation when none matches. */
 export function PatientPanel({

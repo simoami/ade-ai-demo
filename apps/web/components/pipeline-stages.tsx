@@ -87,27 +87,29 @@ export function PipelineStages() {
         ))}
       </ol>
       <p aria-live="polite" className="text-xs flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon-sm"
-          aria-label="Previous step"
-          disabled={active === 0}
-          onClick={() => setActive(active - 1)}
-        >
-          <ChevronLeft />
-        </Button>
-        <span className="font-semibold text-muted-foreground">
-          STEP {active + 1}
-        </span>
-        <Button
-          variant="outline"
-          size="icon-sm"
-          aria-label="Next step"
-          disabled={active === stages.length - 1}
-          onClick={() => setActive(active + 1)}
-        >
-          <ChevronRight />
-        </Button>
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Previous step"
+            disabled={active === 0}
+            onClick={() => setActive(active - 1)}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <span className="font-semibold text-muted-foreground">
+            STEP {active + 1}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Next step"
+            disabled={active === stages.length - 1}
+            onClick={() => setActive(active + 1)}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
         {label}. {caption}.
       </p>
     </div>

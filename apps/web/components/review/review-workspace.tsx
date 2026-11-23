@@ -303,14 +303,14 @@ export function ReviewWorkspace({
           >
             <TabsList variant="line" className="w-full">
               <TabsTrigger
-                className="px-1 text-[9px] data-active:text-primary"
+                className="px-1 text-xs data-active:text-primary"
                 value="general"
               >
                 General
                 {(!linked || pendingCount(redactions) > 0) && <Dot />}
               </TabsTrigger>
               <TabsTrigger
-                className="px-1 text-[9px] data-active:text-primary"
+                className="px-1 text-xs data-active:text-primary"
                 value="observations"
               >
                 Observations
