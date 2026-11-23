@@ -18,7 +18,11 @@ import { DefaultChatTransport } from 'ai'
 import { MessageSquare, X } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { ChatPart, ChatSources } from '#components/chat/chat-parts'
+import {
+  ChatPart,
+  ChatSources,
+  MessageCitations,
+} from '#components/chat/chat-parts'
 
 const transport = new DefaultChatTransport<ChatMessage>({ api: '/api/chat' })
 
@@ -112,13 +116,19 @@ export function ChatDrawer({
             <X />
           </DrawerClose>
         </DrawerHeader>
-        <Conversation key={pathname} context={context} />
+        <Conversation key={pathname} context={context} documents={documents} />
       </DrawerContent>
     </Drawer>
   )
 }
 
-function Conversation({ context }: { context: PageContext }) {
+function Conversation({
+  context,
+  documents,
+}: {
+  context: PageContext
+  documents: { id: string; fileName: string }[]
+}) {
   const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     transport,
   })
@@ -179,15 +189,17 @@ function Conversation({ context }: { context: PageContext }) {
                 : 'space-y-2'
             }
           >
-            {message.parts.map((part, index) => (
-              <ChatPart
-                // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and text parts have no IDs.
-                key={`${message.id}-${index}`}
-                part={part}
-                context={context}
-                role={message.role}
-              />
-            ))}
+            <MessageCitations parts={message.parts} documents={documents}>
+              {message.parts.map((part, index) => (
+                <ChatPart
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and text parts have no IDs.
+                  key={`${message.id}-${index}`}
+                  part={part}
+                  context={context}
+                  role={message.role}
+                />
+              ))}
+            </MessageCitations>
             <ChatSources parts={message.parts} context={context} />
           </article>
         ))}
