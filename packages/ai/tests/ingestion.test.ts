@@ -14,10 +14,10 @@ import {
 } from '#workflows/ingest-document/processing'
 import { startDocumentSchema } from '#workflows/ingest-document/review-action'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 const key = randomBytes(32)
 const input = {
-  documentId,
+  documentId: DOCUMENT_ID,
   fileName: 'scan.png',
   pathnames: ['uploads/scan-random.png'],
 }
@@ -144,7 +144,7 @@ test('renders ordered images, records dimensions, encrypts OCR and safely overwr
   for (let attempt = 0; attempt < 2; attempt++) {
     const rendered = await renderDocument(input, h.deps)
     assert.deepEqual(rendered, { pageCount: 1 })
-    await readDocument(documentId, rendered.pageCount, h.deps, async () => ({
+    await readDocument(DOCUMENT_ID, rendered.pageCount, h.deps, async () => ({
       blocks: [],
       usage: { latencyMs: 1 },
     }))
@@ -163,10 +163,10 @@ test('renders ordered images, records dimensions, encrypts OCR and safely overwr
     ]
   )
   assert.deepEqual(h.updates[1]?.[1].pageDimensions, [{ width: 12, height: 8 }])
-  const thumbnail = h.blobs.get(`documents/${documentId}/render/1-thumb.webp`)
+  const thumbnail = h.blobs.get(`documents/${DOCUMENT_ID}/render/1-thumb.webp`)
   assert.ok(thumbnail)
   assert.equal((await sharp(thumbnail.bytes).metadata()).format, 'webp')
-  const artifact = h.blobs.get(`documents/${documentId}/ocr.json.enc`)
+  const artifact = h.blobs.get(`documents/${DOCUMENT_ID}/ocr.json.enc`)
   assert.ok(artifact)
   assert.deepEqual(
     JSON.parse(decryptArtifact(artifact.bytes, key).toString()),
@@ -188,15 +188,15 @@ test('marks missing originals, unsupported input, missing render and OCR failure
   await assert.rejects(renderDocument(input, h.deps), {
     message: 'Document rendering failed',
   })
-  await assert.rejects(readDocument(documentId, 1, h.deps), {
+  await assert.rejects(readDocument(DOCUMENT_ID, 1, h.deps), {
     message: 'Document reading failed',
   })
-  h.blobs.set(`documents/${documentId}/render/1.png`, {
+  h.blobs.set(`documents/${DOCUMENT_ID}/render/1.png`, {
     bytes: Buffer.from('test'),
     contentType: 'image/png',
   })
   await assert.rejects(
-    readDocument(documentId, 1, h.deps, async () => {
+    readDocument(DOCUMENT_ID, 1, h.deps, async () => {
       throw new Error('sensitive provider body')
     }),
     { message: 'Document reading failed' }
@@ -216,7 +216,7 @@ test('renders PDFs through the PDF stage and rejects mixed PDF and image uploads
   })
   await renderDocument(
     {
-      documentId,
+      documentId: DOCUMENT_ID,
       fileName: 'document.pdf',
       pathnames: ['uploads/document.pdf'],
     },
@@ -229,7 +229,7 @@ test('renders PDFs through the PDF stage and rejects mixed PDF and image uploads
   await assert.rejects(
     renderDocument(
       {
-        documentId,
+        documentId: DOCUMENT_ID,
         fileName: 'mixed',
         pathnames: ['uploads/document.pdf', ...input.pathnames],
       },
@@ -254,7 +254,7 @@ test('preserves image order and marks failed when artifact storage or encryption
   }
   await renderDocument(
     {
-      documentId,
+      documentId: DOCUMENT_ID,
       fileName: 'ordered',
       pathnames: ['uploads/0.png', 'uploads/1.png'],
     },
@@ -265,7 +265,7 @@ test('preserves image order and marks failed when artifact storage or encryption
     { width: 20, height: 8 },
   ])
   await assert.rejects(
-    readDocument(documentId, 2, {
+    readDocument(DOCUMENT_ID, 2, {
       ...h.deps,
       key: () => {
         throw new Error('invalid key')
@@ -276,7 +276,7 @@ test('preserves image order and marks failed when artifact storage or encryption
   assert.equal(h.updates.at(-1)?.[1].status, 'failed')
   await assert.rejects(
     readDocument(
-      documentId,
+      DOCUMENT_ID,
       2,
       {
         ...h.deps,
@@ -292,5 +292,5 @@ test('preserves image order and marks failed when artifact storage or encryption
     { message: 'Document reading failed' }
   )
   assert.equal(h.updates.at(-1)?.[1].status, 'failed')
-  assert.equal(h.blobs.has(`documents/${documentId}/ocr.json.enc`), false)
+  assert.equal(h.blobs.has(`documents/${DOCUMENT_ID}/ocr.json.enc`), false)
 })

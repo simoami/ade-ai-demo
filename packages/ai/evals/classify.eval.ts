@@ -10,7 +10,7 @@ import {
 } from '#evals/scorers/classify'
 import { models } from '#models'
 import { classifyDocument } from '#stages/classify/classify-document'
-import { promptVersion } from '#stages/classify/prompt'
+import { PROMPT_VERSION } from '#stages/classify/prompt'
 
 const log = logger.getSubLogger({ name: 'classify-eval' })
 
@@ -51,7 +51,7 @@ const data = await Promise.all(
 )
 
 const metadata = {
-  promptVersion,
+  promptVersion: PROMPT_VERSION,
   model: models.fast.modelId,
   datasetVersion: 'synthetic-v3',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
@@ -63,7 +63,7 @@ const metadata = {
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `classify-${promptVersion}-${Date.now()}`,
+    experimentName: `classify-${PROMPT_VERSION}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 4,

@@ -15,7 +15,7 @@ import {
   detectIdentifiers,
   reviewPictures,
 } from '#stages/pii/detect-identifiers'
-import { promptVersion } from '#stages/pii/prompt'
+import { PROMPT_VERSION } from '#stages/pii/prompt'
 import type { IdentifierSpan } from '#stages/redact/redaction-types'
 import { renderPdf } from '#stages/render/render-pages'
 
@@ -104,7 +104,7 @@ const data = await Promise.all(
 )
 
 const metadata = {
-  promptVersion,
+  promptVersion: PROMPT_VERSION,
   model: models.pipeline.modelId,
   datasetVersion: 'synthetic-v3',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
@@ -116,7 +116,7 @@ const metadata = {
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `pii-${promptVersion}-${Date.now()}`,
+    experimentName: `pii-${PROMPT_VERSION}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 2,

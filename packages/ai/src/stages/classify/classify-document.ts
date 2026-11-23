@@ -3,7 +3,7 @@ import { generateText, Output } from 'ai'
 import { z } from 'zod'
 import { models } from '#models'
 import type { OcrPage } from '#stages/ocr/ocr-result'
-import { buildDocumentPrompt, classifyPrompt } from './prompt.ts'
+import { buildDocumentPrompt, CLASSIFY_PROMPT } from './prompt.ts'
 
 const log = logger.getSubLogger({ name: 'classify' })
 
@@ -55,7 +55,7 @@ export async function classifyDocument(
       maxRetries: 0,
       abortSignal: AbortSignal.timeout(120_000),
       output: Output.object({ schema: classificationSchema }),
-      system: classifyPrompt,
+      system: CLASSIFY_PROMPT,
       prompt: buildDocumentPrompt(pages),
     })
     classification = validateClassification(result.output)

@@ -4,11 +4,11 @@ import { PipelineError, pipeline } from '#lib/server/pipeline-client'
 import { recordCache } from '#lib/server/record-cache'
 import { POST } from './route.ts'
 
-const id = '981c8ddb-6a4c-5e2a-b667-cf98e800e72c'
-const context = { params: Promise.resolve({ id }) }
+const ID = '981c8ddb-6a4c-5e2a-b667-cf98e800e72c'
+const context = { params: Promise.resolve({ id: ID }) }
 
 function request(body: unknown) {
-  return new Request(`http://localhost/api/documents/${id}/review`, {
+  return new Request(`http://localhost/api/documents/${ID}/review`, {
     method: 'POST',
     body: JSON.stringify(body),
   })
@@ -21,7 +21,7 @@ test('expires terminal artifacts and patient profiles after accepted review acti
     (await POST(request({ type: 'markReviewed' }), context)).status,
     202
   )
-  assert.deepEqual(invalidation.mock.calls[0]?.arguments, [id])
+  assert.deepEqual(invalidation.mock.calls[0]?.arguments, [ID])
 })
 
 test('keeps caches intact for invalid review actions and service failures', async (t) => {
@@ -53,7 +53,7 @@ test('forwards observation, patient link and patient creation decisions unchange
     assert.equal((await POST(request(action), context)).status, 202)
   assert.deepEqual(
     review.mock.calls.map((call) => call.arguments),
-    actions.map((action) => [id, action])
+    actions.map((action) => [ID, action])
   )
 })
 

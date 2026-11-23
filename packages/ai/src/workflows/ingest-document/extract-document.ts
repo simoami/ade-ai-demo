@@ -54,10 +54,10 @@ const defaults: Dependencies = {
 }
 
 /** Observations below this confidence need a reviewer. */
-const flagBelow = 0.7
+const FLAG_BELOW = 0.7
 
 /** Coverage of an observation's box at which a redaction removes it (docs/architecture.md, Review). */
-const removeAtCoverage = 0.3
+const REMOVE_AT_COVERAGE = 0.3
 
 function coverage(item: Box, redaction: Box) {
   const width =
@@ -147,13 +147,13 @@ export async function extractDocumentObservations(
           },
         ],
         reviewStatus:
-          observation.confidence < flagBelow ? 'flagged' : 'unchecked',
+          observation.confidence < FLAG_BELOW ? 'flagged' : 'unchecked',
         details: observation.details,
         removedByRedactionIds: redactions
           .filter(
             (redaction) =>
               redaction.page === observation.page &&
-              coverage(box, redaction.box) >= removeAtCoverage
+              coverage(box, redaction.box) >= REMOVE_AT_COVERAGE
           )
           .map((redaction) => redaction.id),
       })

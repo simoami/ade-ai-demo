@@ -3,7 +3,7 @@ import { embedMany } from 'ai'
 import { z } from 'zod'
 import { embeddingModel } from '#models'
 import {
-  identifierPlaceholder,
+  IDENTIFIER_PLACEHOLDER,
   type MaskedSpans,
   maskIdentifiers,
 } from '#stages/extract/mask-identifiers'
@@ -35,18 +35,8 @@ async function embed(values: string[]) {
   return result.embeddings
 }
 
-/** Exclude page furniture and masked blocks without searchable content. */
-export function isSearchableNoteBlock(block: Block): boolean {
-  return (
-    block.kind !== 'header' &&
-    block.kind !== 'footer' &&
-    !/^(?:page\s+)?\d+(?:\s*(?:of|\/)\s*\d+)?$/i.test(block.text.trim()) &&
-    /[\p{L}\p{N}]/u.test(block.text.replaceAll(identifierPlaceholder, ''))
-  )
-}
-
 // About 500 tokens: large enough for a typical note section, well within the embedding model's input limit.
-const maxChunkLength = 2000
+const MAX_CHUNK_LENGTH = 2000
 
 /**
  * Splits text after `.`, `!` or `?` followed by whitespace, without breaking common clinical abbreviations.
@@ -55,7 +45,7 @@ const maxChunkLength = 2000
  */
 function sentences(text: string) {
   return text.split(
-    /(?<!\b(?:dr|mr|mrs|ms|mg|vs|etc|e\.g|i\.e|b\.i\.d)\.)(?<!\b[a-z]\.)(?<=[.!?])\s+/i
+    /(?<!\b(?:dr|mr|mrs|ms|mg|vs|etc|e\.g|i\.e|q\.d|b\.i\.d|t\.i\.d)\.)(?<!\b[a-z]\.)(?<=[.!?])\s+/i
   )
 }
 
@@ -84,16 +74,19 @@ function splitSection(blocks: NotePiece[]): NotePiece[] {
 
   for (const block of blocks) {
     // The + 1 accounts for the newline that joins block texts.
-    if (hasBody && current.text.length + block.text.length + 1 > maxChunkLength)
+    if (
+      hasBody &&
+      current.text.length + block.text.length + 1 > MAX_CHUNK_LENGTH
+    )
       flush()
 
     const parts =
       !block.table &&
-      current.text.length + block.text.length + 1 > maxChunkLength
+      current.text.length + block.text.length + 1 > MAX_CHUNK_LENGTH
         ? sentences(block.text)
         : [block.text]
     for (const text of parts) {
-      if (hasBody && current.text.length + text.length + 1 > maxChunkLength)
+      if (hasBody && current.text.length + text.length + 1 > MAX_CHUNK_LENGTH)
         flush()
 
       current.text = [current.text, text].filter(Boolean).join('\n')
@@ -113,6 +106,16 @@ function splitSection(blocks: NotePiece[]): NotePiece[] {
   if (current.text) pieces.push(current)
 
   return pieces
+}
+
+/** Exclude page furniture and masked blocks without searchable content. */
+export function isSearchableNoteBlock(block: Block): boolean {
+  return (
+    block.kind !== 'header' &&
+    block.kind !== 'footer' &&
+    !/^(?:page\s+)?\d+(?:\s*(?:of|\/)\s*\d+)?$/i.test(block.text.trim()) &&
+    /[\p{L}\p{N}]/u.test(block.text.replaceAll(IDENTIFIER_PLACEHOLDER, ''))
+  )
 }
 
 /** Builds embedding input from the section path and body without changing stored text. */

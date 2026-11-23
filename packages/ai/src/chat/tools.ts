@@ -21,7 +21,7 @@ import {
   type PageContext,
   scopeSchema,
 } from './context.ts'
-import { noteMatchLimit, selectNoteMatches } from './note-matches.ts'
+import { NOTE_MATCH_LIMIT, selectNoteMatches } from './note-matches.ts'
 import { observationFilters } from './queries.ts'
 import { observationQueryResult } from './selection.ts'
 
@@ -309,7 +309,7 @@ export function chatTools(context: PageContext) {
             )
           )
           .orderBy(distance)
-          .limit(noteMatchLimit)
+          .limit(NOTE_MATCH_LIMIT)
 
         return {
           chunks: selectNoteMatches(rows).flatMap((row) =>

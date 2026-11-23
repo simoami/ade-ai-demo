@@ -1,11 +1,11 @@
-const dismissalKey = 'ade.welcome.dismissed'
+const DISMISSAL_KEY = 'ade.welcome.dismissed'
 
 type WelcomeStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
 /** Reads the welcome preference safely when browser storage is unavailable. */
 export function shouldShowWelcome(storage: () => WelcomeStorage): boolean {
   try {
-    return storage().getItem(dismissalKey) !== '1'
+    return storage().getItem(DISMISSAL_KEY) !== '1'
   } catch {
     return true
   }
@@ -17,8 +17,8 @@ export function dismissWelcome(
   showAgain: boolean
 ): void {
   try {
-    if (showAgain) storage().removeItem(dismissalKey)
-    else storage().setItem(dismissalKey, '1')
+    if (showAgain) storage().removeItem(DISMISSAL_KEY)
+    else storage().setItem(DISMISSAL_KEY, '1')
   } catch {
     // Storage can be blocked; dismissal still applies for this page load.
   }

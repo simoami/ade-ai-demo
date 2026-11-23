@@ -9,11 +9,11 @@ import {
   type ReviewWrite,
 } from '#workflows/ingest-document/review-actions'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
-const flaggedRedaction = 'a1d9f1a4-6a39-5b62-9d43-2f0b1e8a7c01'
-const appliedRedaction = 'a1d9f1a4-6a39-5b62-9d43-2f0b1e8a7c02'
-const flaggedObservation = 'b2c8e0b3-7b48-5c71-8e52-3a1c2f9b8d01'
-const coveredObservation = 'b2c8e0b3-7b48-5c71-8e52-3a1c2f9b8d02'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const FLAGGED_REDACTION = 'a1d9f1a4-6a39-5b62-9d43-2f0b1e8a7c01'
+const APPLIED_REDACTION = 'a1d9f1a4-6a39-5b62-9d43-2f0b1e8a7c02'
+const FLAGGED_OBSERVATION = 'b2c8e0b3-7b48-5c71-8e52-3a1c2f9b8d01'
+const COVERED_OBSERVATION = 'b2c8e0b3-7b48-5c71-8e52-3a1c2f9b8d02'
 const key = Buffer.alloc(32, 7)
 const square: [number, number][] = [
   [0, 0],
@@ -30,19 +30,19 @@ function reviewState(overrides: Partial<ReviewState> = {}): ReviewState {
     proposedPatient: { initials: 'AB', birthYear: 1985, sex: 'Female' },
     pageCount: 2,
     redactions: [
-      { id: flaggedRedaction, page: 1, points: square, state: 'needsReview' },
-      { id: appliedRedaction, page: 2, points: square, state: 'applied' },
+      { id: FLAGGED_REDACTION, page: 1, points: square, state: 'needsReview' },
+      { id: APPLIED_REDACTION, page: 2, points: square, state: 'applied' },
     ],
     observations: [
       {
-        id: flaggedObservation,
+        id: FLAGGED_OBSERVATION,
         reviewStatus: 'flagged',
         removedByRedactionIds: [],
       },
       {
-        id: coveredObservation,
+        id: COVERED_OBSERVATION,
         reviewStatus: 'unchecked',
-        removedByRedactionIds: [flaggedRedaction],
+        removedByRedactionIds: [FLAGGED_REDACTION],
       },
     ],
     ...overrides,
@@ -54,7 +54,7 @@ function harness(state: ReviewState | undefined) {
   const calls: string[] = []
   const blobs = new Map(
     [1, 2].map((page) => [
-      `documents/${documentId}/redaction/source/${page}.png.enc`,
+      `documents/${DOCUMENT_ID}/redaction/source/${page}.png.enc`,
       encryptArtifact(Buffer.from(`source-${page}`), key),
     ])
   )
@@ -99,14 +99,14 @@ function harness(state: ReviewState | undefined) {
 
 async function apply(action: ReviewAction, state = reviewState()) {
   const h = harness(state)
-  const result = await applyReviewAction(documentId, action, h.deps)
+  const result = await applyReviewAction(DOCUMENT_ID, action, h.deps)
   return { ...h, result }
 }
 
 test('accepts a flagged redaction by re-burning from encrypted sources', async () => {
   const { result, writes, calls } = await apply({
     type: 'redaction.update',
-    redactionId: flaggedRedaction,
+    redactionId: FLAGGED_REDACTION,
     status: 'accepted',
   })
   assert.deepEqual(result, { applied: true })
@@ -114,9 +114,9 @@ test('accepts a flagged redaction by re-burning from encrypted sources', async (
     {
       event: {
         action: 'redaction.update',
-        payload: { redactionId: flaggedRedaction, status: 'accepted' },
+        payload: { redactionId: FLAGGED_REDACTION, status: 'accepted' },
       },
-      redaction: { id: flaggedRedaction, state: 'accepted' },
+      redaction: { id: FLAGGED_REDACTION, state: 'accepted' },
     },
   ])
   assert.deepEqual(calls, [
@@ -129,7 +129,7 @@ test('accepts a flagged redaction by re-burning from encrypted sources', async (
 test('re-burns every page from encrypted sources without the rejected redaction, then restores its observations', async () => {
   const { result, writes, calls } = await apply({
     type: 'redaction.update',
-    redactionId: flaggedRedaction,
+    redactionId: FLAGGED_REDACTION,
     status: 'rejected',
   })
   assert.deepEqual(result, { applied: true })
@@ -138,9 +138,9 @@ test('re-burns every page from encrypted sources without the rejected redaction,
     'burn:source-2:1',
     'publish:burned-source-1,burned-source-2',
   ])
-  assert.equal(writes[0]?.restoreRedactionId, flaggedRedaction)
+  assert.equal(writes[0]?.restoreRedactionId, FLAGGED_REDACTION)
   assert.deepEqual(writes[0]?.redaction, {
-    id: flaggedRedaction,
+    id: FLAGGED_REDACTION,
     state: 'rejected',
   })
 })
@@ -148,13 +148,13 @@ test('re-burns every page from encrypted sources without the rejected redaction,
 test('keeps previously rejected redactions out of a re-burn', async () => {
   const state = reviewState()
   state.redactions = [
-    { id: flaggedRedaction, page: 1, points: square, state: 'rejected' },
-    { id: appliedRedaction, page: 1, points: square, state: 'applied' },
+    { id: FLAGGED_REDACTION, page: 1, points: square, state: 'rejected' },
+    { id: APPLIED_REDACTION, page: 1, points: square, state: 'applied' },
   ]
   const { calls } = await apply(
     {
       type: 'redaction.update',
-      redactionId: appliedRedaction,
+      redactionId: APPLIED_REDACTION,
       status: 'rejected',
     },
     state
@@ -188,10 +188,10 @@ test('burns only applied and accepted redactions after either decision', async (
     }
 
     await applyReviewAction(
-      documentId,
+      DOCUMENT_ID,
       {
         type: 'redaction.update',
-        redactionId: flaggedRedaction,
+        redactionId: FLAGGED_REDACTION,
         status,
       },
       h.deps
@@ -212,7 +212,7 @@ for (const status of ['accepted', 'rejected'] as const) {
     const h = harness(reviewState())
     const action = {
       type: 'redaction.update',
-      redactionId: flaggedRedaction,
+      redactionId: FLAGGED_REDACTION,
       status,
     } as const
     h.deps.publish = async () => {
@@ -220,13 +220,13 @@ for (const status of ['accepted', 'rejected'] as const) {
     }
 
     await assert.rejects(
-      applyReviewAction(documentId, action, h.deps),
+      applyReviewAction(DOCUMENT_ID, action, h.deps),
       /Publication failed/
     )
     assert.equal(h.writes.length, 0)
 
     h.deps.publish = async () => 2
-    await applyReviewAction(documentId, action, h.deps)
+    await applyReviewAction(DOCUMENT_ID, action, h.deps)
     assert.equal(h.writes[0]?.redaction?.state, status)
     assert.equal(h.calls.filter((call) => call.startsWith('burn:')).length, 4)
   })
@@ -240,10 +240,10 @@ for (const status of ['accepted', 'rejected'] as const) {
     h.deps.storage = { ...storage, get: async () => null }
     await assert.rejects(
       applyReviewAction(
-        documentId,
+        DOCUMENT_ID,
         {
           type: 'redaction.update',
-          redactionId: flaggedRedaction,
+          redactionId: FLAGGED_REDACTION,
           status,
         },
         h.deps
@@ -257,12 +257,12 @@ for (const status of ['accepted', 'rejected'] as const) {
 test('refuses to reverse a rejected redaction and ignores repeated decisions', async () => {
   const state = reviewState()
   state.redactions = [
-    { id: flaggedRedaction, page: 1, points: square, state: 'rejected' },
+    { id: FLAGGED_REDACTION, page: 1, points: square, state: 'rejected' },
   ]
   const reversed = await apply(
     {
       type: 'redaction.update',
-      redactionId: flaggedRedaction,
+      redactionId: FLAGGED_REDACTION,
       status: 'accepted',
     },
     state
@@ -272,7 +272,7 @@ test('refuses to reverse a rejected redaction and ignores repeated decisions', a
   const repeated = await apply(
     {
       type: 'redaction.update',
-      redactionId: flaggedRedaction,
+      redactionId: FLAGGED_REDACTION,
       status: 'rejected',
     },
     state
@@ -285,12 +285,12 @@ test('refuses redactions and observations that belong to another document', asyn
   for (const action of [
     {
       type: 'redaction.update',
-      redactionId: flaggedObservation,
+      redactionId: FLAGGED_OBSERVATION,
       status: 'accepted',
     },
     {
       type: 'observation.update',
-      observationId: flaggedRedaction,
+      observationId: FLAGGED_REDACTION,
       status: 'accepted',
     },
   ] as const) {
@@ -307,16 +307,16 @@ test('maps observation decisions to confirmed and rejected review statuses', asy
   ] as const) {
     const { writes } = await apply({
       type: 'observation.update',
-      observationId: flaggedObservation,
+      observationId: FLAGGED_OBSERVATION,
       status,
     })
     assert.deepEqual(writes, [
       {
         event: {
           action: 'observation.update',
-          payload: { observationId: flaggedObservation, status },
+          payload: { observationId: FLAGGED_OBSERVATION, status },
         },
-        observation: { id: flaggedObservation, reviewStatus },
+        observation: { id: FLAGGED_OBSERVATION, reviewStatus },
       },
     ])
   }
@@ -325,7 +325,7 @@ test('maps observation decisions to confirmed and rejected review statuses', asy
 test('refuses decisions on observations hidden by a redaction', async () => {
   const { result } = await apply({
     type: 'observation.update',
-    observationId: coveredObservation,
+    observationId: COVERED_OBSERVATION,
     status: 'accepted',
   })
   assert.deepEqual(result, { refusal: 'observationRemoved' })
@@ -412,9 +412,9 @@ test('refuses mark as reviewed while the link or any item still needs review', a
     redactions: [],
     observations: [
       {
-        id: coveredObservation,
+        id: COVERED_OBSERVATION,
         reviewStatus: 'flagged',
-        removedByRedactionIds: [flaggedRedaction],
+        removedByRedactionIds: [FLAGGED_REDACTION],
       },
     ],
   })
@@ -430,7 +430,7 @@ test('refuses mark as reviewed while the link or any item still needs review', a
   ]) {
     const h = harness(state)
     assert.equal(
-      await checkReviewAction(documentId, { type: 'markReviewed' }, h.deps),
+      await checkReviewAction(DOCUMENT_ID, { type: 'markReviewed' }, h.deps),
       'reviewIncomplete'
     )
   }
@@ -483,7 +483,7 @@ test('refuses review actions outside review and on unsupported documents', async
   }
   assert.deepEqual(
     await applyReviewAction(
-      documentId,
+      DOCUMENT_ID,
       { type: 'discard' },
       harness(undefined).deps
     ),

@@ -2,11 +2,11 @@ import { z } from 'zod'
 import { htmlText } from './html-text.ts'
 import type { Block, OcrProvider, Word } from './ocr-result.ts'
 
-const apiUrl = 'https://www.datalab.to/api/v1/convert'
+const API_URL = 'https://www.datalab.to/api/v1/convert'
 
-const pollIntervalMs = 2_000
+const POLL_INTERVAL_MS = 2_000
 
-const timeoutMs = 180_000
+const TIMEOUT_MS = 180_000
 
 const blockKinds: Record<string, Block['kind']> = {
   SectionHeader: 'heading',
@@ -51,9 +51,9 @@ const resultSchema = z.object({
 const submitSchema = z.object({ request_check_url: z.url() })
 
 // Datalab transcribes text inside a picture here, apart from its generated caption.
-const pictureText = /<p class="img-desc">([\s\S]*?)<\/p>/
+const PICTURE_TEXT = /<p class="img-desc">([\s\S]*?)<\/p>/
 
-const wordSpan =
+const WORD_SPAN =
   /<span data-bbox="([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+)" data-confidence="([\d.]+)">([^<]*)<\/span>/g
 
 /** Datalab convert API provider: layout blocks plus word boxes, billed per page. */
@@ -63,7 +63,7 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
     if (!apiKey) throw new Error('DATALAB_API_KEY is required')
 
     const started = performance.now()
-    const signal = AbortSignal.timeout(timeoutMs)
+    const signal = AbortSignal.timeout(TIMEOUT_MS)
     const headers = { 'X-API-Key': apiKey }
 
     const form = new FormData()
@@ -78,14 +78,14 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
     form.append('disable_image_captions', 'true')
 
     const submitted = submitSchema.parse(
-      await request(apiUrl, { method: 'POST', headers, body: form, signal })
+      await request(API_URL, { method: 'POST', headers, body: form, signal })
     )
 
     let result = resultSchema.parse(
       await request(submitted.request_check_url, { headers, signal })
     )
     while (result.status === 'processing') {
-      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs))
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
       result = resultSchema.parse(
         await request(submitted.request_check_url, { headers, signal })
       )
@@ -106,16 +106,19 @@ export function datalabOcr(mode: 'balanced' | 'accurate'): OcrProvider {
     const blocks: Block[] = []
     const words: Word[] = []
     for (const block of pageResult.children ?? []) {
-      const blockWords = Array.from(block.html.matchAll(wordSpan), (match) => ({
-        text: htmlText(match[6] ?? ''),
-        box: normalize(rectSchema.parse(match.slice(1, 5).map(Number))),
-        confidence: Number(match[5]),
-      }))
+      const blockWords = Array.from(
+        block.html.matchAll(WORD_SPAN),
+        (match) => ({
+          text: htmlText(match[6] ?? ''),
+          box: normalize(rectSchema.parse(match.slice(1, 5).map(Number))),
+          confidence: Number(match[5]),
+        })
+      )
 
       const kind = blockKinds[block.block_type] ?? 'other'
       const text =
         kind === 'figure'
-          ? htmlText(block.html.match(pictureText)?.[1] ?? '')
+          ? htmlText(block.html.match(PICTURE_TEXT)?.[1] ?? '')
           : blockWords.map((word) => word.text).join(' ')
 
       words.push(...blockWords)

@@ -8,7 +8,7 @@ import {
   defaultScope,
   observationQuerySchema,
   pageContextSchema,
-  toolPresentationInstructions,
+  TOOL_PRESENTATION_INSTRUCTIONS,
 } from './context.ts'
 import { observationFilters } from './queries.ts'
 import { observationQueryResult } from './selection.ts'
@@ -188,17 +188,17 @@ test('orders trends, excludes incompatible units and labels unverified points', 
 
 test('instructions include the stable rule forbidding restating tool results', () => {
   assert.match(
-    toolPresentationInstructions,
+    TOOL_PRESENTATION_INSTRUCTIONS,
     /Do not restate rows, values or tables already shown/
   )
-  assert.match(toolPresentationInstructions, /at most 1–3 short sentences/)
+  assert.match(TOOL_PRESENTATION_INSTRUCTIONS, /at most 1–3 short sentences/)
   assert.match(
-    toolPresentationInstructions,
+    TOOL_PRESENTATION_INSTRUCTIONS,
     /never restate counts or mention truncation/
   )
   assert.ok(
     chatInstructions({ page: 'documents' }).includes(
-      toolPresentationInstructions
+      TOOL_PRESENTATION_INSTRUCTIONS
     )
   )
 })

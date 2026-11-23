@@ -100,7 +100,7 @@ test('clips row geometry to the block and falls back for wholly outside words', 
   )
 })
 
-const aspectRatio = 612 / 792
+const ASPECT_RATIO = 612 / 792
 
 function tiltedTable(degrees: number): Word[] {
   const angle = (degrees * Math.PI) / 180
@@ -125,9 +125,9 @@ function tiltedTable(degrees: number): Word[] {
         [x + 0.045, y + 0.008],
         [x, y + 0.008],
       ].map(([px = 0, py = 0]) => [
-        (px * aspectRatio * Math.cos(angle) - py * Math.sin(angle)) /
-          aspectRatio,
-        px * aspectRatio * Math.sin(angle) + py * Math.cos(angle),
+        (px * ASPECT_RATIO * Math.cos(angle) - py * Math.sin(angle)) /
+          ASPECT_RATIO,
+        px * ASPECT_RATIO * Math.sin(angle) + py * Math.cos(angle),
       ])
       const xs = corners.map(([px = 0]) => px)
       const ys = corners.map(([, py = 0]) => py)
@@ -149,22 +149,22 @@ test('estimates pixel-proportional skew on positive, negative and untilted table
   for (const degrees of [2.5, -3, 0]) {
     assert.ok(
       Math.abs(
-        pageSkew(tiltedTable(degrees), aspectRatio) - (degrees * Math.PI) / 180
+        pageSkew(tiltedTable(degrees), ASPECT_RATIO) - (degrees * Math.PI) / 180
       ) < 1e-12
     )
   }
 })
 
 test('requires three same-block overlapping pairs and ignores angles above ten degrees', () => {
-  assert.equal(pageSkew(undefined, aspectRatio), 0)
-  assert.equal(pageSkew(tiltedTable(2.5).slice(0, 3), aspectRatio), 0)
+  assert.equal(pageSkew(undefined, ASPECT_RATIO), 0)
+  assert.equal(pageSkew(tiltedTable(2.5).slice(0, 3), ASPECT_RATIO), 0)
   assert.equal(
     pageSkew(
       tiltedTable(2.5).map((word, index) => ({
         ...word,
         blockId: String(index),
       })),
-      aspectRatio
+      ASPECT_RATIO
     ),
     0
   )
@@ -178,11 +178,11 @@ test('requires three same-block overlapping pairs and ignores angles above ten d
       height: 0.03,
     },
   }))
-  assert.equal(pageSkew(steep, aspectRatio), 0)
+  assert.equal(pageSkew(steep, ASPECT_RATIO), 0)
   assert.equal(
     pageSkew(
       steep.map((word) => ({ ...word, blockId: undefined })),
-      aspectRatio
+      ASPECT_RATIO
     ),
     0
   )
@@ -190,7 +190,7 @@ test('requires three same-block overlapping pairs and ignores angles above ten d
 
 test('selects only its tilted row across drift greater than word height and encloses every word', () => {
   const words = tiltedTable(2.5)
-  const angle = pageSkew(words, aspectRatio)
+  const angle = pageSkew(words, ASPECT_RATIO)
   const wideBlock = {
     ...block,
     box: { x: 0.01, y: 0.1, width: 0.95, height: 0.6 },
@@ -199,13 +199,13 @@ test('selects only its tilted row across drift greater than word height and encl
     wideBlock,
     words,
     { name: 'Sodium', value: '140', valueNumeric: 140 },
-    { angle, aspectRatio }
+    { angle, aspectRatio: ASPECT_RATIO }
   )
   assert.ok(result.points)
   assert.equal(result.points.length, 4)
   const deskew = ([x, y]: [number, number]) => [
-    x * aspectRatio * Math.cos(angle) + y * Math.sin(angle),
-    -x * aspectRatio * Math.sin(angle) + y * Math.cos(angle),
+    x * ASPECT_RATIO * Math.cos(angle) + y * Math.sin(angle),
+    -x * ASPECT_RATIO * Math.sin(angle) + y * Math.cos(angle),
   ]
   const polygon = result.points.map(deskew)
   const left = polygon[0]?.[0] ?? NaN
@@ -246,7 +246,7 @@ test('selects only its tilted row across drift greater than word height and encl
       wideBlock,
       undefined,
       { name: 'Sodium', value: '140', valueNumeric: 140 },
-      { angle, aspectRatio }
+      { angle, aspectRatio: ASPECT_RATIO }
     ),
     wideBlock.box
   )

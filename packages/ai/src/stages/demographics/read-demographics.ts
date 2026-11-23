@@ -6,7 +6,7 @@ import { hashIdentifier, type IdentifierField } from '#identity/hash-identifier'
 import { models } from '#models'
 import { buildDocumentPrompt } from '#stages/classify/prompt'
 import type { OcrPage } from '#stages/ocr/ocr-result'
-import { demographicsPrompt } from './prompt.ts'
+import { DEMOGRAPHICS_PROMPT } from './prompt.ts'
 
 const log = logger.getSubLogger({ name: 'demographics' })
 
@@ -81,7 +81,7 @@ export async function readDemographics(
       maxRetries: 0,
       abortSignal: AbortSignal.timeout(120_000),
       output: Output.object({ schema: demographicsSchema }),
-      system: demographicsPrompt,
+      system: DEMOGRAPHICS_PROMPT,
       prompt: buildDocumentPrompt(pages),
     })
     demographics = validateDemographics(result.output)

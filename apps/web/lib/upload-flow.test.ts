@@ -6,7 +6,7 @@ import {
   uploadSummary,
 } from '#lib/upload-flow'
 
-const id = 'f38ac619-f99c-4b98-b4f6-0dc2f892c30c'
+const ID = 'f38ac619-f99c-4b98-b4f6-0dc2f892c30c'
 
 const files = [
   new File(['page'], 'a.png', { type: 'image/png' }),
@@ -28,7 +28,7 @@ test('starts one document per file with one returned pathname and overall progre
       assert.equal(url, '/api/documents')
       assert.equal(init?.method, 'POST')
       bodies.push(JSON.parse(String(init?.body)))
-      return Response.json({ documentId: id, runId: 'run' })
+      return Response.json({ documentId: ID, runId: 'run' })
     }
   )
   assert.deepEqual(
@@ -69,7 +69,7 @@ test('continues after a failed upload and reports only the failed filename', asy
     () => {},
     async () => {
       starts++
-      return Response.json({ documentId: id, runId: 'run' })
+      return Response.json({ documentId: ID, runId: 'run' })
     }
   )
   assert.equal(starts, 1)
@@ -100,8 +100,8 @@ test('reports failed and malformed document starts as file failures', async () =
 })
 
 test('navigates only for one successful file', () => {
-  const success = { fileName: 'a.png', documentId: id, failed: false as const }
-  assert.equal(uploadDestination([success]), `/documents/${id}`)
+  const success = { fileName: 'a.png', documentId: ID, failed: false as const }
+  assert.equal(uploadDestination([success]), `/documents/${ID}`)
   assert.equal(uploadDestination([success, success]), null)
   assert.equal(uploadDestination([{ fileName: 'a.png', failed: true }]), null)
   assert.equal(uploadDestination([]), null)
@@ -119,7 +119,7 @@ test('starts one document per file and reports overall progress', async () => {
     (percentage) => progress.push(percentage),
     async () => {
       starts++
-      return Response.json({ documentId: id, runId: 'run' })
+      return Response.json({ documentId: ID, runId: 'run' })
     }
   )
   assert.equal(starts, 10)

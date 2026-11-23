@@ -7,7 +7,7 @@ import {
   type OcrPage,
   type OcrProvider,
 } from './ocr-result.ts'
-import { ocrPrompt } from './prompt.ts'
+import { OCR_PROMPT } from './prompt.ts'
 import { reductoOcr } from './reducto-ocr.ts'
 
 const log = logger.getSubLogger({ name: 'ocr' })
@@ -29,7 +29,7 @@ export function llmOcr(model: LanguageModel): OcrProvider {
       maxRetries: 0,
       abortSignal: AbortSignal.timeout(180_000),
       output: Output.object({ schema: pageSchema }),
-      system: ocrPrompt,
+      system: OCR_PROMPT,
       messages: [
         {
           role: 'user',

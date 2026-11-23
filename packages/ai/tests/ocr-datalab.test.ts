@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { afterEach, test } from 'node:test'
 import { datalabOcr } from '#stages/ocr/datalab-ocr'
 
-const checkUrl = 'https://www.datalab.to/api/v1/convert/request-1'
+const CHECK_URL = 'https://www.datalab.to/api/v1/convert/request-1'
 
 const completed = {
   status: 'complete',
@@ -51,7 +51,7 @@ function stubFetch(responses: Response[]) {
 test('maps Datalab blocks, word spans and picture text to normalized OCR output, waiting out rate limits', async () => {
   process.env.DATALAB_API_KEY = 'test-key'
   const calls = stubFetch([
-    Response.json({ request_check_url: checkUrl }),
+    Response.json({ request_check_url: CHECK_URL }),
     new Response(null, { status: 429, headers: { 'retry-after': '0' } }),
     Response.json(completed),
   ])
@@ -62,8 +62,8 @@ test('maps Datalab blocks, word spans and picture text to normalized OCR output,
 
   assert.deepEqual(calls, [
     'https://www.datalab.to/api/v1/convert',
-    checkUrl,
-    checkUrl,
+    CHECK_URL,
+    CHECK_URL,
   ])
   assert.deepEqual(
     page.blocks.map(({ kind, text }) => ({ kind, text })),
@@ -95,7 +95,7 @@ test('fails with the HTTP status only and on unsuccessful conversions', async ()
   )
 
   stubFetch([
-    Response.json({ request_check_url: checkUrl }),
+    Response.json({ request_check_url: CHECK_URL }),
     Response.json({ status: 'complete', success: false, error: 'bad page' }),
   ])
   await assert.rejects(

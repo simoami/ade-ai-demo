@@ -9,7 +9,7 @@ import {
 } from '#evals/scorers/extract'
 import { models } from '#models'
 import { extractObservations } from '#stages/extract/extract-observations'
-import { promptVersion } from '#stages/extract/prompt'
+import { PROMPT_VERSION } from '#stages/extract/prompt'
 
 const log = logger.getSubLogger({ name: 'extract-eval' })
 
@@ -73,7 +73,7 @@ const data = await Promise.all(
 )
 
 const metadata = {
-  promptVersion,
+  promptVersion: PROMPT_VERSION,
   model: models.pipeline.modelId,
   datasetVersion: 'synthetic-v3',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
@@ -85,7 +85,7 @@ const metadata = {
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `extract-${promptVersion}-${Date.now()}`,
+    experimentName: `extract-${PROMPT_VERSION}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 2,

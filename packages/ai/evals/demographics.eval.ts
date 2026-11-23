@@ -15,7 +15,7 @@ import {
   matchPatient,
   type PatientHashes,
 } from '#stages/demographics/match-patient'
-import { promptVersion } from '#stages/demographics/prompt'
+import { PROMPT_VERSION } from '#stages/demographics/prompt'
 import {
   type Demographics,
   hashDemographics,
@@ -124,7 +124,7 @@ const data = fixtures
   })
 
 const metadata = {
-  promptVersion,
+  promptVersion: PROMPT_VERSION,
   model: models.pipeline.modelId,
   datasetVersion: 'synthetic-v3',
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
@@ -136,7 +136,7 @@ const metadata = {
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `demographics-${promptVersion}-${Date.now()}`,
+    experimentName: `demographics-${PROMPT_VERSION}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 4,

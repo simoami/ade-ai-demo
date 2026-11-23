@@ -1,6 +1,6 @@
 import type { ObservationDetails } from '@repo/db'
 
-const number = '-?\\d+(?:\\.\\d+)?'
+const NUMBER = '-?\\d+(?:\\.\\d+)?'
 
 /** Parses printed lab bounds and flags without changing their source strings. */
 export function normalizeLabDetails(
@@ -10,9 +10,9 @@ export function normalizeLabDetails(
   const range =
     details.referenceRange?.trim().replaceAll('−', '-').replaceAll('–', '-') ??
     ''
-  const interval = range.match(new RegExp(`^(${number})\\s*-\\s*(${number})$`))
-  const upper = range.match(new RegExp(`^(?:<|≤|<=)\\s*(${number})$`))
-  const lower = range.match(new RegExp(`^(?:>|≥|>=)\\s*(${number})$`))
+  const interval = range.match(new RegExp(`^(${NUMBER})\\s*-\\s*(${NUMBER})$`))
+  const upper = range.match(new RegExp(`^(?:<|≤|<=)\\s*(${NUMBER})$`))
+  const lower = range.match(new RegExp(`^(?:>|≥|>=)\\s*(${NUMBER})$`))
   const rangeLow = interval
     ? Number(interval[1])
     : lower
@@ -88,7 +88,7 @@ export function normalizeObservation<T extends Observation>(
 ): T[] {
   const { kind, name, value } = observation
   const numeric = value.match(
-    new RegExp(`^(${number})\\s*([a-zA-Zµμ%][a-zA-Zµμ/%.-]*)?$`)
+    new RegExp(`^(${NUMBER})\\s*([a-zA-Zµμ%][a-zA-Zµμ/%.-]*)?$`)
   )
   const valueNumeric =
     kind === 'medication' && numeric

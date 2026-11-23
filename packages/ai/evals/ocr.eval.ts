@@ -18,7 +18,7 @@ import { models } from '#models'
 import { datalabOcr } from '#stages/ocr/datalab-ocr'
 import { defaultOcrProvider, llmOcr, ocrPages } from '#stages/ocr/ocr-pages'
 import type { Block, Box, OcrPage } from '#stages/ocr/ocr-result'
-import { promptVersion } from '#stages/ocr/prompt'
+import { PROMPT_VERSION } from '#stages/ocr/prompt'
 import { reductoOcr } from '#stages/ocr/reducto-ocr'
 import { renderPdf } from '#stages/render/render-pages'
 
@@ -65,7 +65,7 @@ const metadata = {
   gitSha: execFileSync('git', ['rev-parse', 'HEAD'], {
     encoding: 'utf8',
   }).trim(),
-  promptVersion,
+  promptVersion: PROMPT_VERSION,
   provider: providerName,
   datasetVersion: data[0]?.metadata.datasetVersion,
   dpi,
@@ -104,7 +104,7 @@ const started = performance.now()
 const result = await Eval(
   'ade-document-stages',
   {
-    experimentName: `ocr-${providerName}-${promptVersion}-${dpi}-${Date.now()}`,
+    experimentName: `ocr-${providerName}-${PROMPT_VERSION}-${dpi}-${Date.now()}`,
     metadata,
     data,
     maxConcurrency: 2,

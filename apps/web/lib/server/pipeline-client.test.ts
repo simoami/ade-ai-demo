@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { type TestContext, test } from 'node:test'
 import { PipelineError, pipeline, pipelineFailure } from './pipeline-client.ts'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 
 function configure() {
   process.env.PIPELINE_SERVICE_ORIGIN = 'http://127.0.0.1:8000'
@@ -31,8 +31,8 @@ test('sends authenticated start, status and review calls to the fixed service', 
   configure()
   const requests: { url: string; options?: RequestInit }[] = []
   const responses = [
-    { documentId, runId: 'run_1' },
-    { documentId, runId: 'run_1', status: 'running' },
+    { documentId: DOCUMENT_ID, runId: 'run_1' },
+    { documentId: DOCUMENT_ID, runId: 'run_1', status: 'running' },
     { accepted: true },
   ]
   t.mock.method(
@@ -48,15 +48,15 @@ test('sends authenticated start, status and review calls to the fixed service', 
     fileName: 'sample.pdf',
     pathnames: ['uploads/sample-a1b2.pdf'],
   })
-  await pipeline.status(documentId)
-  await pipeline.review(documentId, { type: 'markReviewed' })
+  await pipeline.status(DOCUMENT_ID)
+  await pipeline.review(DOCUMENT_ID, { type: 'markReviewed' })
 
   assert.deepEqual(
     requests.map(({ url }) => url),
     [
       'http://127.0.0.1:8000/pipeline/documents',
-      `http://127.0.0.1:8000/pipeline/documents/${documentId}`,
-      `http://127.0.0.1:8000/pipeline/documents/${documentId}/review`,
+      `http://127.0.0.1:8000/pipeline/documents/${DOCUMENT_ID}`,
+      `http://127.0.0.1:8000/pipeline/documents/${DOCUMENT_ID}/review`,
     ]
   )
   assert.deepEqual(
@@ -83,7 +83,7 @@ test('maps upstream failures and malformed responses without leaking their conte
       async () => new Response('private upstream content', { status })
     )
     await assert.rejects(
-      pipeline.status(documentId),
+      pipeline.status(DOCUMENT_ID),
       (error: unknown) =>
         error instanceof PipelineError &&
         error.status === ([400, 404, 409].includes(status) ? status : 503) &&
@@ -94,12 +94,12 @@ test('maps upstream failures and malformed responses without leaking their conte
   const mock = t.mock.method(globalThis, 'fetch', async () =>
     Response.json({ private: 'content' })
   )
-  await assert.rejects(pipeline.status(documentId), /Service unavailable/)
+  await assert.rejects(pipeline.status(DOCUMENT_ID), /Service unavailable/)
   mock.mock.restore()
   t.mock.method(globalThis, 'fetch', async () => {
     throw new Error('private network failure')
   })
-  await assert.rejects(pipeline.status(documentId), /Service unavailable/)
+  await assert.rejects(pipeline.status(DOCUMENT_ID), /Service unavailable/)
   const response = pipelineFailure(new Error('private failure'))
   assert.equal(response.status, 503)
   assert.deepEqual(await response.json(), { error: 'Service unavailable' })
@@ -120,17 +120,21 @@ test('forwards deployment bearer credentials and preserves the binding path', as
     async (url: URL, options?: RequestInit) => {
       assert.equal(
         url.href,
-        `https://service.example/internal/pipeline/documents/${documentId}`
+        `https://service.example/internal/pipeline/documents/${DOCUMENT_ID}`
       )
       assert.equal(
         new Headers(options?.headers).get('authorization'),
         `Bearer ${token}`
       )
-      return Response.json({ documentId, runId: 'run_1', status: 'running' })
+      return Response.json({
+        documentId: DOCUMENT_ID,
+        runId: 'run_1',
+        status: 'running',
+      })
     }
   )
 
-  await pipeline.status(documentId)
+  await pipeline.status(DOCUMENT_ID)
 })
 
 test('fails closed without a deployment binding before making a request', async (t) => {
@@ -144,7 +148,7 @@ test('fails closed without a deployment binding before making a request', async 
     throw new Error('Unexpected request')
   })
 
-  await assert.rejects(pipeline.status(documentId), /Service unavailable/)
+  await assert.rejects(pipeline.status(DOCUMENT_ID), /Service unavailable/)
   assert.equal(request.mock.callCount(), 0)
 })
 
@@ -185,7 +189,7 @@ test('passes validated review refusals through 409 responses and ignores malform
     )
 
     await assert.rejects(
-      pipeline.review(documentId, { type: 'markReviewed' }),
+      pipeline.review(DOCUMENT_ID, { type: 'markReviewed' }),
       (error: unknown) => {
         assert.ok(error instanceof PipelineError)
         assert.equal(error.status, 409)

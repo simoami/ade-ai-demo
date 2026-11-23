@@ -12,7 +12,7 @@ import {
 } from '#workflows/ingest-document/artifact-encryption'
 import { redactDocument } from '#workflows/ingest-document/redact-document'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 const key = Buffer.alloc(32, 7)
 const region: RedactionRegion = {
   page: 1,
@@ -64,15 +64,15 @@ async function harness(placed: RedactionRegion[] = [region]) {
   ]
   const blobs = new Map<string, Buffer>([
     [
-      `documents/${documentId}/ocr.json.enc`,
+      `documents/${DOCUMENT_ID}/ocr.json.enc`,
       encryptArtifact(Buffer.from(JSON.stringify(pages)), key),
     ],
     [
-      `documents/${documentId}/identifiers.json.enc`,
+      `documents/${DOCUMENT_ID}/identifiers.json.enc`,
       encryptArtifact(Buffer.from(JSON.stringify(spans)), key),
     ],
-    [`documents/${documentId}/render/1.png`, image],
-    [`documents/${documentId}/render/2.png`, image],
+    [`documents/${DOCUMENT_ID}/render/1.png`, image],
+    [`documents/${DOCUMENT_ID}/render/2.png`, image],
   ])
   const events: string[] = []
   const replacements: Parameters<
@@ -135,10 +135,10 @@ async function harness(placed: RedactionRegion[] = [region]) {
     publish: async (_id, images) => {
       assert.deepEqual(images, [burned, burned])
       assert.equal(replacements.at(-1)?.length, placed.length)
-      assert.ok(blobs.has(`documents/${documentId}/redaction/ready.json.enc`))
+      assert.ok(blobs.has(`documents/${DOCUMENT_ID}/redaction/ready.json.enc`))
       events.push('publish')
-      blobs.delete(`documents/${documentId}/render/1.png`)
-      blobs.delete(`documents/${documentId}/render/2.png`)
+      blobs.delete(`documents/${DOCUMENT_ID}/render/1.png`)
+      blobs.delete(`documents/${DOCUMENT_ID}/render/2.png`)
       return 1
     },
   }
@@ -147,7 +147,7 @@ async function harness(placed: RedactionRegion[] = [region]) {
 
 test('places stored spans on all pages, reviews only figures, keeps encrypted sources, replaces rows and publishes burned pixels', async () => {
   const h = await harness()
-  assert.deepEqual(await redactDocument(documentId, 2, h.deps), {
+  assert.deepEqual(await redactDocument(DOCUMENT_ID, 2, h.deps), {
     pageCount: 2,
     spanCount: 1,
     appliedCount: 0,
@@ -165,7 +165,7 @@ test('places stored spans on all pages, reviews only figures, keeps encrypted so
   ])
   for (const page of [1, 2]) {
     const source = h.blobs.get(
-      `documents/${documentId}/redaction/source/${page}.png.enc`
+      `documents/${DOCUMENT_ID}/redaction/source/${page}.png.enc`
     )
     assert.ok(source)
     assert.deepEqual(decryptArtifact(source, key), h.image)
@@ -176,7 +176,7 @@ test('places stored spans on all pages, reviews only figures, keeps encrypted so
     /^[a-f0-9]{8}-[a-f0-9]{4}-5[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/
   )
   const { source: _source, ...expected } = region
-  assert.deepEqual(row, { ...expected, id: row?.id, documentId })
+  assert.deepEqual(row, { ...expected, id: row?.id, documentId: DOCUMENT_ID })
 })
 
 test('burns only applied regions while persisting candidates needing review', async () => {
@@ -190,7 +190,7 @@ test('burns only applied regions while persisting candidates needing review', as
     return burn(image, regions)
   }
 
-  assert.deepEqual(await redactDocument(documentId, 2, h.deps), {
+  assert.deepEqual(await redactDocument(DOCUMENT_ID, 2, h.deps), {
     pageCount: 2,
     spanCount: 1,
     appliedCount: 1,
@@ -213,11 +213,11 @@ test('retries from encrypted burned pages after publication deleted renders and 
     if (++attempts === 1) throw new Error('private cleanup failure')
     return version
   }
-  await assert.rejects(redactDocument(documentId, 2, h.deps), {
+  await assert.rejects(redactDocument(DOCUMENT_ID, 2, h.deps), {
     message: 'Document redaction failed',
   })
   assert.equal(h.events.at(-1), 'status:failed')
-  await redactDocument(documentId, 2, h.deps)
+  await redactDocument(DOCUMENT_ID, 2, h.deps)
   assert.deepEqual(h.replacements[0], h.replacements[1])
   assert.equal(h.events.filter((event) => event === 'place:1').length, 1)
   assert.equal(h.events.at(-1), 'publish')
@@ -235,7 +235,7 @@ test('marks failed and hides stage errors without publishing or persisting incom
     h.deps[stage] = async () => {
       throw new Error('synthetic private provider response')
     }
-    await assert.rejects(redactDocument(documentId, 2, h.deps), {
+    await assert.rejects(redactDocument(DOCUMENT_ID, 2, h.deps), {
       message: 'Document redaction failed',
     })
     assert.equal(h.events.at(-1), 'status:failed')
@@ -253,10 +253,10 @@ test('rejects missing, unauthenticated and malformed OCR or identifier artifacts
     )
   )) {
     const h = await harness()
-    const path = `documents/${documentId}/${artifact}`
+    const path = `documents/${DOCUMENT_ID}/${artifact}`
     if (bytes) h.blobs.set(path, bytes)
     else h.blobs.delete(path)
-    await assert.rejects(redactDocument(documentId, 2, h.deps), {
+    await assert.rejects(redactDocument(DOCUMENT_ID, 2, h.deps), {
       message: 'Document redaction failed',
     })
     assert.deepEqual(h.events, ['status:redacting', 'status:failed'])

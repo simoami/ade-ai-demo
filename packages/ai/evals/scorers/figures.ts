@@ -3,7 +3,7 @@ import { boxIoU, normalized } from '#evals/scorers/ocr'
 import type { Block, Box } from '#stages/ocr/ocr-result'
 
 /** Overlap an output figure needs to count as finding a ground-truth figure. */
-const minimumIoU = 0.5
+const MINIMUM_IOU = 0.5
 
 /** Per-page figure counts; output figures are matched one-to-one, best overlap first. */
 export function scoreFigures(
@@ -15,7 +15,7 @@ export function scoreFigures(
     .flatMap((figure, i) =>
       found.map((block, j) => ({ i, j, iou: boxIoU(figure.box, block.box) }))
     )
-    .filter((pair) => pair.iou >= minimumIoU)
+    .filter((pair) => pair.iou >= MINIMUM_IOU)
     .sort((a, b) => b.iou - a.iou)
 
   const matchedExpected = new Set<number>()

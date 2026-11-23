@@ -8,7 +8,7 @@ export type MaskedSpans = Pick<
 >[]
 
 /** Replaces each identifier range in OCR text. */
-export const identifierPlaceholder = '[REDACTED]'
+export const IDENTIFIER_PLACEHOLDER = '[REDACTED]'
 
 /** Returns text blocks with every identifier span replaced; figures are dropped because their pixels may hold identifiers. */
 export function maskIdentifiers(
@@ -39,7 +39,7 @@ export function maskIdentifiers(
         for (const { start, end } of ranges) {
           if (end <= cursor) continue
           if (start >= cursor)
-            text += block.text.slice(cursor, start) + identifierPlaceholder
+            text += block.text.slice(cursor, start) + IDENTIFIER_PLACEHOLDER
           cursor = end
         }
         return { ...block, text: text + block.text.slice(cursor) }

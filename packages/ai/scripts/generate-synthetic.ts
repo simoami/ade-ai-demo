@@ -12,7 +12,7 @@ import { drawPictureForm } from './synthetic-pictures.ts'
 const log = logger.getSubLogger({ name: 'synthetic-generator' })
 
 /** Version changes whenever generated content or geometry changes. */
-export const datasetVersion = 'synthetic-v3'
+export const DATASET_VERSION = 'synthetic-v3'
 
 /** Fixture list; `scan` is the base scan severity (0 mild to 1 worst) for the scanned variant. */
 export const fixtureSpecs = [
@@ -264,7 +264,7 @@ export async function generateFixture(
   const footerStyle = Math.floor(random() * 2)
   const truth: Expected = {
     id: spec.id,
-    datasetVersion,
+    datasetVersion: DATASET_VERSION,
     seed,
     split: ['clinical-06', 'consent-02', 'invoice-01', 'skin-01'].includes(
       spec.id

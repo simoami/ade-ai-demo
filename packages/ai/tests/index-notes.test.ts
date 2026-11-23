@@ -9,7 +9,7 @@ import {
   noteEmbeddingInput,
 } from '#workflows/ingest-document/index-notes'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 
 const box = { x: 0.1, y: 0.1, width: 0.5, height: 0.1 }
 
@@ -42,7 +42,7 @@ const embed = async (values: string[]) =>
 
 test('embeds only masked text and keeps stable IDs and block source geometry', async () => {
   const chunks = await buildNoteChunks(
-    documentId,
+    DOCUMENT_ID,
     pages,
     spans,
     async (values) => {
@@ -52,7 +52,7 @@ test('embeds only masked text and keeps stable IDs and block source geometry', a
   )
   assert.deepEqual(
     chunks,
-    await buildNoteChunks(documentId, pages, spans, embed)
+    await buildNoteChunks(DOCUMENT_ID, pages, spans, embed)
   )
   assert.deepEqual(chunks[0]?.source, [{ page: 1, blockId: 'note', box }])
   assert.notEqual(
@@ -84,14 +84,14 @@ test('preserves indivisible oversized sentences, keeps unique IDs and skips blan
       usage: { latencyMs: 0 },
     },
   ]
-  const chunks = await buildNoteChunks(documentId, long, [], embed)
+  const chunks = await buildNoteChunks(DOCUMENT_ID, long, [], embed)
   assert.deepEqual(
     chunks.map(({ text }) => text.length),
     [4100]
   )
   assert.equal(new Set(chunks.map(({ id }) => id)).size, 1)
   assert.deepEqual(
-    await buildNoteChunks(documentId, [], [], async () => {
+    await buildNoteChunks(DOCUMENT_ID, [], [], async () => {
       throw new Error('must not call')
     }),
     []
@@ -107,7 +107,7 @@ test('stores section headings separately and keeps earlier blocks separate', asy
     continues: null,
   })
   const chunks = await buildNoteChunks(
-    documentId,
+    DOCUMENT_ID,
     [
       {
         blocks: [
@@ -145,7 +145,7 @@ test('rejects invalid embedding count, dimensions and provider errors without ex
       throw new Error('Synthetic Person')
     },
   ])
-    await assert.rejects(buildNoteChunks(documentId, pages, spans, embedder), {
+    await assert.rejects(buildNoteChunks(DOCUMENT_ID, pages, spans, embedder), {
       message: 'Note embedding failed',
     })
 })
@@ -187,12 +187,12 @@ test('replaces the index only after successful embedding and records covering no
       },
     ],
   }
-  assert.deepEqual(await indexDocumentNotes(documentId, deps), {
+  assert.deepEqual(await indexDocumentNotes(DOCUMENT_ID, deps), {
     chunkCount: 1,
   })
   assert.deepEqual(rows[0]?.removedByRedactionIds, ['face'])
   await assert.rejects(
-    indexDocumentNotes(documentId, {
+    indexDocumentNotes(DOCUMENT_ID, {
       ...deps,
       embed: async () => {
         throw new Error('Synthetic private text')
@@ -275,7 +275,7 @@ test('does not embed masked-only blocks or page furniture', async () => {
 
   assert.deepEqual(
     await buildNoteChunks(
-      documentId,
+      DOCUMENT_ID,
       [{ blocks, usage: { latencyMs: 0 } }],
       [{ page: 1, blockId: 'name', start: 0, end: 16 }],
       async () => {
@@ -300,7 +300,7 @@ const page = (...blocks: OcrPage['blocks']): OcrPage => ({
 
 test('builds paths from title and section, folds empty headings, and carries paths across pages', async () => {
   const chunks = await buildNoteChunks(
-    documentId,
+    DOCUMENT_ID,
     [
       page(
         block('title', 'Screening visit', 'heading', 1),
@@ -346,7 +346,7 @@ test('splits long sections at blocks then sentences, preserving abbreviations an
   const first = `${'Synthetic context '.repeat(80)}ends here.`
   const second = Array.from({ length: 35 }, () => sentence).join(' ')
   const chunks = await buildNoteChunks(
-    documentId,
+    DOCUMENT_ID,
     [
       page(
         block('heading', 'Plan', 'heading'),
@@ -405,7 +405,7 @@ test('parses legacy OCR headings without a level and rejects unsupported levels'
 test('keeps oversized tables whole and restricts overlap sources to the contributing blocks', async () => {
   const table = `Test Result\n${'Synthetic value 7.8\n'.repeat(150)}`.trim()
   const chunks = await buildNoteChunks(
-    documentId,
+    DOCUMENT_ID,
     [
       page(
         block('heading', 'Labs', 'heading'),

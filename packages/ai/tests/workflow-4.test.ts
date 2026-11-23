@@ -16,17 +16,17 @@ import {
 } from '#workflows/ingest-document/artifact-encryption'
 import { finishProcessing } from '#workflows/ingest-document/extract-document'
 
-const documentId = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
+const DOCUMENT_ID = 'f5947cf9-48ef-4354-8c39-c1bba1444319'
 const key = Buffer.alloc(32, 7)
 const hashKey = Buffer.alloc(32, 1).toString('base64')
-const secretText = 'Synthetic Alvarez 1957-03-14 MRN-55821'
+const SECRET_TEXT = 'Synthetic Alvarez 1957-03-14 MRN-55821'
 const pages: OcrPage[] = [
   {
     blocks: [
       {
         id: 'header',
         kind: 'paragraph',
-        text: secretText,
+        text: SECRET_TEXT,
         box: { x: 0.1, y: 0.1, width: 0.4, height: 0.05 },
         continues: null,
       },
@@ -57,7 +57,7 @@ type Update = typeof documents.$inferInsert
 function harness() {
   const blobs = new Map<string, Buffer>([
     [
-      `documents/${documentId}/ocr.json.enc`,
+      `documents/${DOCUMENT_ID}/ocr.json.enc`,
       encryptArtifact(Buffer.from(JSON.stringify(pages)), key),
     ],
   ])
@@ -116,7 +116,7 @@ function assertNoContent(value: unknown) {
 test('persists the class and keeps a consent summary only for consent documents', async () => {
   for (const documentClass of ['consent', 'clinical'] as const) {
     const h = harness()
-    const result = await classifyStoredDocument(documentId, {
+    const result = await classifyStoredDocument(DOCUMENT_ID, {
       ...h.deps,
       classify: async (ocr) => {
         assert.deepEqual(ocr, pages)
@@ -140,7 +140,7 @@ test('persists the class and keeps a consent summary only for consent documents'
 
 test('hashes identifiers inside the step, links a partial match with a mismatch and returns only the strength', async () => {
   const h = harness()
-  const result = await identifyDocumentPatient(documentId, {
+  const result = await identifyDocumentPatient(DOCUMENT_ID, {
     ...h.deps,
     now: () => new Date('2026-11-20T00:00:00Z'),
     readDemographics: async () => ({
@@ -186,7 +186,7 @@ test('hashes identifiers inside the step, links a partial match with a mismatch 
 test('records no link and no mismatch when no patient shares an identifier', async () => {
   const h = harness()
   assert.deepEqual(
-    await identifyDocumentPatient(documentId, {
+    await identifyDocumentPatient(DOCUMENT_ID, {
       ...h.deps,
       readDemographics: async () => ({ sex: 'Unknown' }),
       findPatients: async () => [],
@@ -226,14 +226,14 @@ test('omits the birth year from a proposed patient aged 90 or over', () => {
 test('hides stage failures from classification and matching errors', async () => {
   const h = harness()
   const leak = async () => {
-    throw new Error(secretText)
+    throw new Error(SECRET_TEXT)
   }
   await assert.rejects(
-    classifyStoredDocument(documentId, { ...h.deps, classify: leak }),
+    classifyStoredDocument(DOCUMENT_ID, { ...h.deps, classify: leak }),
     { message: 'Document classification failed' }
   )
   await assert.rejects(
-    identifyDocumentPatient(documentId, { ...h.deps, readDemographics: leak }),
+    identifyDocumentPatient(DOCUMENT_ID, { ...h.deps, readDemographics: leak }),
     { message: 'Document patient matching failed' }
   )
   assert.deepEqual(h.updates, [])
@@ -247,15 +247,15 @@ test('stores detected spans encrypted and reuses them on retry without another m
     return spans
   }
   assert.deepEqual(
-    await detectDocumentIdentifiers(documentId, { ...h.deps, detect }),
+    await detectDocumentIdentifiers(DOCUMENT_ID, { ...h.deps, detect }),
     { spanCount: 1 }
   )
   assert.deepEqual(
-    await detectDocumentIdentifiers(documentId, { ...h.deps, detect }),
+    await detectDocumentIdentifiers(DOCUMENT_ID, { ...h.deps, detect }),
     { spanCount: 1 }
   )
   assert.equal(calls, 1)
-  const stored = h.blobs.get(`documents/${documentId}/identifiers.json.enc`)
+  const stored = h.blobs.get(`documents/${DOCUMENT_ID}/identifiers.json.enc`)
   assert.ok(stored)
   assert.deepEqual(JSON.parse(decryptArtifact(stored, key).toString()), spans)
 })
@@ -283,7 +283,7 @@ function observation(
 function extraction(extracted: ExtractedObservation[]) {
   const h = harness()
   h.blobs.set(
-    `documents/${documentId}/identifiers.json.enc`,
+    `documents/${DOCUMENT_ID}/identifiers.json.enc`,
     encryptArtifact(Buffer.from(JSON.stringify(spans)), key)
   )
   const replaced: (typeof observations.$inferInsert)[][] = []
@@ -342,7 +342,7 @@ test('extracts clinical documents with masked spans, flags low confidence and re
     observation({ effectiveDate: null, dateSource: null, name: 'Fatigue' }),
     observation({ effectiveDate: null, dateSource: null, name: 'Fatigue' }),
   ])
-  const result = await finishProcessing(documentId, 'clinical', h.overrides)
+  const result = await finishProcessing(DOCUMENT_ID, 'clinical', h.overrides)
   assert.deepEqual(result, {
     status: 'needsReview',
     observationCount: 3,
@@ -376,8 +376,8 @@ test('extracts clinical documents with masked spans, flags low confidence and re
 
 test('replaces identical observation rows when extraction is retried', async () => {
   const h = extraction([observation()])
-  await finishProcessing(documentId, 'clinical', h.overrides)
-  await finishProcessing(documentId, 'clinical', h.overrides)
+  await finishProcessing(DOCUMENT_ID, 'clinical', h.overrides)
+  await finishProcessing(DOCUMENT_ID, 'clinical', h.overrides)
   assert.deepEqual(h.replaced[0], h.replaced[1])
 })
 
@@ -387,7 +387,7 @@ test('opens review for consent and marks other documents unsupported without ext
     ['other', 'unsupported'],
   ] as const) {
     const h = extraction([])
-    const result = await finishProcessing(documentId, documentClass, {
+    const result = await finishProcessing(DOCUMENT_ID, documentClass, {
       ...h.overrides,
       extract: async () => assert.fail('extraction must not run'),
     })
@@ -399,7 +399,7 @@ test('opens review for consent and marks other documents unsupported without ext
 
 test('rejects observations citing unknown blocks without persisting or leaking content', async () => {
   const h = extraction([observation({ blockId: 'missing' })])
-  await assert.rejects(finishProcessing(documentId, 'clinical', h.overrides), {
+  await assert.rejects(finishProcessing(DOCUMENT_ID, 'clinical', h.overrides), {
     message: 'Document extraction failed',
   })
   assert.deepEqual(h.replaced, [])
@@ -418,10 +418,10 @@ test('stores unmasked OCR row geometry and removes observations covered by a row
     })),
   }))
   h.blobs.set(
-    `documents/${documentId}/ocr.json.enc`,
+    `documents/${DOCUMENT_ID}/ocr.json.enc`,
     encryptArtifact(Buffer.from(JSON.stringify(ocr)), key)
   )
-  await finishProcessing(documentId, 'clinical', {
+  await finishProcessing(DOCUMENT_ID, 'clinical', {
     ...h.overrides,
     extract: async (input) => {
       assert.deepEqual(input, ocr)
@@ -466,10 +466,10 @@ test('persists tilted source corners using stored page dimensions while coverage
     ),
   }))
   h.blobs.set(
-    `documents/${documentId}/ocr.json.enc`,
+    `documents/${DOCUMENT_ID}/ocr.json.enc`,
     encryptArtifact(Buffer.from(JSON.stringify(ocr)), key)
   )
-  await finishProcessing(documentId, 'clinical', {
+  await finishProcessing(DOCUMENT_ID, 'clinical', {
     ...h.overrides,
     find: async () => ({ pageDimensions: [{ width: 2000, height: 1000 }] }),
     extract: async () => [observation()],
@@ -496,7 +496,7 @@ test('rejects missing or invalid page dimensions before extraction without persi
   ]) {
     const h = extraction([observation()])
     await assert.rejects(
-      finishProcessing(documentId, 'clinical', {
+      finishProcessing(DOCUMENT_ID, 'clinical', {
         ...h.overrides,
         find: async () => ({ pageDimensions: dimensions }),
         extract: async () => assert.fail('extraction must not run'),

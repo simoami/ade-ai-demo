@@ -1,10 +1,10 @@
-const citationHref = /^\/documents\/([^/?#]+)\?page=([1-9]\d*)$/
+const CITATION_HREF = /^\/documents\/([^/?#]+)\?page=([1-9]\d*)$/
 
 /** Parse an assistant page citation (`/documents/<id>?page=N`); other hrefs return null. */
 export function parseCitation(
   href: string | undefined
 ): { documentId: string; page: number } | null {
-  const [, documentId, page] = href?.match(citationHref) ?? []
+  const [, documentId, page] = href?.match(CITATION_HREF) ?? []
   return documentId && page ? { documentId, page: Number(page) } : null
 }
 

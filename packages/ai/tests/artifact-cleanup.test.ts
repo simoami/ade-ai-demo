@@ -5,7 +5,7 @@ import {
   selectArtifactDeletions,
 } from '#workflows/ingest-document/artifact-cleanup'
 
-const prefix = 'documents/id/'
+const PREFIX = 'documents/id/'
 const published = [
   'pages/1-v2.webp',
   'pages/1-v2-thumb.webp',
@@ -26,7 +26,7 @@ const transient = [
   'pages/nested/1-v2.webp',
 ]
 
-const paths = (names: string[]) => names.map((name) => `${prefix}${name}`)
+const paths = (names: string[]) => names.map((name) => `${PREFIX}${name}`)
 
 test('keeps only exact published page pairs within the document prefix', () => {
   assert.deepEqual(
@@ -64,7 +64,7 @@ test('cleans all listing pages and every original after terminal review, and can
         }),
         storage: {
           list: async (scope: string, cursor?: string) => {
-            assert.equal(scope, prefix)
+            assert.equal(scope, PREFIX)
             cursors.push(cursor)
 
             return {
@@ -173,7 +173,7 @@ test('retries partial cleanup after originals and an earlier listing page were d
     /Listing unavailable/
   )
   assert.equal(blobs.has(originalPathname), false)
-  assert.equal(blobs.has(`${prefix}${transient[0]}`), false)
+  assert.equal(blobs.has(`${PREFIX}${transient[0]}`), false)
   assert.ok(blobs.size > 0)
 
   failListing = false

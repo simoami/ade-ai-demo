@@ -28,7 +28,7 @@ test('maps reset service failures to a content-free response', async (t) => {
   assert.deepEqual(await response.json(), { error: 'Service unavailable' })
 })
 
-const documentId = '981c8ddb-6a4c-5e2a-b667-cf98e800e72c'
+const DOCUMENT_ID = '981c8ddb-6a4c-5e2a-b667-cf98e800e72c'
 
 function uploadRequest(body: unknown) {
   return new Request('http://localhost/api/documents', {
@@ -39,7 +39,10 @@ function uploadRequest(body: unknown) {
 
 test('expires document and list caches only after upload startup succeeds', async (t) => {
   const invalidation = t.mock.method(recordCache, 'invalidate', () => {})
-  t.mock.method(pipeline, 'start', async () => ({ documentId, runId: 'run-1' }))
+  t.mock.method(pipeline, 'start', async () => ({
+    documentId: DOCUMENT_ID,
+    runId: 'run-1',
+  }))
   const response = await POST(
     uploadRequest({
       fileName: 'synthetic.pdf',
@@ -47,7 +50,7 @@ test('expires document and list caches only after upload startup succeeds', asyn
     })
   )
   assert.equal(response.status, 202)
-  assert.deepEqual(invalidation.mock.calls[0]?.arguments, [documentId])
+  assert.deepEqual(invalidation.mock.calls[0]?.arguments, [DOCUMENT_ID])
 })
 
 test('does not invalidate record caches for invalid uploads or failed startup', async (t) => {
