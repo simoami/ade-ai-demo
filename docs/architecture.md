@@ -5,23 +5,10 @@ A clinician uploads a scanned or digital record. The system reads it, redacts di
 ## Principles
 
 1. **Evals drive model work.** Each model-backed stage has a synthetic dataset and scorers, and prompt or model changes are compared against a baseline. See [Evaluation](#evaluation).
-2. **Fail closed on privacy.** Published pages burn every applied or accepted redaction, and uncertain candidates stay outlined until a reviewer decides. Unredacted renders are visible only while a document is being read and redacted.
+2. **Fail closed on privacy.** Published pages burn every applied or accepted redaction, and uncertain candidates stay outlined until a reviewer decides. Unredacted renders are visible only while a document is being evaluated and redacted.
 3. **Everything cites its source.** Observations, redactions and note chunks keep their page and box, so reviewers can check each one on the page.
 4. **Deterministic pipeline, models for narrow judgments.** A durable workflow orders the steps. Models classify, read demographics, find identifiers and extract observations through structured output; the chat assistant can only read through typed tools.
 5. **Replay-safe writes.** Rows use deterministic IDs and are replaced as a set, so a retried step never duplicates data.
-
-## Packages
-
-| Package            | Responsibility                                                                 |
-| ------------------ | ------------------------------------------------------------------------------ |
-| `apps/web`         | Next.js UI, document API gateway and chat route                                |
-| `packages/ai`      | eve service, ingestion workflow, pipeline stages, chat tools and model registry |
-| `packages/db`      | Drizzle schema and migrations for Neon Postgres with pgvector                  |
-| `packages/storage` | Thin wrapper over Vercel Blob with no document logic                           |
-| `packages/logger`  | Shared logger that masks sensitive keys                                        |
-| `packages/ui`      | shadcn components on Base UI                                                   |
-
-`packages/ai` owns everything document-specific about storage: artifact paths, encryption of review-only artifacts and their deletion.
 
 ## Services
 
@@ -117,7 +104,3 @@ Model-backed stages are built against evaluations, and [`docs/evals.md`](evals.m
 - **Suites per stage.** OCR, classification, demographics, PII detection, extraction and note retrieval. Run them with `pnpm eval`.
 - **Gates and scores.** Privacy and correctness metrics, such as identifier recall and OCR error rates, are gates that fail the suite; the rest are tracked scores.
 - **Experiments.** Results upload to Braintrust with the prompt version, model and dataset version, so a change is compared against its baseline.
-
-## Delivery
-
-`main` deploys to production on Vercel, and other branches get preview deployments. Production and local development use separate Neon branches and Blob stores; each Neon branch is migrated and seeded with the synthetic samples. Deployments need Deployment Protection and the service credentials listed in `AGENTS.md`.
