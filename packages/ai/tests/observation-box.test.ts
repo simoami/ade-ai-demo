@@ -69,61 +69,51 @@ test('selects only the matching narrative line', () => {
   )
 })
 
-test('outlines a stacked label and its combined value without neighbouring fields', () => {
+test('outlines a field grid label with its value and unit, never neighbouring fields', () => {
   const grid = { ...block, kind: 'other' as const }
-  const field = (text: string, x: number, y: number): Word => ({
-    text,
-    blockId: block.id,
-    box: { x, y, width: 0.08, height: 0.02 },
-  })
-  const actual = observationBox(
-    grid,
-    [
-      field('Blood', 0.1, 0.15),
-      field('Pressure', 0.19, 0.15),
-      field('Heart', 0.4, 0.15),
-      field('Rate', 0.49, 0.15),
-      field('128/78', 0.1, 0.2),
-      field('76', 0.4, 0.2),
-    ],
-    { name: 'Blood pressure', value: '128/78', valueNumeric: null }
-  )
-  assert.equal(actual.x, 0.1)
-  assert.equal(actual.y, 0.15)
-  assert.ok(Math.abs(actual.width - 0.17) < 1e-12)
-  assert.ok(Math.abs(actual.height - 0.07) < 1e-12)
-})
+  // Each field is a label above its value; columns sit far apart and words within a field are close.
+  const field = (column: number, y: number, text: string): Word[] => {
+    let x = 0.1 + column * 0.3
+    return text.split(' ').map((part) => {
+      const word = {
+        text: part,
+        blockId: block.id,
+        box: { x, y, width: part.length * 0.01, height: 0.02 },
+      }
+      x += word.box.width + 0.008
+      return word
+    })
+  }
+  const words = [
+    ...field(0, 0.15, 'Blood Pressure'),
+    ...field(1, 0.15, 'Heart Rate'),
+    ...field(2, 0.15, 'Respiratory Rate'),
+    ...field(0, 0.2, '128/78'),
+    ...field(1, 0.2, '76'),
+    ...field(2, 0.2, '16'),
+    ...field(0, 0.3, 'Ht'),
+    ...field(1, 0.3, 'Temperature'),
+    ...field(0, 0.35, '178 cm'),
+    ...field(1, 0.35, '98.4°F'),
+  ]
+  const outline = (
+    name: string,
+    value: string,
+    valueNumeric: number | null
+  ) => {
+    const { x, width } = observationBox(grid, words, {
+      name,
+      value,
+      valueNumeric,
+    })
+    return [x, x + width].map((edge) => Number(edge.toFixed(3)))
+  }
 
-test('matches an abbreviated printed label above its value', () => {
-  const actual = observationBox(
-    block,
-    [
-      {
-        text: 'BP',
-        blockId: block.id,
-        box: { x: 0.1, y: 0.15, width: 0.08, height: 0.02 },
-      },
-      {
-        text: '128/78',
-        blockId: block.id,
-        box: { x: 0.1, y: 0.2, width: 0.08, height: 0.02 },
-      },
-      {
-        text: 'BMI',
-        blockId: block.id,
-        box: { x: 0.4, y: 0.15, width: 0.08, height: 0.02 },
-      },
-      {
-        text: '24',
-        blockId: block.id,
-        box: { x: 0.4, y: 0.2, width: 0.08, height: 0.02 },
-      },
-    ],
-    { name: 'BP', value: '128/78', valueNumeric: null }
-  )
-  assert.equal(actual.x, 0.1)
-  assert.ok(Math.abs(actual.width - 0.08) < 1e-12)
-  assert.ok(Math.abs(actual.height - 0.07) < 1e-12)
+  assert.deepEqual(outline('Blood Pressure', '128/78', null), [0.1, 0.238])
+  assert.deepEqual(outline('Heart Rate', '76', 76), [0.4, 0.498])
+  assert.deepEqual(outline('Respiratory Rate', '16', 16), [0.7, 0.858])
+  assert.deepEqual(outline('Temperature', '98.4', 98.4), [0.4, 0.51])
+  assert.deepEqual(outline('Ht', '178', 178), [0.1, 0.158])
 })
 
 test('falls back to the block when words or matches are missing', () => {

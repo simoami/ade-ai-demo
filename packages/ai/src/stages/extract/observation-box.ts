@@ -30,6 +30,31 @@ function center(word: Word) {
   return word.box.y + word.box.height / 2
 }
 
+/**
+ * Grows an anchor word into the phrase around it on the same line, e.g. "Heart" → "Heart Rate" or "178" → "178 cm".
+ * It stops at gaps wider than a word's height, which separate the columns of a field grid.
+ */
+function phrase(anchor: Word, words: Word[]) {
+  const line = words
+    .filter(
+      (word) => Math.abs(center(word) - center(anchor)) <= anchor.box.height / 2
+    )
+    .sort((a, b) => a.box.x - b.box.x)
+  const gap = (left: Word, right: Word) =>
+    right.box.x - (left.box.x + left.box.width)
+  let start = line.indexOf(anchor)
+  let end = start
+  while (start > 0 && gap(line[start - 1], line[start]) <= anchor.box.height)
+    start--
+  while (
+    end < line.length - 1 &&
+    gap(line[end], line[end + 1]) <= anchor.box.height
+  )
+    end++
+
+  return line.slice(start, end + 1)
+}
+
 /** Locates an observation's complete OCR row or lines, clipped to its cited block. */
 export function observationBox(
   block: Block,
@@ -60,16 +85,19 @@ export function observationBox(
       .map(normalize)
       .filter(Boolean)
   )
-  const allNameTokens = observation.name
+  const nameTokens = observation.name
     .split(/\s+/)
     .map(normalize)
     .filter(
       (token) =>
         token.length > 1 && !/^(the|of|and|in|on|with|for)$/.test(token)
     )
-  const nameTokens = allNameTokens.slice(0, 2)
+    .slice(0, 2)
+  // Units printed against the number ("98.4°F") still match the value 98.4.
   const values = blockWords.filter((word) =>
-    valueTokens.has(normalize(word.text))
+    [word.text, word.text.match(/-?\d+(?:\.\d+)?/)?.[0] ?? ''].some((part) =>
+      valueTokens.has(normalize(part))
+    )
   )
   const names = nameTokens.flatMap((token) =>
     blockWords.filter((word) => normalize(word.text) === token)
@@ -102,14 +130,7 @@ export function observationBox(
   // widening to full rows would cover every neighbouring field in the grid.
   const stacked = value && name && !pairs[0]?.sameBand
   const row = stacked
-    ? [
-        value,
-        ...blockWords.filter(
-          (word) =>
-            Math.abs(center(word) - center(name)) <= name.box.height / 2 &&
-            allNameTokens.includes(normalize(word.text))
-        ),
-      ]
+    ? [...phrase(name, blockWords), ...phrase(value, blockWords)]
     : blockWords.filter((word) => center(word) >= top && center(word) <= bottom)
   const rectangle = bounds(row.flatMap((word) => corners(word.box)))
   const points = corners(rectangle).map(
