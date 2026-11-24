@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from '@repo/ui/components/alert'
 import { Button } from '@repo/ui/components/button'
 import {
   Dialog,
@@ -7,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@repo/ui/components/dialog'
+import { Info } from 'lucide-react'
 import { type MouseEvent, useState, useSyncExternalStore } from 'react'
 import { PipelineStages } from '#components/pipeline-stages'
 import { dismissWelcome, shouldShowWelcome } from '#lib/welcome'
@@ -57,17 +59,22 @@ export function WelcomeDialog({ samplesId }: { samplesId: string }) {
           <DialogTitle>Try the document pipeline</DialogTitle>
         </DialogHeader>
         <PipelineStages />
-        <DialogDescription>
-          Download a{' '}
-          <a
-            href={`#${samplesId}`}
-            className="rounded-sm text-primary underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-popover"
-            onClick={handleShowSamples}
-          >
-            sample document
-          </a>{' '}
-          and upload it to see the extraction pipeline in action.
-        </DialogDescription>
+        <Alert>
+          <Info aria-hidden />
+          <AlertDescription>
+            <DialogDescription>
+              Download a{' '}
+              <a
+                href={`#${samplesId}`}
+                className="rounded-sm text-primary underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-popover"
+                onClick={handleShowSamples}
+              >
+                sample document
+              </a>{' '}
+              and upload it to see the extraction pipeline in action.
+            </DialogDescription>
+          </AlertDescription>
+        </Alert>
         <DialogFooter>
           <label className="flex items-center gap-2">
             <input
