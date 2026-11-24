@@ -5,6 +5,7 @@ import {
   type ObservationView,
   observationFlag,
   observationTrends,
+  referenceRange,
 } from './observations.ts'
 
 const observation: ObservationView = {
@@ -232,4 +233,24 @@ test('groups coded vitals across printed labels while keeping units and uncoded 
     ]),
     []
   )
+})
+
+test('prints-reference-range-from-text-or-bounds', () => {
+  assert.equal(
+    referenceRange({
+      ...observation,
+      details: { referenceRange: '70-99 mg/dL', rangeLow: 1 },
+    }),
+    '70-99 mg/dL'
+  )
+  assert.equal(referenceRange(observation), '70–99 mg/dL')
+  assert.equal(
+    referenceRange({ ...observation, details: { rangeLow: 3.5 } }),
+    '≥3.5 mg/dL'
+  )
+  assert.equal(
+    referenceRange({ ...observation, unit: '', details: { rangeHigh: 5 } }),
+    '≤5'
+  )
+  assert.equal(referenceRange({ ...observation, details: {} }), null)
 })

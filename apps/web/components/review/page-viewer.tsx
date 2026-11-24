@@ -1,5 +1,3 @@
-import { Button } from '@repo/ui/components/button'
-import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -7,10 +5,17 @@ import {
   TransformComponent,
   TransformWrapper,
 } from 'react-zoom-pan-pinch'
-import { PageSkeleton } from '#components/record-skeletons'
+import { PageSkeleton } from '#components/record-skeletons/page-skeleton'
 import { getCoverScale, nextZoomStep, zoomSteps } from '#lib/page-zoom'
 import type { Box, PageImage, Redaction } from '#lib/records-types'
 import { outsetOutline } from './page-outline'
+import { PageNavigation } from './page-viewer/page-navigation.tsx'
+import {
+  type OutlineShape,
+  PageOutlines,
+} from './page-viewer/page-outlines.tsx'
+import { PageStatusBar } from './page-viewer/page-status-bar.tsx'
+import { ZoomControls } from './page-viewer/zoom-controls.tsx'
 
 // The library clamps the centered position to the page edges.
 const SELECTION_ZOOM = 1.5
@@ -83,24 +88,30 @@ export function PageViewer({
 
   const selectedId = outlines.find(({ tone }) => tone === 'selected')?.id
 
-  const shapes = outlines.map(({ id, box, points, tone, spotlight }) => {
-    const corners = points ?? [
-      [box.x, box.y],
-      [box.x + box.width, box.y],
-      [box.x + box.width, box.y + box.height],
-      [box.x, box.y + box.height],
-    ]
-    const polygon = outsetOutline(
-      corners.map(([x, y]): [number, number] => [
-        x * pageSize.width,
-        y * pageSize.height,
-      ])
-    ).map(([x, y]) => `${x},${y}`)
+  const shapes = outlines.map(
+    ({ id, box, points, tone, spotlight }): OutlineShape => {
+      const corners = points ?? [
+        [box.x, box.y],
+        [box.x + box.width, box.y],
+        [box.x + box.width, box.y + box.height],
+        [box.x, box.y + box.height],
+      ]
+      const polygon = outsetOutline(
+        corners.map(([x, y]): [number, number] => [
+          x * pageSize.width,
+          y * pageSize.height,
+        ])
+      ).map(([x, y]) => `${x},${y}`)
 
-    return { id, tone, spotlight, polygon }
-  })
-
-  const spotlight = shapes.find((shape) => shape.spotlight)
+      return {
+        id,
+        elementId: tone === 'selected' ? selectedOutlineId(id) : undefined,
+        tone,
+        spotlight,
+        polygon,
+      }
+    }
+  )
 
   // Runs after the page is centered, so a selection elsewhere on the page is brought into view.
   useEffect(() => {
@@ -151,6 +162,10 @@ export function PageViewer({
       : viewer.zoomOut(current - next))
   }
 
+  function handleResetZoom() {
+    void transformRef.current?.centerView(1)
+  }
+
   if (images.length === 0) {
     return (
       <section
@@ -167,55 +182,17 @@ export function PageViewer({
     <section className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-muted/60">
       <div className="flex h-[42px] shrink-0 items-center justify-end border-b bg-card px-3.5 text-[10px] text-muted-foreground">
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Zoom out"
-            disabled={nextZoomStep(zoom, 'out') === undefined}
-            onClick={() => handleStepZoom('out')}
-          >
-            <ZoomOut />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-12 px-0 text-[10px] tabular-nums"
-            aria-label="Reset zoom to 100%"
-            onClick={() => void transformRef.current?.centerView(1)}
-          >
-            {Math.round(zoom * 100)}%
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Zoom in"
-            disabled={nextZoomStep(zoom, 'in') === undefined}
-            onClick={() => handleStepZoom('in')}
-          >
-            <ZoomIn />
-          </Button>
+          <ZoomControls
+            zoom={zoom}
+            onStep={handleStepZoom}
+            onReset={handleResetZoom}
+          />
           <span className="mx-1 h-4 w-px bg-border" />
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Previous page"
-            disabled={page === 1}
-            onClick={() => onPage(page - 1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <span className="w-16 text-center tabular-nums">
-            {page} of {images.length}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Next page"
-            disabled={page === images.length}
-            onClick={() => onPage(page + 1)}
-          >
-            <ChevronRight />
-          </Button>
+          <PageNavigation
+            page={page}
+            pageCount={images.length}
+            onPage={onPage}
+          />
         </div>
       </div>
 
@@ -288,64 +265,17 @@ export function PageViewer({
                   priority
                   draggable={false}
                 />
-                <svg
-                  viewBox={`0 0 ${pageSize.width || 1} ${pageSize.height || 1}`}
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 size-full overflow-visible"
-                >
-                  {spotlight && (
-                    <path
-                      d={`M0 0H${pageSize.width}V${pageSize.height}H0Z M${spotlight.polygon.join(' L')}Z`}
-                      fillRule="evenodd"
-                      className="fill-black/15 animate-in fade-in duration-200"
-                    />
-                  )}
-                  {shapes.map(({ id, polygon, tone }) => {
-                    const coordinates = polygon.join(' ')
-
-                    return (
-                      <g
-                        key={id}
-                        id={
-                          tone === 'selected'
-                            ? selectedOutlineId(id)
-                            : undefined
-                        }
-                        fill="none"
-                        strokeWidth={1.25}
-                        strokeLinejoin="round"
-                      >
-                        <polygon
-                          points={coordinates}
-                          stroke="white"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                        <polygon
-                          points={coordinates}
-                          stroke="black"
-                          vectorEffect="non-scaling-stroke"
-                          strokeDasharray={tone === 'selected' ? '5 5' : '4 6'}
-                          className="animate-marching-ants motion-reduce:animate-none"
-                        />
-                      </g>
-                    )
-                  })}
-                </svg>
+                <PageOutlines
+                  width={pageSize.width}
+                  height={pageSize.height}
+                  shapes={shapes}
+                />
               </div>
             </TransformComponent>
           </TransformWrapper>
         )}
       </section>
-      <div className="flex h-[29px] shrink-0 items-center justify-between border-t bg-card/50 px-3 text-[8.5px] text-muted-foreground [&_span]:flex [&_span]:items-center [&_span]:gap-1">
-        <span>
-          <Lock size={13} />
-          Read only
-        </span>
-        <span>
-          Page {page} of {images.length}
-        </span>
-      </div>
+      <PageStatusBar page={page} pageCount={images.length} />
     </section>
   )
 }

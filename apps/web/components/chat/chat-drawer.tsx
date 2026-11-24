@@ -1,64 +1,20 @@
 'use client'
 
-import { useChat } from '@ai-sdk/react'
-import type { ChatMessage, PageContext } from '@repo/ai/chat'
-import { Badge } from '@repo/ui/components/badge'
 import { Button } from '@repo/ui/components/button'
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
 } from '@repo/ui/components/drawer'
-import { Textarea } from '@repo/ui/components/textarea'
-import { DefaultChatTransport } from 'ai'
-import { MessageSquare, X } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
-import { ChatPart, MessageCitations } from '#components/chat/chat-parts'
 import {
   type DocumentRef,
   pageContext,
   pageScopeLabel,
 } from '#lib/page-context'
-
-const transport = new DefaultChatTransport<ChatMessage>({ api: '/api/chat' })
-
-// Roughly two pages of typed text: room for a pasted excerpt, short of flooding the model's context.
-const MAX_MESSAGE_LENGTH = 8000
-
-const presets = {
-  patient: [
-    "Show this patient's glucose trend against the reference range.",
-    'Which labs are out of range?',
-    'Summarize adverse events, with seriousness and dates.',
-    "Show this patient's timeline across documents.",
-  ],
-  document: [
-    'What does this document say about the plan or assessment?',
-    'What still needs my attention before I can mark this reviewed?',
-    'Which labs are out of range?',
-  ],
-  documents: [
-    'Which documents are waiting for review, and why?',
-    'Which documents have flagged observations?',
-    'Which documents still have unchecked observations?',
-  ],
-  patients: [
-    'Which patients have abnormal labs or serious adverse events?',
-    'Show abnormal lab results across patients.',
-    'Summarize serious adverse events across patients.',
-  ],
-}
+import { ChatDrawerHeader } from './chat-drawer/chat-drawer-header.tsx'
+import { Conversation } from './chat-drawer/conversation.tsx'
 
 /** Ephemeral, page-scoped clinical assistant mounted beside the theme toggle. */
 export function ChatDrawer({ documents }: { documents: DocumentRef[] }) {
@@ -83,164 +39,9 @@ export function ChatDrawer({ documents }: { documents: DocumentRef[] }) {
         keepMounted
         className="rounded-none border-s shadow-xl [--drawer-inset:0px] data-[swipe-axis=x]:w-full data-[swipe-axis=x]:sm:w-md"
       >
-        <DrawerHeader className="flex-row items-start justify-between border-b">
-          <div>
-            <DrawerTitle>Clinical assistant</DrawerTitle>
-            <DrawerDescription>
-              Answers from redacted records. Verify unreviewed values.
-            </DrawerDescription>
-            <Badge
-              variant="secondary"
-              className="mt-2 max-w-full whitespace-normal break-all"
-            >
-              {pageScopeLabel(context, documents)}
-            </Badge>
-          </div>
-          <DrawerClose
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Close assistant"
-              />
-            }
-          >
-            <X />
-          </DrawerClose>
-        </DrawerHeader>
+        <ChatDrawerHeader scopeLabel={pageScopeLabel(context, documents)} />
         <Conversation key={pathname} context={context} documents={documents} />
       </DrawerContent>
     </Drawer>
-  )
-}
-
-function Conversation({
-  context,
-  documents,
-}: {
-  context: PageContext
-  documents: DocumentRef[]
-}) {
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
-    transport,
-  })
-  const [input, setInput] = useState('')
-  const end = useRef<HTMLDivElement>(null)
-  const busy = status === 'submitted' || status === 'streaming'
-
-  useEffect(() => {
-    if (messages.length || busy) end.current?.scrollIntoView({ block: 'end' })
-  }, [messages, busy])
-
-  useEffect(
-    () => () => {
-      void stop()
-    },
-    [stop]
-  )
-
-  function handleSend(text: string) {
-    if (!text.trim() || busy) return
-
-    void sendMessage({ text: text.trim() }, { body: { context } })
-    setInput('')
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    handleSend(input)
-  }
-
-  function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    setInput(event.target.value)
-  }
-
-  function handleStop() {
-    void stop()
-  }
-
-  return (
-    <>
-      <div
-        className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4"
-        role="log"
-        aria-label="Conversation"
-      >
-        {messages.length === 0 && (
-          <div className="space-y-2">
-            <p className="text-muted-foreground">
-              Ask about the records on this page.
-            </p>
-            {presets[context.page].map((prompt) => (
-              <Button
-                key={prompt}
-                variant="outline"
-                className="h-auto w-full justify-start whitespace-normal text-left"
-                disabled={busy}
-                onClick={() => handleSend(prompt)}
-              >
-                {prompt}
-              </Button>
-            ))}
-          </div>
-        )}
-        {messages.map((message) => (
-          <article
-            key={message.id}
-            aria-label={message.role === 'user' ? 'You' : 'Assistant'}
-            className={
-              message.role === 'user'
-                ? 'ms-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-muted px-3 py-2'
-                : 'space-y-2'
-            }
-          >
-            <MessageCitations parts={message.parts} documents={documents}>
-              {message.parts.map((part, index) => (
-                <ChatPart
-                  // biome-ignore lint/suspicious/noArrayIndexKey: Stream parts are append-only and text parts have no IDs.
-                  key={`${message.id}-${index}`}
-                  part={part}
-                  context={context}
-                  role={message.role}
-                />
-              ))}
-            </MessageCitations>
-          </article>
-        ))}
-        {Boolean(busy) && (
-          <p role="status" className="text-muted-foreground">
-            {status === 'submitted' ? 'Thinking…' : 'Answering…'}
-          </p>
-        )}
-        {Boolean(error) && (
-          <p role="alert">The assistant could not answer. Please try again.</p>
-        )}
-        <div ref={end} />
-      </div>
-      <form className="space-y-2 border-t p-4" onSubmit={handleSubmit}>
-        <Textarea
-          aria-label="Message the assistant"
-          placeholder="Ask about these records…"
-          value={input}
-          onChange={handleInputChange}
-          disabled={busy}
-          maxLength={MAX_MESSAGE_LENGTH}
-        />
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-xs text-muted-foreground">
-            Conversation clears when you leave this page.
-          </p>
-          {busy ? (
-            <Button type="button" variant="outline" onClick={handleStop}>
-              Stop
-            </Button>
-          ) : (
-            <Button type="submit" disabled={!input.trim()}>
-              Send
-            </Button>
-          )}
-        </div>
-      </form>
-    </>
   )
 }

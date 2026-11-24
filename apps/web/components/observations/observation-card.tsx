@@ -1,10 +1,4 @@
-import { Badge } from '@repo/ui/components/badge'
 import { Card } from '@repo/ui/components/card'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@repo/ui/components/tooltip'
 import { cn } from '@repo/ui/lib/utils'
 import {
   AlertTriangle,
@@ -17,13 +11,10 @@ import {
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { formatDate } from '#lib/format'
-import {
-  type ObservationView,
-  observationFlag,
-  observationKindLabels,
-} from '#lib/observations'
-
-type Flag = NonNullable<ReturnType<typeof observationFlag>>
+import { type ObservationView, observationKindLabels } from '#lib/observations'
+import { KindDetail } from './observation-card/kind-detail.tsx'
+import { RangeBar } from './observation-card/range-bar.tsx'
+import { ReviewState } from './observation-card/review-state.tsx'
 
 const kindIcons = {
   lab: FlaskConical,
@@ -32,16 +23,6 @@ const kindIcons = {
   'adverse-event': AlertTriangle,
   'medical-history': History,
   medication: Pill,
-}
-
-const flagTones: Record<Flag, { badge: string; marker: string }> = {
-  normal: { badge: 'bg-success-muted text-success', marker: 'bg-success' },
-  low: { badge: 'bg-warning-muted text-warning', marker: 'bg-warning' },
-  high: { badge: 'bg-warning-muted text-warning', marker: 'bg-warning' },
-  abnormal: {
-    badge: 'bg-destructive/10 text-destructive',
-    marker: 'bg-destructive',
-  },
 }
 
 /** Kind-accented clinical card with optional review actions and keyboard-accessible selection. */
@@ -120,197 +101,4 @@ export function ObservationCard({
       </div>
     </Card>
   )
-}
-
-function KindDetail({ observation }: { observation: ObservationView }) {
-  const { kind, value, unit, details } = observation
-  const muted = 'text-xs text-muted-foreground'
-  const period = [
-    details.startDate ? formatDate(details.startDate) : null,
-    details.ongoing
-      ? 'Ongoing'
-      : details.endDate
-        ? formatDate(details.endDate)
-        : null,
-  ]
-    .filter(Boolean)
-    .join(' – ')
-
-  switch (kind) {
-    case 'lab':
-    case 'vital': {
-      const flag = observationFlag(observation)
-      const range = referenceRange(observation)
-      return (
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="font-mono text-lg font-semibold tabular-nums">
-            {value}
-            {unit && !value.endsWith(unit) && (
-              <span className="ms-1 font-sans text-sm font-normal text-muted-foreground">
-                {unit}
-              </span>
-            )}
-          </span>
-          {flag && (
-            <Badge
-              variant="outline"
-              className={cn('border-transparent', flagTones[flag].badge)}
-            >
-              {flag}
-            </Badge>
-          )}
-          {range && <span className={muted}>Ref {range}</span>}
-          {details.components?.length ? (
-            <p className="w-full text-xs text-muted-foreground">
-              {details.components
-                .map(
-                  (component) =>
-                    `${component.name.replace(' blood pressure', '')} ${component.value}`
-                )
-                .join(' · ')}
-            </p>
-          ) : null}
-        </div>
-      )
-    }
-    case 'adverse-event':
-      return (
-        <div className={cn('flex flex-wrap items-center gap-1.5', muted)}>
-          {period && <span>{period}</span>}
-          {details.serious ? (
-            <Badge variant="destructive">Serious</Badge>
-          ) : (
-            <span>
-              {details.serious === false ? 'Non-serious' : details.seriousness}
-            </span>
-          )}
-          {details.outcome ? (
-            <span>· {details.outcome.replaceAll('-', ' ')}</span>
-          ) : null}
-        </div>
-      )
-    case 'medical-history':
-      return (
-        <div className={cn('flex flex-wrap items-center gap-2', muted)}>
-          {details.startDate ? (
-            <span>
-              Since {formatDate(details.startDate)}
-              {!details.ongoing && details.endDate
-                ? ` – ${formatDate(details.endDate)}`
-                : ''}
-            </span>
-          ) : null}
-          {Boolean(details.ongoing) && <Badge variant="outline">Ongoing</Badge>}
-        </div>
-      )
-    case 'medication':
-      return (
-        <div>
-          <p className="font-medium">{value}</p>
-          {Boolean(details.route || details.frequency) && (
-            <p className={muted}>
-              {[details.route, details.frequency].filter(Boolean).join(' · ')}
-            </p>
-          )}
-          {period && <p className={muted}>{period}</p>}
-        </div>
-      )
-    case 'symptom':
-      return <p className="text-muted-foreground">{value}</p>
-  }
-}
-
-function ReviewState({ state }: { state: ObservationView['state'] }) {
-  if (state === 'accepted')
-    return (
-      <Badge
-        variant="outline"
-        className="border-transparent bg-success-muted text-success"
-      >
-        Accepted
-      </Badge>
-    )
-  if (state === 'rejected')
-    return (
-      <Badge variant="outline" className="text-destructive">
-        Rejected
-      </Badge>
-    )
-
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        render={<Badge variant="outline" className="text-muted-foreground" />}
-      >
-        {state === 'needsReview' ? 'Needs review' : 'Extracted'}
-      </TooltipTrigger>
-      <TooltipContent>Unverified observation</TooltipContent>
-    </Tooltip>
-  )
-}
-
-/** Plots the value against one or both reference bounds, padded so out-of-range values stay visible. */
-function RangeBar({ observation }: { observation: ObservationView }) {
-  const { rangeLow: low, rangeHigh: high } = observation.details
-  const value = observation.valueNumeric
-  const flag = observationFlag(observation)
-  if (value === null || !flag || (low == null && high == null)) return null
-  if (low != null && high != null && high <= low) return null
-
-  const points = [low, high, value].filter((point) => point != null)
-  const spread =
-    Math.max(...points) - Math.min(...points) || Math.abs(value) || 1
-  const start = Math.min(...points) - spread / 3
-  const span = Math.max(...points) + spread / 3 - start
-  const percent = (point: number) => ((point - start) / span) * 100
-  const normalStart = low == null ? 0 : percent(low)
-  const normalEnd = high == null ? 100 : percent(high)
-
-  return (
-    <div
-      role="img"
-      aria-label={`${observation.value} is ${flag}; reference ${referenceRange(observation)}`}
-      className="relative mt-1.5 mb-0.5 h-1.5 rounded-full bg-muted"
-    >
-      <span
-        className="absolute inset-y-0 bg-success-muted"
-        style={{
-          left: `${normalStart}%`,
-          width: `${normalEnd - normalStart}%`,
-        }}
-      />
-      {[low, high].map((bound) =>
-        bound == null ? null : (
-          <span
-            key={bound}
-            className="absolute -inset-y-1 w-px bg-success"
-            // Snap to a whole pixel so 1px markers don't blur at fractional offsets.
-            style={{ left: `round(${percent(bound)}%, 1px)` }}
-          />
-        )
-      )}
-      <span
-        className={cn(
-          'absolute top-1/2 size-2.5 -translate-1/2 rounded-full border-2 border-card',
-          flagTones[flag].marker
-        )}
-        style={{ left: `${percent(value)}%` }}
-      />
-    </div>
-  )
-}
-
-/** Parsed limits as printed text: both → "3.5–5.0", one side → "≥3.5" or "≤5.0", neither → null. */
-function rangeBounds(low?: number | null, high?: number | null) {
-  if (low != null && high != null) return `${low}–${high}`
-  if (low != null) return `≥${low}`
-  if (high != null) return `≤${high}`
-  return null
-}
-
-function referenceRange({ details, unit }: ObservationView) {
-  if (details.referenceRange) return details.referenceRange
-
-  const bounds = rangeBounds(details.rangeLow, details.rangeHigh)
-  return bounds && unit ? `${bounds} ${unit}` : bounds
 }

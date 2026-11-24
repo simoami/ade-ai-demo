@@ -1,12 +1,9 @@
 import { Suspense } from 'react'
-import { DocumentRow } from '#components/document-row'
-import { DocumentStats } from '#components/document-stats'
-import { DocumentsList } from '#components/documents-list'
-import { ProcessingRefresh } from '#components/processing-refresh'
-import { StatsSkeleton, TableSkeleton } from '#components/record-skeletons'
+import { CurrentDocumentStats } from '#components/current-document-stats'
+import { RecentDocuments } from '#components/recent-documents'
+import { StatsSkeleton } from '#components/record-skeletons/stats-skeleton'
+import { TableSkeleton } from '#components/record-skeletons/table-skeleton'
 import { UploadZone } from '#components/upload-zone'
-import { reviewMode } from '#lib/review'
-import { getDocuments } from '#lib/server/records'
 
 /** Document operations with a prerendered upload entry point. */
 export default function DocumentsPage() {
@@ -24,39 +21,12 @@ export default function DocumentsPage() {
       </header>
 
       <Suspense fallback={<StatsSkeleton />}>
-        <Stats />
+        <CurrentDocumentStats />
       </Suspense>
       <UploadZone />
       <Suspense fallback={<TableSkeleton />}>
         <RecentDocuments />
       </Suspense>
     </main>
-  )
-}
-
-async function Stats() {
-  return <DocumentStats documents={await getDocuments()} />
-}
-
-async function RecentDocuments() {
-  const documents = await getDocuments()
-  return (
-    <>
-      <ProcessingRefresh
-        path="/documents"
-        active={documents.some(
-          (document) => reviewMode(document.status) === 'processing'
-        )}
-      />
-      <DocumentsList
-        documents={documents}
-        renderedRows={Object.fromEntries(
-          documents.map((document) => [
-            document.id,
-            <DocumentRow key={document.id} document={document} />,
-          ])
-        )}
-      />
-    </>
   )
 }

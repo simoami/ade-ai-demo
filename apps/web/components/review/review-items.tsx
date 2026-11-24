@@ -1,19 +1,10 @@
-import { Badge } from '@repo/ui/components/badge'
-import { Button } from '@repo/ui/components/button'
-import { Card } from '@repo/ui/components/card'
-import { cn } from '@repo/ui/lib/utils'
-import {
-  Check,
-  Image,
-  ScanFace,
-  Signature,
-  Type,
-  UserSquare,
-  X,
-} from 'lucide-react'
 import { ObservationCard } from '#components/observations/observation-card'
 import { groupObservations, type ObservationView } from '#lib/observations'
 import type { redactionIconKind } from '#lib/review'
+import { DecisionActions } from './review-items/decision-actions.tsx'
+import { DecisionLabel } from './review-items/decision-label.tsx'
+import { ItemGroup } from './review-items/item-group.tsx'
+import { ReviewItemRow } from './review-items/review-item-row.tsx'
 
 /** Selectable source region with optional clinical presentation. */
 export type ReviewItem = {
@@ -27,14 +18,6 @@ export type ReviewItem = {
 }
 
 type Decision = 'accepted' | 'rejected'
-
-const redactionIcons = {
-  text: Type,
-  patientPhoto: UserSquare,
-  face: ScanFace,
-  signature: Signature,
-  picture: Image,
-}
 
 /** Groups clinical cards by kind while keeping flagged items visible across pages. */
 export function ReviewItems({
@@ -101,24 +84,11 @@ export function ReviewItems({
           {group.items.map((item) => {
             const actions =
               item.state === 'needsReview' && !readOnly ? (
-                <div key={item.id} className="flex shrink-0 gap-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onDecide(item.id, 'accepted')}
-                  >
-                    <Check data-icon="inline-start" />
-                    Accept
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onDecide(item.id, 'rejected')}
-                  >
-                    <X data-icon="inline-start" />
-                    Reject
-                  </Button>
-                </div>
+                <DecisionActions
+                  key={item.id}
+                  onAccept={() => onDecide(item.id, 'accepted')}
+                  onReject={() => onDecide(item.id, 'rejected')}
+                />
               ) : undefined
 
             return item.observation ? (
@@ -131,7 +101,7 @@ export function ReviewItems({
                 />
               </li>
             ) : (
-              <Row
+              <ReviewItemRow
                 key={item.id}
                 item={item}
                 selected={item.id === selectedId}
@@ -139,100 +109,13 @@ export function ReviewItems({
               >
                 {actions ??
                   ((item.state === 'accepted' || item.state === 'rejected') && (
-                    <span
-                      className={cn(
-                        'text-xs',
-                        item.state === 'rejected'
-                          ? 'text-destructive'
-                          : 'text-muted-foreground'
-                      )}
-                    >
-                      {item.state === 'accepted' ? 'Accepted' : 'Rejected'}
-                    </span>
+                    <DecisionLabel state={item.state} />
                   ))}
-              </Row>
+              </ReviewItemRow>
             )
           })}
         </ItemGroup>
       ))}
     </div>
-  )
-}
-
-/** A list under an optional section title with its count. */
-function ItemGroup({
-  title,
-  count,
-  children,
-  separateCards,
-}: {
-  title: string | null
-  count: number
-  separateCards: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <section className="flex flex-col">
-      {title !== null && (
-        <h3 className="flex items-center gap-1.5 pb-2 text-[11px] font-semibold tracking-wide text-foreground uppercase">
-          {title}
-          <Badge variant="secondary" className="tabular-nums">
-            {count}
-          </Badge>
-        </h3>
-      )}
-      {separateCards ? (
-        <ul className="flex flex-col gap-2">{children}</ul>
-      ) : (
-        <Card render={<ul />} className="flex flex-col divide-y rounded-md">
-          {children}
-        </Card>
-      )}
-    </section>
-  )
-}
-
-function Row({
-  item,
-  selected,
-  onSelect,
-  children,
-}: {
-  item: ReviewItem
-  selected: boolean
-  onSelect: (item: ReviewItem) => void
-  children?: React.ReactNode
-}) {
-  const Icon = item.redactionIcon && redactionIcons[item.redactionIcon]
-
-  return (
-    <li
-      className={cn(
-        'flex items-center gap-3 px-3 py-2',
-        selected && 'bg-accent'
-      )}
-    >
-      <button
-        type="button"
-        className="flex min-w-0 flex-1 items-center gap-2 text-left"
-        onClick={() => onSelect(item)}
-      >
-        {Icon ? (
-          <Icon
-            aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground"
-          />
-        ) : null}
-        <span className="flex min-w-0 flex-col items-start">
-          <span className="max-w-full truncate text-sm font-medium">
-            {item.label}
-          </span>
-          <span className="max-w-full truncate text-xs text-muted-foreground">
-            {item.detail}
-          </span>
-        </span>
-      </button>
-      {children}
-    </li>
   )
 }

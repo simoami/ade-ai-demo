@@ -84,3 +84,35 @@ export function observationTrends(observations: ObservationView[]) {
       }
     })
 }
+
+type ObservationFlag = NonNullable<ReturnType<typeof observationFlag>>
+
+/** Badge and range-marker classes per flag; in-range reads as success, out-of-range as warning. */
+export const observationFlagTones: Record<
+  ObservationFlag,
+  { badge: string; marker: string }
+> = {
+  normal: { badge: 'bg-success-muted text-success', marker: 'bg-success' },
+  low: { badge: 'bg-warning-muted text-warning', marker: 'bg-warning' },
+  high: { badge: 'bg-warning-muted text-warning', marker: 'bg-warning' },
+  abnormal: {
+    badge: 'bg-destructive/10 text-destructive',
+    marker: 'bg-destructive',
+  },
+}
+
+/** Parsed limits as printed text: both → "3.5–5.0", one side → "≥3.5" or "≤5.0", neither → null. */
+function rangeBounds(low?: number | null, high?: number | null) {
+  if (low != null && high != null) return `${low}–${high}`
+  if (low != null) return `≥${low}`
+  if (high != null) return `≤${high}`
+  return null
+}
+
+/** The printed reference range when present, otherwise one built from the parsed bounds and unit. */
+export function referenceRange({ details, unit }: ObservationView) {
+  if (details.referenceRange) return details.referenceRange
+
+  const bounds = rangeBounds(details.rangeLow, details.rangeHigh)
+  return bounds && unit ? `${bounds} ${unit}` : bounds
+}
