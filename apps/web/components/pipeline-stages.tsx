@@ -86,7 +86,7 @@ export function PipelineStages() {
           </li>
         ))}
       </ol>
-      <p aria-live="polite" className="text-xs flex items-center gap-2">
+      <div aria-live="polite" className="text-xs flex items-center gap-2">
         <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
@@ -111,7 +111,7 @@ export function PipelineStages() {
           </Button>
         </div>
         {label}. {caption}.
-      </p>
+      </div>
     </div>
   )
 }
