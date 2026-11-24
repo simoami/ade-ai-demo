@@ -35,6 +35,8 @@ Use Biome with the checked-in configuration, single quotes, two-space indentatio
 
 Event handlers in components are named `handleXxx`; callback props are named `onXxx`.
 
+Keep one React component per file. A parent's private child components live in a sibling folder named after the parent (`review/review-workspace.tsx` imports `./review-workspace/discard-dialog.tsx`); shadcn files in `packages/ui` keep their multi-part exports.
+
 Module-level constants holding primitive literals or regular expressions use UPPER_SNAKE_CASE; framework-required export names (such as Next.js `maxDuration`) keep their names.
 
 ## Testing Guidelines
