@@ -198,6 +198,15 @@ test('replaces the index only after successful embedding and records covering no
         throw new Error('Synthetic private text')
       },
     }),
+    { message: 'Note embedding failed' }
+  )
+  await assert.rejects(
+    indexDocumentNotes(DOCUMENT_ID, {
+      ...deps,
+      replace: async () => {
+        throw new Error('Synthetic private text')
+      },
+    }),
     { message: 'Note indexing failed' }
   )
   assert.equal(writes, 1)

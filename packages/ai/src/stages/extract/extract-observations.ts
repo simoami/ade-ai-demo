@@ -1,4 +1,4 @@
-import type { ObservationDetails } from '@repo/db'
+import { type ObservationDetails, observationKind } from '@repo/db'
 import { logger } from '@repo/logger'
 import { generateText, Output } from 'ai'
 import { z } from 'zod'
@@ -14,25 +14,18 @@ import { buildExtractionPrompt, extractionPrompt } from './prompt.ts'
 
 const log = logger.getSubLogger({ name: 'extract' })
 
-const ISO_DATE = z.iso.date()
+const isoDate = z.iso.date()
 
 /** Structured extraction output; strict model schemas need every key, so absent values are null. */
 export const observationOutputSchema = z.object({
   observations: z.array(
     z.object({
       blockId: z.string(),
-      kind: z.enum([
-        'lab',
-        'vital',
-        'symptom',
-        'adverse-event',
-        'medical-history',
-        'medication',
-      ]),
+      kind: z.enum(observationKind.enumValues),
       name: z.string().trim().min(1),
       value: z.string().trim().min(1),
       unit: z.string().trim().min(1).nullable(),
-      effectiveDate: ISO_DATE.nullable(),
+      effectiveDate: isoDate.nullable(),
       dateSource: z.enum(['explicit', 'document']).nullable(),
       sourceFormat: z.enum(['table', 'list', 'narrative']),
       details: z.object({
@@ -49,8 +42,8 @@ export const observationOutputSchema = z.object({
           .nullable(),
         referenceRange: z.string().nullable(),
         flag: z.string().nullable(),
-        startDate: ISO_DATE.nullable(),
-        endDate: ISO_DATE.nullable(),
+        startDate: isoDate.nullable(),
+        endDate: isoDate.nullable(),
         seriousness: z.string().nullable(),
         outcome: z
           .enum([
@@ -81,6 +74,15 @@ export type ExtractedObservation = Omit<ObservationOutput, 'details'> & {
   details: ObservationDetails
 }
 
+type WithoutNulls<T> = { [K in keyof T]?: Exclude<T[K], null> }
+
+/** Drops null fields: { flag: 'H', route: null } → { flag: 'H' }. Strict model schemas need every key; stored details omit absent ones. */
+function withoutNulls<T extends object>(value: T): WithoutNulls<T> {
+  return Object.fromEntries(
+    Object.entries(value).filter(([, field]) => field !== null)
+  ) as WithoutNulls<T>
+}
+
 /** Rejects invalid output without including document text in errors; numeric values are parsed in code. */
 export function validateObservationOutput(
   output: unknown,
@@ -107,9 +109,7 @@ export function validateObservationOutput(
       ...observation,
       page,
       valueNumeric: null,
-      details: Object.fromEntries(
-        Object.entries(observation.details).filter((entry) => entry[1] !== null)
-      ),
+      details: withoutNulls(observation.details),
     })
   })
 }

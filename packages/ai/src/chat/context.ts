@@ -1,4 +1,9 @@
+import { observationKind } from '@repo/db'
 import { z } from 'zod'
+import { BLOOD_PRESSURE_CODE, DIASTOLIC_CODE, SYSTOLIC_CODE } from '#loinc'
+import { NOTE_MATCH_LIMIT } from './note-matches.ts'
+import { DOCUMENT_LIST_LIMIT, TREND_POINT_LIMIT } from './queries.ts'
+import { OBSERVATION_CARD_LIMIT } from './selection.ts'
 
 const id = z.string().trim().min(1).max(200)
 
@@ -21,16 +26,7 @@ export const scopeSchema = z.object({
 
 /** Observation filters accepted by the model's query tool. */
 export const observationQuerySchema = scopeSchema.extend({
-  kind: z
-    .enum([
-      'lab',
-      'vital',
-      'symptom',
-      'adverse-event',
-      'medical-history',
-      'medication',
-    ])
-    .optional(),
+  kind: z.enum(observationKind.enumValues).optional(),
   outOfRangeOnly: z.boolean().optional(),
   name: z.string().trim().min(1).max(200).optional(),
   // False when the results only inform a written answer, such as a summary note.
@@ -62,7 +58,7 @@ export function chatInstructions(context: PageContext) {
     TOOL_PRESENTATION_INSTRUCTIONS,
     'For searchNotes, synthesize the retrieved text in 1–4 sentences with [page N](/documents/<documentId>?page=N) links. Never paste chunks. Note sources are shown as compact pills, not full text. If no relevant notes are returned, say so without inventing an assessment or plan.',
     'Cite every clinical value and note claim with a Markdown link whose text is only the page, like [page 3](/documents/<documentId>?page=3). Never write document IDs in the answer text. Label extracted (unchecked) and needsReview (flagged) observations as unverified, including trend points.',
-    'Use queryObservations to show observation cards and observationTrend for numeric trends. Names are printed labels. Trends group by LOINC code when present, otherwise exact name and unit. Vital codes: BP 85354-9, BMI 39156-5, pulse/heart rate 8867-4, respiratory rate 9279-1, temperature 8310-5, oxygen saturation 59408-5, height 8302-2, weight 29463-7. Request BP code 85354-9 for both series or component 8480-6 (systolic) / 8462-4 (diastolic) for one; never combine incompatible units. Do not interpret missing results as normal or complete. Observation queries return at most 20 cards; named queries return the latest 20 results chronologically. Trends are limited to 100 points, document lists to 50 documents and note searches to 4 relevant chunks.',
+    `Use queryObservations to show observation cards and observationTrend for numeric trends. Names are printed labels. Trends group by LOINC code when present, otherwise exact name and unit. Vital codes: BP ${BLOOD_PRESSURE_CODE}, BMI 39156-5, pulse/heart rate 8867-4, respiratory rate 9279-1, temperature 8310-5, oxygen saturation 59408-5, height 8302-2, weight 29463-7. Request BP code ${BLOOD_PRESSURE_CODE} for both series or component ${SYSTOLIC_CODE} (systolic) / ${DIASTOLIC_CODE} (diastolic) for one; never combine incompatible units. Do not interpret missing results as normal or complete. Observation queries return at most ${OBSERVATION_CARD_LIMIT} cards; named queries return the latest ${OBSERVATION_CARD_LIMIT} results chronologically. Trends are limited to ${TREND_POINT_LIMIT} points, document lists to ${DOCUMENT_LIST_LIMIT} documents and note searches to ${NOTE_MATCH_LIMIT} relevant chunks.`,
     'For adverse events, report severity, seriousness and dates as recorded. For review blockers use reviewStatus. For plans and assessments use searchNotes. Ask for a document or patient scope before searching notes from a list page.',
     'Never invent source pages. Document lists and review counts are metadata; link their document without claiming a page citation.',
     `Current page context (default tool scope): ${JSON.stringify(context)}`,

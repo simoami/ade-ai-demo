@@ -43,7 +43,8 @@
   },
   "exports": {
     "./review-action": "./src/workflows/ingest-document/review-action.ts",
-    "./chat": "./src/chat/index.ts"
+    "./chat": "./src/chat/index.ts",
+    "./chat/trend-point": "./src/chat/trend-point.ts"
   },
   "imports": {
     "#agent/*": "./agent/*.ts",

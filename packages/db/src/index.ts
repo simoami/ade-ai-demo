@@ -1,3 +1,3 @@
-export { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
+export { and, asc, desc, eq, inArray, ne, or, sql } from 'drizzle-orm'
 export { createDb } from '#client'
 export * from '#schema'

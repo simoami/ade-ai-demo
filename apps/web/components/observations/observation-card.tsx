@@ -300,17 +300,17 @@ function RangeBar({ observation }: { observation: ObservationView }) {
   )
 }
 
+/** Parsed limits as printed text: both → "3.5–5.0", one side → "≥3.5" or "≤5.0", neither → null. */
+function rangeBounds(low?: number | null, high?: number | null) {
+  if (low != null && high != null) return `${low}–${high}`
+  if (low != null) return `≥${low}`
+  if (high != null) return `≤${high}`
+  return null
+}
+
 function referenceRange({ details, unit }: ObservationView) {
   if (details.referenceRange) return details.referenceRange
 
-  const { rangeLow: low, rangeHigh: high } = details
-  const bounds =
-    low != null && high != null
-      ? `${low}–${high}`
-      : low != null
-        ? `≥${low}`
-        : high != null
-          ? `≤${high}`
-          : null
+  const bounds = rangeBounds(details.rangeLow, details.rangeHigh)
   return bounds && unit ? `${bounds} ${unit}` : bounds
 }

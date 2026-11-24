@@ -8,6 +8,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@repo/ui/components/chart'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@repo/ui/components/collapsible'
+import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import {
   CartesianGrid,
@@ -144,11 +150,18 @@ export function ObservationTrend({
           Reference: {rangeLow ?? '−∞'}–{rangeHigh ?? '∞'} {unit}
         </p>
       )}
-      <details className="mt-2 text-xs text-muted-foreground">
-        <summary className="cursor-pointer">
+      <Collapsible className="mt-2 text-xs text-muted-foreground">
+        <CollapsibleTrigger className="group flex cursor-pointer items-center gap-1">
+          <ChevronRight
+            aria-hidden
+            className="size-3 transition-transform group-data-[panel-open]:rotate-90"
+          />
           {points.length} source observations
-        </summary>
-        <ul className="mt-2 flex max-h-40 flex-col gap-1 overflow-y-auto">
+        </CollapsibleTrigger>
+        <CollapsibleContent
+          render={<ul />}
+          className="mt-2 flex max-h-40 flex-col gap-1 overflow-y-auto"
+        >
           {[
             ...new Map(
               points.map((point) => [JSON.stringify(point), point])
@@ -157,15 +170,15 @@ export function ObservationTrend({
             <li key={key}>
               <Link
                 className="underline underline-offset-2"
-                href={`/documents/${point.documentId}?page=${point.page}`}
+                href={`/documents/${encodeURIComponent(point.documentId)}?page=${point.page}`}
               >
                 {formatDate(point.date)} · {reading(point)} {unit}
                 {point.flag ? ` · ${point.flag}` : ''} · page {point.page}
               </Link>
             </li>
           ))}
-        </ul>
-      </details>
+        </CollapsibleContent>
+      </Collapsible>
     </Card>
   )
 }

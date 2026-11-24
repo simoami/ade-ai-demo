@@ -1,4 +1,5 @@
-import type { noteChunks } from '@repo/db'
+import { EMBEDDING_DIMENSIONS, type noteChunks } from '@repo/db'
+import { logger } from '@repo/logger'
 import { embedMany } from 'ai'
 import { z } from 'zod'
 import { embeddingModel } from '#models'
@@ -19,20 +20,42 @@ import {
   replaceNoteChunks,
 } from '#workflows/ingest-document/document-store'
 
+const log = logger.getSubLogger({ name: 'index-notes' })
+
 type Embedder = (values: string[]) => Promise<number[][]>
 
 type Chunk = typeof noteChunks.$inferInsert
 
-const embeddingsSchema = z.array(z.array(z.number().finite()).length(1536))
+const embeddingsSchema = z.array(
+  z.array(z.number().finite()).length(EMBEDDING_DIMENSIONS)
+)
+
+const EMBEDDING_TIMEOUT_MS = 180_000
 
 async function embed(values: string[]) {
   const result = await embedMany({
     model: embeddingModel,
     values,
     maxRetries: 0,
-    abortSignal: AbortSignal.timeout(180_000),
+    abortSignal: AbortSignal.timeout(EMBEDDING_TIMEOUT_MS),
   })
   return result.embeddings
+}
+
+/**
+ * Runs `task`, replacing any failure with a fixed message.
+ * Provider and driver errors can echo note text, so only the error class is logged and nothing is chained as `cause`.
+ */
+async function withMaskedError<T>(message: string, task: () => Promise<T>) {
+  try {
+    return await task()
+  } catch (error) {
+    log.error(
+      { errorType: error instanceof Error ? error.name : typeof error },
+      message
+    )
+    throw new Error(message)
+  }
 }
 
 // About 500 tokens: large enough for a typical note section, well within the embedding model's input limit.
@@ -136,20 +159,22 @@ export async function buildNoteChunks(
   spans: MaskedSpans,
   embedder: Embedder = embed
 ): Promise<Chunk[]> {
-  const headings: string[] = []
+  // Open headings, outermost first: an h2 "Plan" under an h1 "Visit" gives the section path "Visit › Plan".
+  const headings: { level: number; text: string }[] = []
   const chunks = maskIdentifiers(pages, spans).flatMap((page, pageIndex) => {
     const sections: { section: string | null; blocks: NotePiece[] }[] = []
     let current: (typeof sections)[number] | undefined
     for (const block of page.blocks.filter(isSearchableNoteBlock)) {
       if (block.kind === 'heading') {
         const level = block.level ?? 2
-        headings.length = level - 1
-        headings[level - 1] = block.text.trim()
+        // A heading closes every open heading at its level or deeper, then opens itself.
+        while ((headings.at(-1)?.level ?? 0) >= level) headings.pop()
+        headings.push({ level, text: block.text.trim() })
         current = undefined
         continue
       }
 
-      const section = headings.filter(Boolean).join(' › ') || null
+      const section = headings.map(({ text }) => text).join(' › ') || null
       if (!current || !section) {
         current = { section, blocks: [] }
         sections.push(current)
@@ -174,7 +199,7 @@ export async function buildNoteChunks(
   })
   if (!chunks.length) return []
 
-  try {
+  return withMaskedError('Note embedding failed', async () => {
     const embeddings = embeddingsSchema.safeParse(
       await embedder(chunks.map(noteEmbeddingInput))
     )
@@ -187,9 +212,7 @@ export async function buildNoteChunks(
 
       return { ...chunk, embedding }
     })
-  } catch {
-    throw new Error('Note embedding failed')
-  }
+  })
 }
 
 // Text identifier regions are already masked; suppressing their whole block would hide surrounding clinical notes.
@@ -220,35 +243,36 @@ export async function indexDocumentNotes(
   overrides: Partial<typeof defaults> = {}
 ) {
   const deps = { ...defaults, ...overrides }
-  try {
-    const chunks = await buildNoteChunks(
-      documentId,
-      await deps.readOcr(documentId, deps),
-      await deps.readIdentifierSpans(documentId, deps),
-      deps.embed
-    )
-    const redactions = (await deps.redactions(documentId)).filter(
-      ({ state, category }) =>
-        state !== 'rejected' && !IDENTIFIER_CATEGORIES.has(category)
-    )
-    for (const chunk of chunks) {
-      chunk.removedByRedactionIds = redactions
-        .filter((redaction) =>
-          chunk.source.some(
-            ({ page, box }) =>
-              page === redaction.page &&
-              box.x < redaction.box.x + redaction.box.width &&
-              box.x + box.width > redaction.box.x &&
-              box.y < redaction.box.y + redaction.box.height &&
-              box.y + box.height > redaction.box.y
-          )
+  const chunks = await buildNoteChunks(
+    documentId,
+    await deps.readOcr(documentId, deps),
+    await deps.readIdentifierSpans(documentId, deps),
+    deps.embed
+  )
+  const redactions = (await deps.redactions(documentId)).filter(
+    ({ state, category }) =>
+      state !== 'rejected' && !IDENTIFIER_CATEGORIES.has(category)
+  )
+  // A chunk overlapping a burned picture or other non-identifier redaction is hidden from search.
+  const indexed = chunks.map((chunk) => ({
+    ...chunk,
+    removedByRedactionIds: redactions
+      .filter((redaction) =>
+        chunk.source.some(
+          ({ page, box }) =>
+            page === redaction.page &&
+            box.x < redaction.box.x + redaction.box.width &&
+            box.x + box.width > redaction.box.x &&
+            box.y < redaction.box.y + redaction.box.height &&
+            box.y + box.height > redaction.box.y
         )
-        .map(({ id }) => id)
-    }
-    await deps.replace(documentId, chunks)
+      )
+      .map(({ id }) => id),
+  }))
+  // The insert carries chunk text, so a failed write must not surface the driver's message.
+  await withMaskedError('Note indexing failed', () =>
+    deps.replace(documentId, indexed)
+  )
 
-    return { chunkCount: chunks.length }
-  } catch {
-    throw new Error('Note indexing failed')
-  }
+  return { chunkCount: indexed.length }
 }

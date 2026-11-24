@@ -25,16 +25,20 @@ import { ObservationTrend } from '#components/observations/observation-trend'
 import { citationNumbers, parseCitation } from '#lib/citations'
 import { noteExcerpts, pageKey } from '#lib/note-excerpts'
 import { observationKindLabels } from '#lib/observations'
+import type { DocumentRef } from '#lib/page-context'
 
 type Part = ChatMessage['parts'][number]
 
 const CitationContext = createContext<{
   numbers: Map<string, number>
-  documents: { id: string; fileName: string }[]
+  documents: DocumentRef[]
   excerpts: ReturnType<typeof noteExcerpts>
 }>({ numbers: new Map(), documents: [], excerpts: new Map() })
 
 const markdownComponents = { a: CitationLink }
+
+// Cards shown before "Show more"; enough for a glance without pushing the answer off screen.
+const COLLAPSED_CARD_COUNT = 5
 
 /** Numbers one message's page citations and resolves their file names and note excerpts. */
 export function MessageCitations({
@@ -43,7 +47,7 @@ export function MessageCitations({
   children,
 }: {
   parts: ChatMessage['parts']
-  documents: { id: string; fileName: string }[]
+  documents: DocumentRef[]
   children: ReactNode
 }) {
   const text = parts
@@ -187,6 +191,15 @@ function CitationLink(props: ComponentProps<typeof defaultComponents.a>) {
   )
 }
 
+/** Links to the full observation list for the scoped record; list pages have none. */
+function observationsHref(context: PageContext) {
+  if (context.page === 'document')
+    return `/documents/${encodeURIComponent(context.documentId)}?tab=observations`
+  if (context.page === 'patient')
+    return `/patients/${encodeURIComponent(context.patientId)}#observations`
+  return null
+}
+
 function ObservationResults({
   result,
   context,
@@ -198,12 +211,12 @@ function ObservationResults({
   if (!result) return null
 
   const { summary, observations } = result
-  const href =
-    context.page === 'document'
-      ? `/documents/${encodeURIComponent(context.documentId)}?tab=observations`
-      : context.page === 'patient'
-        ? `/patients/${encodeURIComponent(context.patientId)}#observations`
-        : null
+  const href = observationsHref(context)
+  const hiddenCount = observations.length - COLLAPSED_CARD_COUNT
+
+  function handleToggle() {
+    setExpanded((previous) => !previous)
+  }
 
   return (
     <div className="space-y-2">
@@ -227,20 +240,20 @@ function ObservationResults({
         )}
       </div>
       {observations
-        .slice(0, expanded ? observations.length : 5)
+        .slice(0, expanded ? observations.length : COLLAPSED_CARD_COUNT)
         .map((observation) => (
           <ObservationCard key={observation.id} observation={observation} />
         ))}
       {observations.length === 0 && <p>No matching observations found.</p>}
-      {observations.length > 5 && (
+      {hiddenCount > 0 && (
         <Button
           variant="outline"
           size="sm"
           className="rounded-full"
           aria-expanded={expanded}
-          onClick={() => setExpanded(!expanded)}
+          onClick={handleToggle}
         >
-          {expanded ? 'Show less' : `Show ${observations.length - 5} more`}
+          {expanded ? 'Show less' : `Show ${hiddenCount} more`}
         </Button>
       )}
       {href !== null && (

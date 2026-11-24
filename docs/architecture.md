@@ -77,16 +77,16 @@ Observations share common columns (kind, name, value, numeric value, unit, date,
 
 ## Services
 
-| Service                      | Use                                                                                 |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
+| Service                      | Use                                                                                     |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
 | OpenAI (AI SDK)              | Picture pass, classification, demographics, PII detection, extraction, chat, embeddings |
-| Reducto parse (`r-1`)        | OCR blocks and word boxes, chosen by the OCR evaluation                             |
-| Tesseract (WASM, in-process) | Character boxes inside identifier regions, for exact redaction geometry             |
-| Vercel Workflow (via eve)    | Durable pipeline run and review loop                                                |
-| Vercel Blob (private)        | Originals, renders, encrypted artifacts and published pages                         |
-| Neon Postgres + pgvector     | Application data and note embeddings                                                |
-| Braintrust                   | Eval datasets, experiments and scores                                               |
-| Vercel Deployment Protection | Access control for every deployment; the app has no auth code                       |
+| Reducto parse (`r-1`)        | OCR blocks and word boxes, chosen by the OCR evaluation                                 |
+| Tesseract (WASM, in-process) | Character boxes inside identifier regions, for exact redaction geometry                 |
+| Vercel Workflow (via eve)    | Durable pipeline run and review loop                                                    |
+| Vercel Blob (private)        | Originals, renders, encrypted artifacts and published pages                             |
+| Neon Postgres + pgvector     | Application data and note embeddings                                                    |
+| Braintrust                   | Eval datasets, experiments and scores                                                   |
+| Vercel Deployment Protection | Access control for every deployment; the app has no auth code                           |
 
 Models are called directly, without AI Gateway, from one registry in `packages/ai/src/models.ts`.
 

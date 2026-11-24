@@ -1,3 +1,4 @@
+import { BLOOD_PRESSURE_CODE, DIASTOLIC_CODE, SYSTOLIC_CODE } from '#loinc'
 import type { OcrPage } from '#stages/ocr/ocr-result'
 import { IDENTIFIER_PLACEHOLDER } from './mask-identifiers.ts'
 
@@ -24,12 +25,12 @@ and adverse events it is the stated severity (mild) or present if none.
 For medical history value is present or the printed status; for medication it
 is the printed dose (500 mg), with its numeric unit when available.
 For vitals assign details.code from this LOINC list when applicable:
-blood pressure panel 85354-9, BMI 39156-5, heart rate/pulse 8867-4,
+blood pressure panel ${BLOOD_PRESSURE_CODE}, BMI 39156-5, heart rate/pulse 8867-4,
 respiratory rate 9279-1, body temperature 8310-5, oxygen saturation 59408-5,
 body height 8302-2, body weight 29463-7. Other codes are null.
 Blood pressure is one panel with its printed label (e.g. BP), combined value
-(e.g. 128/78), unit mmHg, and details.components: systolic code 8480-6,
-name Systolic blood pressure, numeric value, unit mmHg; diastolic code 8462-4,
+(e.g. 128/78), unit mmHg, and details.components: systolic code ${SYSTOLIC_CODE},
+name Systolic blood pressure, numeric value, unit mmHg; diastolic code ${DIASTOLIC_CODE},
 name Diastolic blood pressure, numeric value, unit mmHg.
 Combine separately printed systolic/diastolic readings on the same date into one
 panel, keeping the first printed label. A lone reading is a panel with one

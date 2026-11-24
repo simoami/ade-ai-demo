@@ -104,11 +104,12 @@ test('parameterizes clinical filters and always excludes rejected or removed row
   })
   assert.ok(query)
   const compiled = new PgDialect().sqlToQuery(query)
-  assert.match(compiled.sql, /review_status.*<> 'rejected'/)
+  assert.match(compiled.sql, /review_status" <> \$1/)
   assert.match(compiled.sql, /cardinality\(.*removed_by_redaction_ids.*\) = 0/)
   assert.match(compiled.sql, /flagNormalized.*'low', 'high', 'abnormal'/)
   assert.equal(compiled.sql.includes('drop table'), false)
   assert.deepEqual(compiled.params, [
+    'rejected',
     'doc-1',
     'pt-1',
     'lab',
@@ -123,10 +124,14 @@ test('trend queries drop undated rows before the limit and sort undated results 
   const compiled = dialect.sqlToQuery(trend)
   assert.match(compiled.sql, /effective_date.* is not null/)
   assert.match(compiled.sql, /"name" = \$\d/)
-  assert.deepEqual(compiled.params, ['pt-1', 'Glucose'])
+  assert.deepEqual(compiled.params, ['rejected', 'pt-1', 'Glucose'])
   const filter = trendFilters('pt-1', 'BP', '85354-9')
   assert.ok(filter)
-  assert.deepEqual(dialect.sqlToQuery(filter).params, ['pt-1', '85354-9'])
+  assert.deepEqual(dialect.sqlToQuery(filter).params, [
+    'rejected',
+    'pt-1',
+    '85354-9',
+  ])
   assert.match(dialect.sqlToQuery(filter).sql, /->>'code'/)
 
   const [byDate] = newestFirst
@@ -309,13 +314,16 @@ test('named queries retain the latest 20 repeated test results in chronological 
     id: `obs-${index}`,
     date: `2026-01-${String(index + 1).padStart(2, '0')}`,
   }))
-  const result = observationQueryResult(rows, true)
+  const result = observationQueryResult(rows, { named: true })
   assert.equal(result.summary.total, 25)
   assert.equal(result.observations.length, 20)
   assert.equal(result.observations[0]?.date, '2026-01-06')
   assert.equal(result.observations.at(-1)?.date, '2026-01-25')
   assert.equal(result.truncated, true)
-  assert.deepEqual(observationQueryResult([...rows].reverse(), true), result)
+  assert.deepEqual(
+    observationQueryResult([...rows].reverse(), { named: true }),
+    result
+  )
 })
 
 test('handles empty, undated and rejected observations deterministically without mutating input', () => {

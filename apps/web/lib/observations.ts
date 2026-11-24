@@ -1,4 +1,5 @@
 import type { ObservationView } from '@repo/ai/chat'
+import { trendPoint } from '@repo/ai/chat/trend-point'
 
 export type { ObservationView }
 
@@ -79,30 +80,7 @@ export function observationTrends(observations: ObservationView[]) {
         unit: latest.unit,
         rangeLow: latest.details.rangeLow ?? null,
         rangeHigh: latest.details.rangeHigh ?? null,
-        points: sorted.map((row) => ({
-          date: row.date,
-          value: row.valueNumeric,
-          ...(row.details.components?.length
-            ? {
-                systolic:
-                  row.details.components.find((part) => part.code === '8480-6')
-                    ?.value ?? null,
-                diastolic:
-                  row.details.components.find((part) => part.code === '8462-4')
-                    ?.value ?? null,
-              }
-            : {}),
-          // Same convention as the assistant's trend, so unverified points read alike in both charts.
-          flag:
-            [
-              observationFlag(row),
-              row.state === 'accepted' ? null : 'unverified',
-            ]
-              .filter(Boolean)
-              .join('; ') || null,
-          documentId: row.documentId,
-          page: row.page,
-        })),
+        points: sorted.map((row) => trendPoint(row, observationFlag(row))),
       }
     })
 }

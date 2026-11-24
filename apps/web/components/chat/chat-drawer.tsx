@@ -17,11 +17,24 @@ import { Textarea } from '@repo/ui/components/textarea'
 import { DefaultChatTransport } from 'ai'
 import { MessageSquare, X } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { ChatPart, MessageCitations } from '#components/chat/chat-parts'
-import { pageContext, pageScopeLabel } from '#lib/page-context'
+import {
+  type DocumentRef,
+  pageContext,
+  pageScopeLabel,
+} from '#lib/page-context'
 
 const transport = new DefaultChatTransport<ChatMessage>({ api: '/api/chat' })
+
+// Roughly two pages of typed text: room for a pasted excerpt, short of flooding the model's context.
+const MAX_MESSAGE_LENGTH = 8000
 
 const presets = {
   patient: [
@@ -48,11 +61,7 @@ const presets = {
 }
 
 /** Ephemeral, page-scoped clinical assistant mounted beside the theme toggle. */
-export function ChatDrawer({
-  documents,
-}: {
-  documents: { id: string; fileName: string }[]
-}) {
+export function ChatDrawer({ documents }: { documents: DocumentRef[] }) {
   const pathname = usePathname()
   const { id } = useParams<{ id?: string }>()
   const context = pageContext(pathname, id)
@@ -110,7 +119,7 @@ function Conversation({
   documents,
 }: {
   context: PageContext
-  documents: { id: string; fileName: string }[]
+  documents: DocumentRef[]
 }) {
   const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     transport,
@@ -135,6 +144,19 @@ function Conversation({
 
     void sendMessage({ text: text.trim() }, { body: { context } })
     setInput('')
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    handleSend(input)
+  }
+
+  function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    setInput(event.target.value)
+  }
+
+  function handleStop() {
+    void stop()
   }
 
   return (
@@ -195,33 +217,21 @@ function Conversation({
         )}
         <div ref={end} />
       </div>
-      <form
-        className="space-y-2 border-t p-4"
-        onSubmit={(event) => {
-          event.preventDefault()
-          handleSend(input)
-        }}
-      >
+      <form className="space-y-2 border-t p-4" onSubmit={handleSubmit}>
         <Textarea
           aria-label="Message the assistant"
           placeholder="Ask about these records…"
           value={input}
-          onChange={(event) => setInput(event.target.value)}
+          onChange={handleInputChange}
           disabled={busy}
-          maxLength={8000}
+          maxLength={MAX_MESSAGE_LENGTH}
         />
         <div className="flex items-center justify-between gap-2">
           <p className="text-xs text-muted-foreground">
             Conversation clears when you leave this page.
           </p>
           {busy ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                void stop()
-              }}
-            >
+            <Button type="button" variant="outline" onClick={handleStop}>
               Stop
             </Button>
           ) : (

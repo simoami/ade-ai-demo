@@ -1,4 +1,5 @@
 import type { ObservationDetails } from '@repo/db'
+import { BLOOD_PRESSURE_CODE } from '#loinc'
 
 const NUMBER = '-?\\d+(?:\\.\\d+)?'
 
@@ -119,7 +120,7 @@ export function combineBloodPressure<
   for (const row of rows) {
     const components = row.details.components
     const previous =
-      row.details.code === '85354-9' &&
+      row.details.code === BLOOD_PRESSURE_CODE &&
       row.effectiveDate &&
       components?.length === 1
         ? result.find(
@@ -131,20 +132,27 @@ export function combineBloodPressure<
           )
         : undefined
     if (!previous) {
-      result.push({ ...row, details: { ...row.details } })
+      result.push(row)
       continue
     }
 
+    // Descending code order puts systolic (8480-6) before diastolic (8462-4), so the value reads "128/78".
     const merged = [
       ...(previous.details.components ?? []),
       ...(components ?? []),
     ].sort((a, b) => b.code.localeCompare(a.code))
-    previous.value = merged.map((component) => component.value).join('/')
-    previous.details.components = merged
     const flags = [
       ...new Set([previous.details.flag, row.details.flag].filter(Boolean)),
     ].join('; ')
-    if (flags) previous.details.flag = flags
+    result[result.indexOf(previous)] = {
+      ...previous,
+      value: merged.map((component) => component.value).join('/'),
+      details: {
+        ...previous.details,
+        components: merged,
+        ...(flags ? { flag: flags } : {}),
+      },
+    }
   }
   return result
 }

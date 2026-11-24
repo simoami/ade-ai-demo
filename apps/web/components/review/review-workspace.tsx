@@ -100,6 +100,13 @@ export function ReviewWorkspace({
   const status = outcome ?? document.status
   const mode = reviewMode(status)
   const readOnly = mode !== 'review'
+  // Exactly one observations-tab state renders: still extracting, nothing found, or the list.
+  const observationsView =
+    mode === 'processing'
+      ? 'processing'
+      : observations.length
+        ? 'list'
+        : 'empty'
 
   const redactionItems: ReviewItem[] = redactions.map((redaction) => ({
     ...redaction,
@@ -314,7 +321,7 @@ export function ReviewWorkspace({
                 value="observations"
               >
                 Observations
-                {mode !== 'processing' && observations.length > 0 && (
+                {observationsView === 'list' && (
                   <Badge variant="secondary" className="tabular-nums">
                     {observations.length}
                   </Badge>
@@ -372,7 +379,7 @@ export function ReviewWorkspace({
                 </Collapsible>
               </div>
             )}
-            {tab === 'observations' && mode === 'processing' && (
+            {tab === 'observations' && observationsView === 'processing' && (
               <Empty>
                 <EmptyHeader>
                   <EmptyMedia variant="icon">
@@ -386,40 +393,34 @@ export function ReviewWorkspace({
                 </EmptyHeader>
               </Empty>
             )}
-            {tab === 'observations' &&
-              mode !== 'processing' &&
-              observations.length === 0 && (
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <ClipboardX />
-                    </EmptyMedia>
-                    <EmptyTitle>No observations</EmptyTitle>
-                    <EmptyDescription>
-                      {document.documentClass === 'clinical'
-                        ? 'No labs, vitals, events, history or medications were found in this document.'
-                        : 'Observations are extracted from clinical documents only.'}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              )}
-            {tab === 'observations' &&
-              mode !== 'processing' &&
-              observations.length > 0 && (
-                <div className="flex min-w-0 flex-col gap-4">
-                  {selectedTrend ? (
-                    <ObservationTrend {...selectedTrend} />
-                  ) : null}
-                  <ReviewItems
-                    items={observationItems}
-                    page={page}
-                    selectedId={selected?.id ?? null}
-                    readOnly={readOnly}
-                    onSelect={handleSelect}
-                    onDecide={handleDecide}
-                  />
-                </div>
-              )}
+            {tab === 'observations' && observationsView === 'empty' && (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <ClipboardX />
+                  </EmptyMedia>
+                  <EmptyTitle>No observations</EmptyTitle>
+                  <EmptyDescription>
+                    {document.documentClass === 'clinical'
+                      ? 'No labs, vitals, events, history or medications were found in this document.'
+                      : 'Observations are extracted from clinical documents only.'}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            )}
+            {tab === 'observations' && observationsView === 'list' && (
+              <div className="flex min-w-0 flex-col gap-4">
+                {selectedTrend ? <ObservationTrend {...selectedTrend} /> : null}
+                <ReviewItems
+                  items={observationItems}
+                  page={page}
+                  selectedId={selected?.id ?? null}
+                  readOnly={readOnly}
+                  onSelect={handleSelect}
+                  onDecide={handleDecide}
+                />
+              </div>
+            )}
           </div>
         </aside>
       </div>

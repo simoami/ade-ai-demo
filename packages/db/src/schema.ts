@@ -207,6 +207,9 @@ export const observations = pgTable(
   (table) => [index('observations_document_id_idx').on(table.documentId)]
 )
 
+/** Vector width of note embeddings; must match the embedding model's output (text-embedding-3-small returns 1536). */
+export const EMBEDDING_DIMENSIONS = 1536
+
 /** Redacted note chunks and their source regions support cosine similarity search. */
 export const noteChunks = pgTable(
   'note_chunks',
@@ -218,7 +221,9 @@ export const noteChunks = pgTable(
     section: text('section'),
     text: text('text').notNull(),
     source: jsonb('source').$type<SourceRegion[]>().notNull(),
-    embedding: vector('embedding', { dimensions: 1536 }).notNull(),
+    embedding: vector('embedding', {
+      dimensions: EMBEDDING_DIMENSIONS,
+    }).notNull(),
     removedByRedactionIds: text('removed_by_redaction_ids')
       .array()
       .default(sql`'{}'::text[]`)
